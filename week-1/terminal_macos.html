@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>macOS Terminal — Run Python 3</title>
+<style>
+  :root{
+    --nav:#6366f1; --py:#10b981; --pip:#f59e0b; --file:#0ea5e9; --key:#ec4899;
+    --muted:#9a9a9a;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{ background:#fff; font-family:'Segoe UI',system-ui,sans-serif; color:#111;
+    display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:54px 20px; }
+  h1{ font-size:13px; font-weight:500; letter-spacing:.18em; text-transform:uppercase; color:#999; margin-bottom:8px; }
+  h2{ font-size:26px; font-weight:600; letter-spacing:-.02em; text-align:center; margin-bottom:6px; }
+  .subtitle{ font-size:13px; color:var(--muted); margin-bottom:34px; text-align:center; }
+  .wrap{ width:100%; max-width:720px; }
+
+  /* terminal window */
+  .win{ border-radius:12px; overflow:hidden; box-shadow:0 12px 34px rgba(0,0,0,.18); }
+  .win-bar{ display:flex; align-items:center; gap:8px; padding:10px 14px; background:#2a2d3a; }
+  .win-bar .d{ width:12px; height:12px; border-radius:50%; }
+  .d.r{ background:#ff5f57; } .d.y{ background:#febc2e; } .d.g{ background:#28c840; }
+  .win-bar .ttl{ margin-left:8px; font-size:12px; color:#aeb3c2; font-family:'SF Mono','Consolas',monospace; }
+  .win-body{ background:#0b0f18; padding:16px 17px; min-height:230px;
+    font-family:'SF Mono','Consolas',monospace; font-size:13px; line-height:1.75; color:#d7dce8;
+    white-space:pre-wrap; word-break:break-word; }
+  .pr-u{ color:#6ee7ff; } .pr-d{ color:#ffcb6b; } .pr-p{ color:#7c8398; }
+  .o-files{ color:#8ad6ff; } .o-ok{ color:#9af7c0; } .o-dim{ color:#aab1c4; }
+  .tabkey{ display:inline-block; background:#33384a; color:#ffd479; border:1px solid #4a5167;
+    border-radius:5px; padding:0 6px; font-size:11px; margin-left:6px; }
+  .cur{ display:inline-block; width:8px; height:14px; background:#9af7c0; vertical-align:-2px; animation:blink 1s steps(1) infinite; }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  .controls{ display:flex; gap:10px; justify-content:center; margin:18px 0 4px; }
+  .controls button{ font-family:inherit; font-size:13.5px; font-weight:600; cursor:pointer; border:none; border-radius:10px; padding:9px 20px; color:#fff; transition:transform .12s, opacity .2s, filter .2s; }
+  .controls button:active{ transform:scale(.95); } .controls button:disabled{ opacity:.4; cursor:default; }
+  #play{ background:#10b981; } #pause{ background:#64748b; } #stop{ background:#ef4444; }
+  .controls button:not(:disabled):hover{ filter:brightness(1.07); }
+  .hint{ text-align:center; font-size:12px; color:var(--muted); margin-bottom:46px; }
+
+  /* cheat sheet */
+  .sheet-title{ font-size:16px; font-weight:600; text-align:center; margin-bottom:4px; }
+  .sheet-sub{ font-size:12.5px; color:var(--muted); text-align:center; margin-bottom:24px; }
+  .sheet{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .cat{ border:1.5px solid #eee; border-radius:14px; padding:14px 14px 6px; }
+  .cat-h{ display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .dot{ width:9px; height:9px; border-radius:50%; }
+  .cat-n{ font-size:13.5px; font-weight:600; }
+  .row{ display:flex; gap:10px; align-items:baseline; padding:5px 0; border-top:1px solid #f4f4f7; }
+  .row:first-of-type{ border-top:none; }
+  .cmd{ font-family:'SF Mono','Consolas',monospace; font-size:12px; font-weight:600; white-space:nowrap;
+    padding:2px 7px; border-radius:6px; background:color-mix(in srgb,var(--c) 11%,#fff);
+    color:color-mix(in srgb,var(--c) 78%,#222); border:1px solid color-mix(in srgb,var(--c) 24%,#fff); }
+  .desc{ font-size:12px; color:#666; line-height:1.4; }
+
+  @media (max-width:600px){
+    body{ padding:40px 12px; } h2{ font-size:21px; } .win-body{ font-size:11.5px; }
+    .sheet{ grid-template-columns:1fr; } .cmd{ white-space:normal; }
+  }
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 1</h1>
+  <h2>Run Python in the macOS Terminal</h2>
+  <div class="subtitle">navigate to your folder, run a script, check your version</div>
+
+  <div class="wrap">
+    <div class="win">
+      <div class="win-bar"><span class="d r"></span><span class="d y"></span><span class="d g"></span><span class="ttl">zsh — week-1</span></div>
+      <div class="win-body" id="term"></div>
+    </div>
+
+    <div class="controls">
+      <button id="play">▶ Play</button>
+      <button id="pause" disabled>❚❚ Pause</button>
+      <button id="stop" disabled>■ Stop</button>
+    </div>
+    <div class="hint" id="hint">Press Play to watch the session — including Tab ⇥ to auto-complete a filename.</div>
+
+    <div class="sheet-title">Commands worth knowing</div>
+    <div class="sheet-sub">the essentials to move around and run Python 3</div>
+    <div class="sheet" id="sheet"></div>
+  </div>
+
+<script>
+/* ---------- animated terminal ---------- */
+const term=document.getElementById('term');
+const hint=document.getElementById('hint');
+const btnPlay=document.getElementById('play'),btnPause=document.getElementById('pause'),btnStop=document.getElementById('stop');
+
+const script=[
+  {p:'~', cmd:'pwd'},
+  {out:'/Users/benchvue', cls:'o-dim'},
+  {p:'~', cmd:'cd /Users/benchvue/Documents/python-lesson/week-1'},
+  {p:'week-1', cmd:'ls'},
+  {out:'01_hello_world.py   02_variable.py   03_fstring-print.py   04_calc_print.py', cls:'o-files'},
+  {p:'week-1', cmd:'clear', clear:true},
+  {p:'week-1', cmd:'python3 01_hello_world.py', tab:true, stop:10},
+  {out:'hello world', cls:'o-ok'},
+  {p:'week-1', cmd:'python3 --version'},
+  {out:'Python 3.12.4', cls:'o-dim'}
+];
+
+const PER=42, PERFAST=22, PRE=200, AFTER=430;
+const TAB_PAUSE=680, OUTPAUSE=520, HOLD=1300;
+
+// build timeline
+const lines=[]; let t=0;
+for(const e of script){
+  if(e.cmd!==undefined){
+    const L={kind:'cmd', prompt:e.p, full:e.cmd, tab:!!e.tab, stop:e.stop||0, clear:!!e.clear};
+    L.tStart=t; t+=PRE; L.typeStart=t;
+    if(e.tab){
+      t+=L.stop*PER; L.tabStart=t;
+      t+=TAB_PAUSE; L.tabEnd=t;
+      t+=(e.cmd.length-L.stop)*PERFAST; L.tType=t;
+    } else {
+      t+=e.cmd.length*PER; L.tType=t;
+    }
+    t+=AFTER; L.tEnd=t;
+    lines.push(L);
+  }
+  if(e.out!==undefined){
+    const L={kind:'out', full:e.out, cls:e.cls||'o-dim'};
+    L.tStart=t; L.tType=t; t+=OUTPAUSE; L.tEnd=t;
+    lines.push(L);
+  }
+}
+t+=HOLD; const CYCLE=t;
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function promptHTML(d){ return '<span class="pr-u">benchvue@Mac</span> <span class="pr-d">'+d+'</span> <span class="pr-p">%</span> '; }
+function typedCount(L,ms){
+  if(ms<L.typeStart) return 0;
+  if(L.tab){
+    if(ms<L.tabStart) return Math.min(L.stop, Math.floor((ms-L.typeStart)/PER));
+    if(ms<L.tabEnd) return L.stop;
+    if(ms<L.tType) return L.stop + Math.floor((ms-L.tabEnd)/PERFAST);
+    return L.full.length;
+  }
+  if(ms>=L.tType) return L.full.length;
+  return Math.floor((ms-L.typeStart)/PER);
+}
+
+let playing=false, elapsed=0, last=0, raf=null, started=false;
+
+function render(ms){
+  // a clear command, once executed, wipes everything above it
+  let cutoff=-1;
+  lines.forEach((L,i)=>{ if(L.kind==='cmd' && L.clear && ms>=L.tType) cutoff=i; });
+  const html=[];
+  lines.forEach((L,i)=>{
+    if(i<=cutoff) return;
+    if(ms<L.tStart) return;
+    if(L.kind==='cmd'){
+      const n=typedCount(L,ms);
+      let s=promptHTML(L.prompt)+esc(L.full.slice(0,n));
+      if(L.tab && ms>=L.tabStart && ms<L.tabEnd) s+='<span class="tabkey">⇥ Tab</span>';
+      html.push(s);
+    } else {
+      html.push('<span class="'+L.cls+'">'+esc(L.full)+'</span>');
+    }
+  });
+  // freshly cleared screen, nothing typed yet → show a clean prompt
+  if(cutoff>=0 && html.length===0){
+    let d='week-1';
+    for(let j=cutoff+1;j<lines.length;j++){ if(lines[j].kind==='cmd'){ d=lines[j].prompt; break; } }
+    html.push(promptHTML(d));
+  }
+  if(playing && html.length) html[html.length-1]+='<span class="cur"></span>';
+  term.innerHTML=html.join('\n');
+}
+
+function frame(now){ if(!playing) return; const dt=now-last; last=now; elapsed=(elapsed+dt)%CYCLE; render(elapsed); raf=requestAnimationFrame(frame); }
+function play(){ if(playing) return; playing=true; started=true; last=performance.now(); btnPlay.disabled=true; btnPause.disabled=false; btnStop.disabled=false; hint.textContent='Tip: press Tab ⇥ to auto-complete file names — saves typing!'; raf=requestAnimationFrame(frame); }
+function pause(){ if(!playing) return; playing=false; cancelAnimationFrame(raf); btnPlay.disabled=false; btnPause.disabled=true; }
+function stop(){ playing=false; cancelAnimationFrame(raf); elapsed=0; started=false; btnPlay.disabled=false; btnPause.disabled=true; btnStop.disabled=true; term.innerHTML=''; hint.textContent='Press Play to watch the session — including Tab ⇥ to auto-complete a filename.'; }
+btnPlay.addEventListener('click',play); btnPause.addEventListener('click',pause); btnStop.addEventListener('click',stop);
+stop();
+
+/* ---------- command cheat sheet ---------- */
+const CATS=[
+  {name:'Navigate', color:'var(--nav)', items:[
+    ['pwd','Print the folder you are in.'],
+    ['ls','List files in this folder.'],
+    ['ls -la','List all files, with details.'],
+    ['cd folder','Go into a folder.'],
+    ['cd ..','Go up one folder.'],
+    ['cd ~','Go to your home folder.'],
+    ['clear','Clear the screen.'],
+  ]},
+  {name:'Run Python', color:'var(--py)', items:[
+    ['python3 --version','Check Python 3 is installed.'],
+    ['python3 file.py','Run a script.'],
+    ['python3','Open the interactive shell (REPL).'],
+    ['exit()','Leave the Python shell.'],
+    ['which python3','Show where python3 lives.'],
+  ]},
+  {name:'Packages (pip)', color:'var(--pip)', items:[
+    ['pip3 --version','Check pip is installed.'],
+    ['pip3 install name','Install a package.'],
+    ['pip3 list','List installed packages.'],
+  ]},
+  {name:'Files & folders', color:'var(--file)', items:[
+    ['mkdir name','Make a new folder.'],
+    ['touch file.py','Create an empty file.'],
+    ['cat file.py','Show a file’s contents.'],
+    ['open .','Open this folder in Finder.'],
+    ['code .','Open this folder in VS Code.'],
+  ]},
+  {name:'Keyboard shortcuts', color:'var(--key)', items:[
+    ['Tab ⇥','Auto-complete file / folder names.'],
+    ['↑ / ↓','Recall previous commands.'],
+    ['Ctrl + C','Stop a running program.'],
+    ['Ctrl + L','Clear the screen.'],
+    ['Ctrl + A / E','Jump to start / end of line.'],
+  ]},
+];
+const sheet=document.getElementById('sheet');
+CATS.forEach(c=>{
+  const el=document.createElement('div'); el.className='cat'; el.style.setProperty('--c',c.color);
+  el.innerHTML='<div class="cat-h"><span class="dot" style="background:'+c.color+'"></span><span class="cat-n">'+c.name+'</span></div>'+
+    c.items.map(([cmd,desc])=>'<div class="row"><code class="cmd">'+cmd+'</code><span class="desc">'+desc+'</span></div>').join('');
+  sheet.appendChild(el);
+});
+</script>
+</body>
+</html>

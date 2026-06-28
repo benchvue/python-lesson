@@ -33,18 +33,24 @@ Test yourself after the lessons — 5 quick questions with instant feedback and 
 
 | Page | Open | Idea |
 |------|------|------|
+| macOS Terminal | [open](https://benchvue.github.io/python-lesson/week-1/terminal_macos.html) | Run Python 3 from Terminal + command cheat-sheet. |
 | How Python runs | [open](https://benchvue.github.io/python-lesson/week-1/python_run_flow.html) | Editor → interpreter → terminal, step by step. |
 | Reserved keywords | [open](https://benchvue.github.io/python-lesson/week-1/python_keywords.html) | 35 keywords grouped by category. |
 | Built-in functions | [open](https://benchvue.github.io/python-lesson/week-1/python_builtin_functions.html) | 71 built-ins grouped by category. |
 | Setup tools | [open](https://benchvue.github.io/python-lesson/week-1/tools_page.html) | Install Python, VS Code, and the Python extension. |
 
-## Run locally
+## Run in Terminal (macOS)
+
+Full guide → [terminal_macos.html](https://benchvue.github.io/python-lesson/week-1/terminal_macos.html)
 
 ```bash
-python 01_hello_world.py
-python 02_variable.py
-python 03_fstring-print.py
-python 04_calc_print.py
+cd /Users/you/Documents/python-lesson/week-1   # go to the folder
+ls                                              # list the files
+python3 --version                               # check Python 3
+python3 01_hello_world.py                       # run a lesson
+clear                                           # clean the screen
 ```
+
+Tip: type the start of a filename and press **Tab ⇥** to auto-complete it.
 
 Each animation has **▶ Play / ❚❚ Pause / ■ Stop** controls and runs in any browser.
