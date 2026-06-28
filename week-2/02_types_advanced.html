@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — Advanced Data Types</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:30px;text-align:center}
+  .wrap{width:100%;max-width:720px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:30px;font-family:'SF Mono','Consolas',monospace;font-size:12.5px;line-height:1.85;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:flex;align-items:center;gap:10px;border-radius:7px;padding:1px 8px;transition:background .25s;min-height:22px;white-space:nowrap}
+  .cl .gut{color:#5a6080;width:14px;text-align:right}
+  .cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-num{color:#f78c6c}.t-punc{color:#9aa4c0}.t-com{color:#5a6080}
+  .cards{display:flex;flex-direction:column;gap:14px;margin-bottom:6px}
+  .card{border:2px solid #ececf2;border-radius:14px;padding:14px 16px;transition:all .3s}
+  .card.active[data-c="0"]{border-color:#6366f1;box-shadow:0 8px 22px #6366f130}
+  .card.active[data-c="1"]{border-color:#f59e0b;box-shadow:0 8px 22px #f59e0b30}
+  .card.active[data-c="2"]{border-color:#10b981;box-shadow:0 8px 22px #10b98130}
+  .chead{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+  .ctype{font-family:'SF Mono','Consolas',monospace;font-size:14px;font-weight:700}
+  .card[data-c="0"] .ctype{color:#6366f1}.card[data-c="1"] .ctype{color:#f59e0b}.card[data-c="2"] .ctype{color:#10b981}
+  .cdesc{font-size:11.5px;color:#888}
+  .cont{font-family:'SF Mono','Consolas',monospace;font-size:13.5px;color:#333;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+  .brk{color:#bbb;font-weight:700}
+  .item{padding:4px 9px;border-radius:7px;opacity:0;transform:scale(.7);transition:all .3s}
+  .item.show{opacity:1;transform:none}
+  .card[data-c="0"] .item{background:#eef0ff;color:#4f46e5}
+  .card[data-c="1"] .item{background:#fff5e6;color:#b45309}
+  .card[data-c="2"] .item{background:#e9fbf3;color:#0a7d57}
+  .status{text-align:center;font-size:13px;color:#555;margin:24px auto 16px;min-height:20px;max-width:600px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 20px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}
+  @media(max-width:560px){h2{font-size:20px}.code{font-size:10.5px}.cont{font-size:11.5px}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 2</h1>
+  <h2>Advanced Data Types</h2>
+  <div class="subtitle">containers that hold many values: list, dict, tuple</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l0"><span class="gut">1</span><span class="t-name">fruits</span> <span class="t-op">=</span> <span class="t-punc">[</span><span class="t-str">"apple"</span><span class="t-punc">,</span> <span class="t-str">"banana"</span><span class="t-punc">,</span> <span class="t-str">"cherry"</span><span class="t-punc">]</span>  <span class="t-com"># list</span></div>
+      <div class="cl" id="l1"><span class="gut">2</span><span class="t-name">person</span> <span class="t-op">=</span> <span class="t-punc">{</span><span class="t-str">"name"</span><span class="t-punc">:</span> <span class="t-str">"Valentina"</span><span class="t-punc">,</span> <span class="t-str">"age"</span><span class="t-punc">:</span> <span class="t-num">42</span><span class="t-punc">}</span>  <span class="t-com"># dict</span></div>
+      <div class="cl" id="l2"><span class="gut">3</span><span class="t-name">point</span> <span class="t-op">=</span> <span class="t-punc">(</span><span class="t-num">10</span><span class="t-punc">,</span> <span class="t-num">20</span><span class="t-punc">)</span>  <span class="t-com"># tuple</span></div>
+    </div>
+    <div class="cards">
+      <div class="card" data-c="0">
+        <div class="chead"><span class="ctype">list  [ ]</span><span class="cdesc">ordered · changeable</span></div>
+        <div class="cont"><span class="brk">[</span><span class="item" id="a0">"apple"</span><span class="item" id="a1">"banana"</span><span class="item" id="a2">"cherry"</span><span class="brk">]</span></div>
+      </div>
+      <div class="card" data-c="1">
+        <div class="chead"><span class="ctype">dict  { }</span><span class="cdesc">key : value pairs</span></div>
+        <div class="cont"><span class="brk">{</span><span class="item" id="b0">"name": "Valentina"</span><span class="item" id="b1">"age": 42</span><span class="brk">}</span></div>
+      </div>
+      <div class="card" data-c="2">
+        <div class="chead"><span class="ctype">tuple  ( )</span><span class="cdesc">ordered · fixed (can't change)</span></div>
+        <div class="cont"><span class="brk">(</span><span class="item" id="c0">10</span><span class="item" id="c1">20</span><span class="brk">)</span></div>
+      </div>
+    </div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const cards=[...document.querySelectorAll('.card')];
+const status=document.getElementById('status');
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop');
+const ITEMS=[['a0','a1','a2'],['b0','b1'],['c0','c1']];
+const STAT=[
+ 'A <b>list</b> uses <b>[ ]</b>. Items are ordered and you can add, remove, or change them.',
+ 'A <b>dict</b> uses <b>{ }</b>. Each value is stored under a <b>key</b> — look it up by name.',
+ 'A <b>tuple</b> uses <b>( )</b>. Like a list, but <b>fixed</b> — it can never change.',
+ 'list = many items · dict = key→value · tuple = fixed items.'
+];
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d},o));t+=d;};
+// three cards, each fills its items
+[0,1,2].forEach(ci=>{ add(1750,{card:ci,st:ci}); });
+add(1300,{card:-1,st:3});
+const CYCLE=t;
+let playing=false,elapsed=0,last=0,raf=null;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  cards.forEach((c,i)=>c.classList.toggle('active',i===s.card));
+  // reveal items: for each card, stagger items over its segment
+  seg.forEach(g=>{ if(g.card<0)return; const list=ITEMS[g.card]; const per=(g.e-g.s)/(list.length+0.6);
+    list.forEach((id,k)=>{ document.getElementById(id).classList.toggle('show', ms>=g.s+per*(k+0.5)); }); });
+  status.innerHTML=STAT[s.st];
+}
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;bP.disabled=false;bPa.disabled=true;bS.disabled=true;cards.forEach(c=>c.classList.remove('active'));document.querySelectorAll('.item').forEach(i=>i.classList.remove('show'));status.innerHTML='Press Play to start';}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;stop();
+</script>
+</body>
+</html>

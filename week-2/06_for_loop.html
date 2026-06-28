@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — for loop</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:30px;text-align:center}
+  .wrap{width:100%;max-width:680px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:34px;font-family:'SF Mono','Consolas',monospace;font-size:13px;line-height:1.85;box-shadow:0 8px 22px rgba(0,0,0,.13)}
+  .cl{display:flex;align-items:center;gap:10px;border-radius:7px;padding:1px 8px;transition:.25s;min-height:22px}
+  .cl .gut{color:#5a6080;width:14px;text-align:right}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}
+  .listrow{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+  .lbl{font-family:'SF Mono','Consolas',monospace;font-size:12.5px;color:#888;margin-right:4px}
+  .brk{font-family:'SF Mono','Consolas',monospace;font-size:20px;color:#cbb;font-weight:700}
+  .it{font-family:'SF Mono','Consolas',monospace;font-size:13.5px;font-weight:600;color:#444;padding:9px 13px;border:2px solid #ececf2;border-radius:11px;transition:.25s}
+  .it.cur{border-color:#6366f1;background:#eef0ff;color:#4f46e5;transform:translateY(-4px);box-shadow:0 8px 18px #6366f130}
+  .it.done{opacity:.5}
+  .varrow{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:18px;font-family:'SF Mono','Consolas',monospace;font-size:13px}
+  .varbox{padding:5px 12px;border:1.5px solid #d8dbef;border-radius:9px;background:#f7f8ff;color:#4f46e5;font-weight:700;min-width:96px;text-align:center;transition:.2s}
+  .arrow{color:#bbb}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:12px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:10px 12px;text-align:left;line-height:1.7;min-height:96px}
+  .termline .p{color:#6ee7ff}
+  .oline{opacity:0;transform:translateY(3px);transition:.3s}.oline.show{opacity:1;transform:none}
+  .status{text-align:center;font-size:13px;color:#555;margin:24px auto 16px;min-height:20px;max-width:600px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 20px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}
+  @media(max-width:560px){h2{font-size:20px}.code{font-size:11px}.it{font-size:11.5px;padding:7px 9px}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 2</h1>
+  <h2>for loop — Visit Every Item</h2>
+  <div class="subtitle">a for loop walks through a list, one item at a time</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l1"><span class="gut">1</span><span class="t-name">fruits</span> <span class="t-op">=</span> <span class="t-punc">[</span><span class="t-str">"apple"</span><span class="t-punc">,</span> <span class="t-str">"banana"</span><span class="t-punc">,</span> <span class="t-str">"cherry"</span><span class="t-punc">]</span></div>
+      <div class="cl" id="l2"><span class="gut">2</span><span class="t-kw">for</span> <span class="t-name">fruit</span> <span class="t-kw">in</span> <span class="t-name">fruits</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l3"><span class="gut">3</span>    <span class="t-fn">print</span><span class="t-punc">(</span><span class="t-name">fruit</span><span class="t-punc">)</span></div>
+    </div>
+    <div class="listrow">
+      <span class="lbl">fruits =</span><span class="brk">[</span>
+      <span class="it" id="i0">"apple"</span><span class="it" id="i1">"banana"</span><span class="it" id="i2">"cherry"</span>
+      <span class="brk">]</span>
+    </div>
+    <div class="varrow"><span class="arrow">loop variable</span><span class="arrow">→</span><span class="varbox" id="loopvar">fruit = —</span></div>
+    <div class="termline">
+      <div><span class="p">$</span> python loop.py</div>
+      <div class="oline" id="o0">apple</div>
+      <div class="oline" id="o1">banana</div>
+      <div class="oline" id="o2">cherry</div>
+    </div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const items=['i0','i1','i2'],vals=['apple','banana','cherry'];
+const loopvar=document.getElementById('loopvar'),status=document.getElementById('status');
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop');
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d},o));t+=d;};
+add(500,{type:'intro',line:2,st:'A <b>for</b> loop repeats once for each item in the list.'});
+for(let i=0;i<3;i++){
+  add(700,{type:'pick',i,line:2,st:`Take the next item → <b>fruit = "${vals[i]}"</b>.`});
+  add(750,{type:'print',i,line:3,st:`Run <b>print(fruit)</b> → prints <b>${vals[i]}</b>.`});
+}
+add(700,{type:'done',line:2,st:'No items left — the loop ends. ✅'});
+add(700,{type:'hold',line:2,st:'Three items → the body ran three times.'});
+const CYCLE=t;
+let playing=false,elapsed=0,last=0,raf=null;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  // current index = highest pick reached
+  let cur=-1,printed=-1;
+  seg.forEach(g=>{ if(g.type==='pick'&&ms>=g.s) cur=g.i; if(g.type==='print'&&ms>=g.s+(g.e-g.s)*0.6) printed=g.i; });
+  items.forEach((id,i)=>{const el=document.getElementById(id);el.classList.toggle('cur',i===cur&&s.type!=='done'&&s.type!=='hold');el.classList.toggle('done',i<cur||((s.type==='done'||s.type==='hold')));});
+  loopvar.textContent = cur>=0 ? `fruit = "${vals[cur]}"` : 'fruit = —';
+  if(s.type==='done'||s.type==='hold') loopvar.textContent='fruit = —';
+  for(let i=0;i<3;i++) document.getElementById('o'+i).classList.toggle('show', i<=printed);
+  ['l1','l2','l3'].forEach((id,k)=>document.getElementById(id).classList.toggle('on',s.line===k+1));
+  status.innerHTML=s.st;
+}
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;bP.disabled=false;bPa.disabled=true;bS.disabled=true;items.forEach(id=>document.getElementById(id).classList.remove('cur','done'));loopvar.textContent='fruit = —';[0,1,2].forEach(i=>document.getElementById('o'+i).classList.remove('show'));['l1','l2','l3'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;stop();
+</script>
+</body>
+</html>

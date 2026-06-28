@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — while loop</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:30px;text-align:center}
+  .wrap{width:100%;max-width:680px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:34px;font-family:'SF Mono','Consolas',monospace;font-size:13px;line-height:1.85;box-shadow:0 8px 22px rgba(0,0,0,.13)}
+  .cl{display:flex;align-items:center;gap:10px;border-radius:7px;padding:1px 8px;transition:.25s;min-height:22px}
+  .cl .gut{color:#5a6080;width:14px;text-align:right}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-num{color:#f78c6c}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}
+  .loop{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+  .cnt{font-family:'SF Mono','Consolas',monospace;font-size:15px;font-weight:700;color:#4f46e5;background:#eef0ff;border:2px solid #d8dbef;border-radius:12px;padding:12px 18px;min-width:74px;text-align:center;transition:.2s}
+  .step{font-family:'SF Mono','Consolas',monospace;font-size:12.5px;border:2px solid #ececf2;border-radius:11px;padding:10px 13px;text-align:center;color:#555;transition:.25s;min-width:108px}
+  .step .lab{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#bbb;display:block;margin-bottom:3px}
+  .step.on{transform:translateY(-3px)}
+  .step.cond.on{border-color:#f59e0b;box-shadow:0 8px 18px #f59e0b30}
+  .step.body.on{border-color:#10b981;box-shadow:0 8px 18px #10b98130}
+  .step.inc.on{border-color:#0ea5e9;box-shadow:0 8px 18px #0ea5e930}
+  .step.cond.t{border-color:#10b981}.step.cond.f{border-color:#ef4444;color:#c12d2d}
+  .arrow{color:#ccc;font-size:18px}
+  .back{text-align:center;font-size:11.5px;color:#aaa;margin-bottom:16px}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:12px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:10px 12px;text-align:left;line-height:1.7;min-height:96px}
+  .termline .p{color:#6ee7ff}
+  .oline{opacity:0;transform:translateY(3px);transition:.3s}.oline.show{opacity:1;transform:none}
+  .status{text-align:center;font-size:13px;color:#555;margin:24px auto 16px;min-height:20px;max-width:600px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 20px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}
+  @media(max-width:560px){h2{font-size:20px}.code{font-size:11px}.step{min-width:0;font-size:11px;padding:8px 9px}.cnt{font-size:13px}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 2</h1>
+  <h2>while loop — Repeat Until Done</h2>
+  <div class="subtitle">keep looping while a condition stays true</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l1"><span class="gut">1</span><span class="t-name">i</span> <span class="t-op">=</span> <span class="t-num">1</span></div>
+      <div class="cl" id="l2"><span class="gut">2</span><span class="t-kw">while</span> <span class="t-name">i</span> <span class="t-op">&lt;=</span> <span class="t-num">3</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l3"><span class="gut">3</span>    <span class="t-fn">print</span><span class="t-punc">(</span><span class="t-name">i</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l4"><span class="gut">4</span>    <span class="t-name">i</span> <span class="t-op">+=</span> <span class="t-num">1</span></div>
+    </div>
+    <div class="loop">
+      <div class="cnt" id="cnt">i = 1</div>
+      <span class="arrow">→</span>
+      <div class="step cond" id="sCond"><span class="lab">check</span>i &lt;= 3 ?</div>
+      <span class="arrow">→</span>
+      <div class="step body" id="sBody"><span class="lab">if true</span>print(i)</div>
+      <span class="arrow">→</span>
+      <div class="step inc" id="sInc"><span class="lab">then</span>i += 1</div>
+    </div>
+    <div class="back" id="back">↺ loop back to the check</div>
+    <div class="termline">
+      <div><span class="p">$</span> python count.py</div>
+      <div class="oline" id="o0">1</div>
+      <div class="oline" id="o1">2</div>
+      <div class="oline" id="o2">3</div>
+    </div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const cnt=document.getElementById('cnt'),status=document.getElementById('status'),back=document.getElementById('back');
+const sCond=document.getElementById('sCond'),sBody=document.getElementById('sBody'),sInc=document.getElementById('sInc');
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop');
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d},o));t+=d;};
+add(500,{type:'init',i:1,line:1,st:'Start with <b>i = 1</b>.'});
+for(let i=1;i<=3;i++){
+  add(640,{type:'cond',i,pass:true,line:2,st:`Check: <b>${i} &lt;= 3</b> → <b>True</b>, so run the body.`});
+  add(640,{type:'body',i,line:3,st:`<b>print(i)</b> → prints <b>${i}</b>.`});
+  add(640,{type:'inc',i,line:4,st:`<b>i += 1</b> → i becomes <b>${i+1}</b>, then loop back.`});
+}
+add(820,{type:'cond',i:4,pass:false,line:2,st:'Check: <b>4 &lt;= 3</b> → <b>False</b>. Stop the loop. ✅'});
+add(900,{type:'hold',i:4,line:2,st:'The condition controls how many times the body runs.'});
+const CYCLE=t;
+let playing=false,elapsed=0,last=0,raf=null;
+function clearSteps(){[sCond,sBody,sInc].forEach(e=>e.classList.remove('on','t','f'));}
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  cnt.textContent='i = '+s.i;
+  clearSteps();
+  back.style.opacity = (s.type==='inc')?1:.35;
+  if(s.type==='cond'){sCond.classList.add('on',s.pass?'t':'f');}
+  else if(s.type==='body'){sBody.classList.add('on');}
+  else if(s.type==='inc'){sInc.classList.add('on');}
+  // printed lines
+  let printed=-1;seg.forEach(g=>{if(g.type==='body'&&ms>=g.s+(g.e-g.s)*0.6)printed=g.i-1;});
+  for(let k=0;k<3;k++) document.getElementById('o'+k).classList.toggle('show',k<=printed);
+  ['l1','l2','l3','l4'].forEach((id,k)=>document.getElementById(id).classList.toggle('on',s.line===k+1));
+  status.innerHTML=s.st;
+}
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;bP.disabled=false;bPa.disabled=true;bS.disabled=true;clearSteps();cnt.textContent='i = 1';back.style.opacity=.35;[0,1,2].forEach(k=>document.getElementById('o'+k).classList.remove('show'));['l1','l2','l3','l4'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;stop();
+</script>
+</body>
+</html>

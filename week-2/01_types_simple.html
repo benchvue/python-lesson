@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — Simple Data Types</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:30px;text-align:center}
+  .wrap{width:100%;max-width:720px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:30px;font-family:'SF Mono','Consolas',monospace;font-size:13px;line-height:1.85;box-shadow:0 8px 22px rgba(0,0,0,.13)}
+  .cl{display:flex;align-items:center;gap:10px;border-radius:7px;padding:1px 8px;transition:background .25s;min-height:22px}
+  .cl .gut{color:#5a6080;width:14px;text-align:right}
+  .cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-num{color:#f78c6c}.t-bool{color:#82aaff}.t-com{color:#5a6080}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+  .card{border:2px solid #ececf2;border-radius:14px;padding:14px 10px;text-align:center;transition:all .3s}
+  .card.active{transform:translateY(-5px)}
+  .card.active[data-c="0"]{border-color:#10b981;box-shadow:0 8px 22px #10b98138}
+  .card.active[data-c="1"]{border-color:#0ea5e9;box-shadow:0 8px 22px #0ea5e938}
+  .card.active[data-c="2"]{border-color:#f59e0b;box-shadow:0 8px 22px #f59e0b38}
+  .card.active[data-c="3"]{border-color:#ec4899;box-shadow:0 8px 22px #ec489938}
+  .ctype{font-family:'SF Mono','Consolas',monospace;font-size:13px;font-weight:700}
+  .card[data-c="0"] .ctype{color:#10b981}.card[data-c="1"] .ctype{color:#0ea5e9}.card[data-c="2"] .ctype{color:#f59e0b}.card[data-c="3"] .ctype{color:#ec4899}
+  .cval{font-family:'SF Mono','Consolas',monospace;font-size:14px;font-weight:600;color:#222;margin:7px 0 5px;word-break:break-word}
+  .cdesc{font-size:10.5px;color:#888;line-height:1.4}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:12px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:10px 12px;text-align:left;line-height:1.7;min-height:118px}
+  .termline .p{color:#6ee7ff}
+  .oline{opacity:0;transform:translateY(3px);transition:.3s}.oline.show{opacity:1;transform:none}
+  .ot{color:#c0c6d6}.ot b{color:#fff;font-weight:600}
+  .status{text-align:center;font-size:13px;color:#555;margin:24px auto 16px;min-height:20px;max-width:600px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 20px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}
+  @media(max-width:560px){h2{font-size:20px}.cards{grid-template-columns:1fr 1fr}.code{font-size:11px}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 2</h1>
+  <h2>Simple Data Types</h2>
+  <div class="subtitle">the four basic kinds of value: text, whole numbers, decimals, true/false</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l0"><span class="gut">1</span><span class="t-name">name</span> <span class="t-op">=</span> <span class="t-str">"Valentina"</span>   <span class="t-com"># str</span></div>
+      <div class="cl" id="l1"><span class="gut">2</span><span class="t-name">age</span> <span class="t-op">=</span> <span class="t-num">42</span>           <span class="t-com"># int</span></div>
+      <div class="cl" id="l2"><span class="gut">3</span><span class="t-name">price</span> <span class="t-op">=</span> <span class="t-num">3.14</span>       <span class="t-com"># float</span></div>
+      <div class="cl" id="l3"><span class="gut">4</span><span class="t-name">is_member</span> <span class="t-op">=</span> <span class="t-bool">True</span>  <span class="t-com"># bool</span></div>
+    </div>
+    <div class="cards" id="cards">
+      <div class="card" data-c="0"><div class="ctype">str</div><div class="cval">"Valentina"</div><div class="cdesc">text in quotes</div></div>
+      <div class="card" data-c="1"><div class="ctype">int</div><div class="cval">42</div><div class="cdesc">whole number</div></div>
+      <div class="card" data-c="2"><div class="ctype">float</div><div class="cval">3.14</div><div class="cdesc">decimal number</div></div>
+      <div class="card" data-c="3"><div class="ctype">bool</div><div class="cval">True</div><div class="cdesc">True or False</div></div>
+    </div>
+    <div class="termline">
+      <div><span class="p">$</span> python types.py</div>
+      <div class="oline ot" id="o0"><b>&lt;class 'str'&gt;</b></div>
+      <div class="oline ot" id="o1"><b>&lt;class 'int'&gt;</b></div>
+      <div class="oline ot" id="o2"><b>&lt;class 'float'&gt;</b></div>
+      <div class="oline ot" id="o3"><b>&lt;class 'bool'&gt;</b></div>
+    </div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const cards=[...document.querySelectorAll('.card')];
+const status=document.getElementById('status');
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop');
+const STAT=[
+ 'A <b>str</b> is text — always wrapped in quotes: <b>"Valentina"</b>.',
+ 'An <b>int</b> is a whole number, no decimal point: <b>42</b>.',
+ 'A <b>float</b> has a decimal point: <b>3.14</b>.',
+ 'A <b>bool</b> is either <b>True</b> or <b>False</b>.',
+ 'Four simple types — the building blocks of every program.'
+];
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d},o));t+=d;};
+add(500,{i:-1,st:0});
+for(let i=0;i<4;i++) add(1250,{i,st:i});
+add(1300,{i:-1,st:4});
+const CYCLE=t;
+const TH=[seg[1].s,seg[2].s,seg[3].s,seg[4].s];
+let playing=false,elapsed=0,last=0,raf=null;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  cards.forEach((c,i)=>c.classList.toggle('active',i===s.i));
+  for(let i=0;i<4;i++) document.getElementById('o'+i).classList.toggle('show',ms>=TH[i]);
+  status.innerHTML=STAT[s.st];
+}
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;bP.disabled=false;bPa.disabled=true;bS.disabled=true;cards.forEach(c=>c.classList.remove('active'));[0,1,2,3].forEach(i=>document.getElementById('o'+i).classList.remove('show'));status.innerHTML='Press Play to start';}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;stop();
+</script>
+</body>
+</html>

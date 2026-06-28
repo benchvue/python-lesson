@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — if / else</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:30px;text-align:center}
+  .wrap{width:100%;max-width:760px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:34px;font-family:'SF Mono','Consolas',monospace;font-size:13px;line-height:1.8;box-shadow:0 8px 22px rgba(0,0,0,.13)}
+  .cl{display:flex;align-items:center;gap:10px;border-radius:7px;padding:1px 8px;transition:.25s;min-height:22px}
+  .cl .gut{color:#5a6080;width:14px;text-align:right}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-num{color:#f78c6c}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}
+  .flow{position:relative;min-height:230px}
+  .node{position:absolute;background:#fff;border:2px solid #ececec;border-radius:13px;padding:11px 12px;text-align:center;transition:.25s;z-index:2}
+  .node .tag{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#bbb}
+  .node .nm{font-family:'SF Mono','Consolas',monospace;font-size:13px;font-weight:600;margin-top:3px;color:#222}
+  #nValue{left:0;top:50%;transform:translateY(-50%);width:120px}
+  #nCond{left:175px;top:50%;transform:translateY(-50%);width:150px;border-color:#f0e2c4}
+  #nPass{right:120px;top:8px;width:150px}
+  #nFail{right:120px;bottom:8px;width:150px}
+  #nTerm{right:0;top:50%;transform:translateY(-50%);width:96px}
+  .res{font-family:'SF Mono','Consolas',monospace;font-size:12px;font-weight:700;margin-top:5px;padding:1px 8px;border-radius:6px;display:inline-block}
+  .res.t{background:#e9fbf3;color:#0a7d57}.res.f{background:#fdecec;color:#c12d2d}
+  .node.on-t{border-color:#10b981;box-shadow:0 8px 20px #10b98133;transform:translateY(0)}
+  #nPass.on-t,#nFail.on-f{transform:none}
+  .node.on-f{border-color:#ef4444;box-shadow:0 8px 20px #ef444433}
+  .node.dim{opacity:.4}
+  .node.condon{border-color:#f59e0b;box-shadow:0 8px 20px #f59e0b33}
+  svg.wires{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+  .wire{fill:none;stroke:#e3e3ea;stroke-width:2.5}
+  .termbox{font-family:'SF Mono','Consolas',monospace;font-size:11.5px;background:#0b0f18;color:#9af7c0;border-radius:7px;padding:5px 7px;margin-top:5px;min-height:24px}
+  .packet{position:absolute;z-index:6;transform:translate(-50%,-50%) scale(.6);opacity:0;font-family:'SF Mono','Consolas',monospace;font-size:12px;font-weight:700;color:#fff;background:#6366f1;padding:4px 11px;border-radius:18px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+  .status{text-align:center;font-size:13px;color:#555;margin:26px auto 16px;min-height:20px;max-width:600px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 20px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}
+  @media(max-width:600px){h2{font-size:20px}.code{font-size:11px}.flow{min-height:250px}
+    #nValue{width:84px}#nCond{left:96px;width:120px}#nPass,#nFail{right:74px;width:120px}#nTerm{width:66px}.nm{font-size:11px}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 2</h1>
+  <h2>if / else — Making Decisions</h2>
+  <div class="subtitle">a condition is checked, and the program picks one path</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l1"><span class="gut">1</span><span class="t-name">score</span> <span class="t-op">=</span> <span class="t-num">75</span></div>
+      <div class="cl" id="l2"><span class="gut">2</span><span class="t-kw">if</span> <span class="t-name">score</span> <span class="t-op">&gt;=</span> <span class="t-num">60</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l3"><span class="gut">3</span>    <span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Pass"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l4"><span class="gut">4</span><span class="t-kw">else</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l5"><span class="gut">5</span>    <span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Fail"</span><span class="t-punc">)</span></div>
+    </div>
+    <div class="flow" id="flow">
+      <svg class="wires"><path class="wire" id="w1"/><path class="wire" id="w2"/><path class="wire" id="w3"/><path class="wire" id="w4"/></svg>
+      <div class="node" id="nValue"><div class="tag">value</div><div class="nm" id="vScore">score = 75</div></div>
+      <div class="node" id="nCond"><div class="tag">condition</div><div class="nm">score &gt;= 60 ?</div><span class="res" id="res">&nbsp;</span></div>
+      <div class="node" id="nPass"><div class="tag">if true</div><div class="nm">print("Pass")</div></div>
+      <div class="node" id="nFail"><div class="tag">else</div><div class="nm">print("Fail")</div></div>
+      <div class="node" id="nTerm"><div class="tag">output</div><div class="termbox" id="term"></div></div>
+      <div class="packet" id="packet">75</div>
+    </div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const flow=document.getElementById('flow');
+const refs={value:'nValue',cond:'nCond',pass:'nPass',fail:'nFail',term:'nTerm'};
+const packet=document.getElementById('packet'),status=document.getElementById('status');
+const vScore=document.getElementById('vScore'),res=document.getElementById('res'),term=document.getElementById('term');
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop');
+function ctr(key){const f=flow.getBoundingClientRect(),e=document.getElementById(refs[key]).getBoundingClientRect();return{x:e.left-f.left+e.width/2,y:e.top-f.top+e.height/2};}
+function wires(){const c=ctr('cond'),p=ctr('pass'),fl=ctr('fail'),v=ctr('value'),tm=ctr('term');
+  document.getElementById('w1').setAttribute('d',`M${v.x} ${v.y} L${c.x} ${c.y}`);
+  document.getElementById('w2').setAttribute('d',`M${c.x} ${c.y} C${c.x+40} ${c.y},${p.x-40} ${p.y},${p.x} ${p.y}`);
+  document.getElementById('w3').setAttribute('d',`M${c.x} ${c.y} C${c.x+40} ${c.y},${fl.x-40} ${fl.y},${fl.x} ${fl.y}`);
+  document.getElementById('w4').setAttribute('d',`M${p.x} ${p.y} C${p.x+30} ${p.y},${tm.x-30} ${tm.y},${tm.x} ${tm.y} M${fl.x} ${fl.y} C${fl.x+30} ${fl.y},${tm.x-30} ${tm.y},${tm.x} ${tm.y}`);}
+// timeline: run A score 75 -> Pass ; run B score 45 -> Fail
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d},o));t+=d;};
+function run(score,pass){
+  const branch=pass?'pass':'fail', out=pass?'Pass':'Fail';
+  add(520,{type:'set',score,line:1,st:`Check the value <b>score = ${score}</b>.`});
+  add(720,{type:'travel',from:'value',to:'cond',val:String(score),col:'#6366f1',line:2,st:'Test the condition: <b>score &gt;= 60</b> ?'});
+  add(620,{type:'eval',pass,line:2,st:`${score} &gt;= 60 is <b>${pass?'True':'False'}</b>.`});
+  add(700,{type:'travel',from:'cond',to:branch,val:pass?'True':'False',col:pass?'#10b981':'#ef4444',line:pass?3:5,st:`Take the <b>${pass?'if':'else'}</b> branch.`});
+  add(700,{type:'travel',from:branch,to:'term',val:`"${out}"`,col:pass?'#10b981':'#ef4444',line:pass?3:5,st:`Run <b>print("${out}")</b>.`});
+  add(700,{type:'out',out,pass,line:pass?3:5,st:`The terminal shows <b>${out}</b>.`});
+  add(700,{type:'hold',pass,line:pass?3:5,st:`Different value → different path.`});
+}
+run(75,true); run(45,false);
+const CYCLE=t;
+let playing=false,elapsed=0,last=0,raf=null;
+function setC(c){packet.style.background=c;packet.style.boxShadow='0 4px 14px '+c+'88';}
+function clearNodes(){['nValue','nCond','nPass','nFail','nTerm'].forEach(id=>document.getElementById(id).classList.remove('on-t','on-f','dim','condon'));}
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  // score + reset terminal at each run start
+  const runB = ms>=seg.find(x=>x.type==='set'&&x.score===45).s;
+  vScore.textContent='score = '+(runB?45:75);
+  res.className='res';res.innerHTML='&nbsp;';
+  clearNodes();
+  let pos,vis=true;
+  if(s.type==='set'){pos=ctr('value');vis=false;document.getElementById('nValue').classList.add('on-t');}
+  else if(s.type==='travel'){const p=(ms-s.s)/(s.e-s.s);const a=ctr(s.from),b=ctr(s.to);pos={x:a.x+(b.x-a.x)*p,y:a.y+(b.y-a.y)*p};setC(s.col);packet.textContent=s.val;}
+  else if(s.type==='eval'){pos=ctr('cond');vis=false;document.getElementById('nCond').classList.add('condon');res.className='res '+(s.pass?'t':'f');res.textContent=s.pass?'True':'False';}
+  else {pos=ctr('term');vis=false;}
+  // branch highlight when known
+  const decided = ['eval','out','hold'].includes(s.type) || (s.type==='travel'&&(s.to!=='cond'));
+  if(decided){ const pass = s.pass!==undefined?s.pass:(s.to==='pass'||s.col==='#10b981');
+    if(s.type!=='set'){
+      document.getElementById('nPass').classList.add(pass?'on-t':'dim');
+      document.getElementById('nFail').classList.add(pass?'dim':'on-f');
+      document.getElementById('nCond').classList.add(pass?'on-t':'on-f');
+    }
+  }
+  packet.style.left=pos.x+'px';packet.style.top=pos.y+'px';packet.style.opacity=vis?1:0;packet.style.transform='translate(-50%,-50%) scale('+(vis?1:.6)+')';
+  // terminal text
+  if(['out','hold'].includes(s.type)) term.textContent=s.out;
+  else if(s.type==='set'||s.type==='travel'&&s.to==='cond'||s.type==='eval') term.textContent='';
+  ['l1','l2','l3','l4','l5'].forEach((id,k)=>document.getElementById(id).classList.toggle('on',s.line===k+1));
+  status.innerHTML=s.st;
+}
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;wires();raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;bP.disabled=false;bPa.disabled=true;bS.disabled=true;clearNodes();packet.style.opacity=0;term.textContent='';res.className='res';res.innerHTML='&nbsp;';vScore.textContent='score = 75';['l1','l2','l3','l4','l5'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';wires();}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;
+window.addEventListener('resize',()=>{wires();if(elapsed)render(elapsed);});
+setTimeout(()=>{wires();stop();},50);
+</script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — Type Conversion</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:30px;text-align:center}
+  .wrap{width:100%;max-width:760px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:34px;font-family:'SF Mono','Consolas',monospace;font-size:13px;line-height:1.85;box-shadow:0 8px 22px rgba(0,0,0,.13)}
+  .cl{display:flex;align-items:center;gap:10px;border-radius:7px;padding:1px 8px;transition:.25s;min-height:22px}
+  .cl .gut{color:#5a6080;width:14px;text-align:right}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-num{color:#f78c6c}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-com{color:#5a6080}
+  .track{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:170px}
+  .rail{position:absolute;left:6%;right:6%;top:50%;height:3px;background:#eee;border-radius:3px;transform:translateY(-50%);z-index:0}
+  .rail-fill{position:absolute;left:6%;top:50%;height:3px;width:0;border-radius:3px;z-index:0;transform:translateY(-50%);background:linear-gradient(90deg,#10b981,#0ea5e9,#f59e0b,#6366f1)}
+  .box{position:relative;z-index:2;flex:1 1 0;background:#fff;border:2px solid #ececec;border-radius:14px;padding:15px 11px;text-align:center;transition:.25s}
+  .box .tag{font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#bbb;transition:.25s}
+  .box .name{font-size:14.5px;font-weight:600;margin:5px 0 5px}
+  .box .detail{font-family:'SF Mono','Consolas',monospace;font-size:11px;color:#777;line-height:1.4}
+  .box.active{transform:translateY(-4px)}
+  .box.active[data-c="0"]{border-color:#10b981;box-shadow:0 8px 22px #10b98138}.box.active[data-c="0"] .tag{color:#10b981}
+  .box.active[data-c="1"]{border-color:#0ea5e9;box-shadow:0 8px 22px #0ea5e938}.box.active[data-c="1"] .tag{color:#0ea5e9}
+  .box.active[data-c="2"]{border-color:#f59e0b;box-shadow:0 8px 22px #f59e0b38}.box.active[data-c="2"] .tag{color:#f59e0b}
+  .box.active[data-c="3"]{border-color:#6366f1;box-shadow:0 8px 22px #6366f138}.box.active[data-c="3"] .tag{color:#6366f1}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:12px;background:#0b0f18;color:#9af7c0;border-radius:8px;padding:8px 9px;margin-top:2px;text-align:left;min-height:30px}
+  .termline .p{color:#6ee7ff}
+  .cur{display:inline-block;width:7px;height:12px;background:#9af7c0;vertical-align:-1px;animation:blink 1s steps(1) infinite}@keyframes blink{50%{opacity:0}}
+  .packet{position:absolute;z-index:6;left:0;top:50%;transform:translate(-50%,-50%) scale(.6);opacity:0;font-family:'SF Mono','Consolas',monospace;font-size:12.5px;font-weight:700;color:#fff;background:#10b981;padding:5px 12px;border-radius:20px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+  .packet .ty{font-size:10px;opacity:.8;margin-left:5px}
+  .status{text-align:center;font-size:13px;color:#555;margin:28px auto 16px;min-height:20px;max-width:600px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 20px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}
+  @media(max-width:560px){h2{font-size:20px}.track{gap:6px}.box{padding:11px 6px}.box .name{font-size:11.5px}.packet{font-size:10px}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 2</h1>
+  <h2>Type Conversion</h2>
+  <div class="subtitle">change a value from one type to another with str(), int(), float()</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l0"><span class="gut">1</span><span class="t-name">text</span> <span class="t-op">=</span> <span class="t-str">"100"</span>           <span class="t-com"># str</span></div>
+      <div class="cl" id="l1"><span class="gut">2</span><span class="t-name">number</span> <span class="t-op">=</span> <span class="t-fn">int</span><span class="t-punc">(</span><span class="t-name">text</span><span class="t-punc">)</span>     <span class="t-com"># str → int</span></div>
+      <div class="cl" id="l2"><span class="gut">3</span><span class="t-name">price</span> <span class="t-op">=</span> <span class="t-fn">float</span><span class="t-punc">(</span><span class="t-name">number</span><span class="t-punc">)</span> <span class="t-com"># int → float</span></div>
+      <div class="cl" id="l3"><span class="gut">4</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-name">text</span><span class="t-punc">,</span> <span class="t-name">number</span><span class="t-punc">,</span> <span class="t-name">price</span><span class="t-punc">)</span></div>
+    </div>
+    <div class="track" id="track">
+      <div class="rail"></div><div class="rail-fill" id="railFill"></div>
+      <div class="box" data-c="0"><div class="tag">str</div><div class="name">"100"</div><div class="detail">text</div></div>
+      <div class="box" data-c="1"><div class="tag">convert</div><div class="name">int()</div><div class="detail">text →<br>whole number</div></div>
+      <div class="box" data-c="2"><div class="tag">convert</div><div class="name">float()</div><div class="detail">→ decimal<br>number</div></div>
+      <div class="box" data-c="3"><div class="tag">Output</div><div class="name">Terminal</div><div class="termline"><span class="p">$</span> <span id="termout"></span><span class="cur" id="cur"></span></div></div>
+      <div class="packet" id="packet">"100"</div>
+    </div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const track=document.getElementById('track'),boxes=[...track.querySelectorAll('.box')];
+const packet=document.getElementById('packet'),railFill=document.getElementById('railFill');
+const termout=document.getElementById('termout'),cur=document.getElementById('cur'),status=document.getElementById('status');
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop');
+const COL=['#10b981','#0ea5e9','#f59e0b','#6366f1'];
+const OUT='100 100 100.0';
+function cx(i){const tr=track.getBoundingClientRect(),b=boxes[i].getBoundingClientRect();return b.left-tr.left+b.width/2;}
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d},o));t+=d;};
+add(480,{type:'dwell',i:0,val:'"100"',col:0,line:1,st:'<b>"100"</b> is a <b>str</b> — text, even though it looks like a number.'});
+add(780,{type:'travel',from:0,to:1,val:'"100"',col:0,line:2,st:'<b>int("100")</b> converts the text into a whole number.'});
+add(560,{type:'morph',i:1,val:'100',col:1,line:2,st:'Now it is the <b>int</b> <b>100</b> — you can do math with it.'});
+add(780,{type:'travel',from:1,to:2,val:'100',col:1,line:3,st:'<b>float(100)</b> converts the int into a decimal.'});
+add(560,{type:'morph',i:2,val:'100.0',col:2,line:3,st:'Now it is the <b>float</b> <b>100.0</b>.'});
+add(780,{type:'travel',from:2,to:3,val:'100 / 100 / 100.0',col:2,line:4,st:'print() shows all three values.'});
+add(800,{type:'type',i:3,line:4,st:'Same digits, three different types.'});
+add(1100,{type:'hold',i:3,line:4,st:'Going back? <b>str(100)</b> turns a number into text again.'});
+const CYCLE=t,TS=seg.find(s=>s.type==='type');
+let playing=false,elapsed=0,last=0,raf=null;
+function setC(i){packet.style.background=COL[i];packet.style.boxShadow='0 4px 14px '+COL[i]+'88';}
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];let x,vis=true,act=s.i;
+  if(s.type==='dwell'||s.type==='morph'){x=cx(s.i);setC(s.col);packet.textContent=s.val;act=s.i;}
+  else if(s.type==='travel'){const p=(ms-s.s)/(s.e-s.s);x=cx(s.from)+(cx(s.to)-cx(s.from))*p;setC(s.col);packet.textContent=s.val;act=p<.5?s.from:s.to;}
+  else {x=cx(3);act=3;vis=false;}
+  packet.style.left=x+'px';packet.style.opacity=vis?1:0;packet.style.transform='translate(-50%,-50%) scale('+(vis?1:.6)+')';
+  railFill.style.width=Math.max(0,x-track.clientWidth*0.06)+'px';
+  boxes.forEach((b,i)=>b.classList.toggle('active',i===act));
+  let ch=0;if(ms>=TS.s){const p=Math.min(1,(ms-TS.s)/(TS.e-TS.s));ch=Math.round(p*OUT.length);}
+  termout.textContent=OUT.slice(0,ch);cur.style.display=act===3?'inline-block':'none';
+  ['l0','l1','l2','l3'].forEach((id,k)=>document.getElementById(id).classList.toggle('on',s.line===k+1));
+  status.innerHTML=s.st;
+}
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;bP.disabled=false;bPa.disabled=true;bS.disabled=true;boxes.forEach(b=>b.classList.remove('active'));termout.textContent='';railFill.style.width='0px';packet.style.opacity=0;cur.style.display='none';['l0','l1','l2','l3'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;window.addEventListener('resize',()=>{if(elapsed)render(elapsed);});stop();
+</script>
+</body>
+</html>
