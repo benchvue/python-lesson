@@ -1,5 +1,5 @@
 company_name = "ABC Company"
-revenue = 50000
+revenue = 500
 tax_rate = 0.21
 is_profitable = True
 

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Variables — Data Flow</title>
+<style>
+  :root{
+    --c1:#6366f1;  /* value     */
+    --c2:#0ea5e9;  /* variable  */
+    --c3:#f59e0b;  /* print()   */
+    --c4:#10b981;  /* terminal  */
+    --ink:#111; --muted:#9a9a9a;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{
+    background:#fff; font-family:'Segoe UI', system-ui, sans-serif; color:var(--ink);
+    display:flex; flex-direction:column; align-items:center;
+    min-height:100vh; padding:54px 20px;
+  }
+  h1{ font-size:13px; font-weight:500; letter-spacing:.18em; text-transform:uppercase; color:#999; margin-bottom:8px; }
+  h2{ font-size:26px; font-weight:600; letter-spacing:-.02em; text-align:center; margin-bottom:6px; }
+  .subtitle{ font-size:13px; color:var(--muted); margin-bottom:34px; text-align:center; }
+
+  .stage-wrap{ width:100%; max-width:920px; }
+
+  /* code panel ------------------------------------------------ */
+  .code{
+    background:#1e2030; border-radius:12px; padding:14px 16px; margin-bottom:38px;
+    font-family:'SF Mono','Consolas',monospace; font-size:14px; line-height:1.9;
+    box-shadow:0 8px 22px rgba(0,0,0,.13);
+  }
+  .cl{ display:flex; align-items:center; gap:10px; border-radius:7px; padding:2px 8px; transition:background .25s; }
+  .cl .gut{ color:#5a6080; width:14px; text-align:right; user-select:none; }
+  .cl.on{ background:rgba(255,255,255,.08); }
+  .cl.on .gut{ color:#cfd4e8; }
+  .v-name{ color:#89ddff; } .v-op{ color:#c792ea; } .v-str{ color:#c3e88d; }
+  .v-fn{ color:#ffcb6b; } .v-punc{ color:#9aa4c0; }
+
+  /* flow ------------------------------------------------------ */
+  .track{ position:relative; display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:170px; }
+  .rail{ position:absolute; left:6%; right:6%; top:50%; height:3px; background:#eee; border-radius:3px; transform:translateY(-50%); z-index:0; }
+  .rail-fill{ position:absolute; left:6%; top:50%; height:3px; width:0; border-radius:3px; z-index:0; transform:translateY(-50%);
+              background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3),var(--c4)); }
+
+  .box{
+    position:relative; z-index:2; flex:1 1 0; min-width:0;
+    background:#fff; border:2px solid #ececec; border-radius:14px;
+    padding:14px 11px 13px; text-align:center;
+    transition:border-color .25s, box-shadow .25s, transform .25s;
+  }
+  .box .tag{ font-size:9.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#bbb; transition:color .25s; }
+  .box .name{ font-size:14px; font-weight:600; margin:5px 0 6px; letter-spacing:-.01em; }
+  .box .detail{ font-family:'SF Mono','Consolas',monospace; font-size:11px; color:#777; line-height:1.45; word-break:break-word; }
+  .box.active{ transform:translateY(-4px); }
+  .box.active[data-c="1"]{ border-color:var(--c1); box-shadow:0 8px 22px color-mix(in srgb,var(--c1) 28%,transparent); }
+  .box.active[data-c="2"]{ border-color:var(--c2); box-shadow:0 8px 22px color-mix(in srgb,var(--c2) 28%,transparent); }
+  .box.active[data-c="3"]{ border-color:var(--c3); box-shadow:0 8px 22px color-mix(in srgb,var(--c3) 28%,transparent); }
+  .box.active[data-c="4"]{ border-color:var(--c4); box-shadow:0 8px 22px color-mix(in srgb,var(--c4) 28%,transparent); }
+  .box.active .tag{ color:var(--bc); }
+
+  /* the variable box: a named container with a slot */
+  .varbox.holding{ border-color:var(--c2); }
+  .nameplate{
+    display:inline-block; font-family:'SF Mono','Consolas',monospace; font-size:12px; font-weight:700;
+    color:#0369a1; background:#e0f2fe; padding:2px 9px; border-radius:6px; margin-bottom:8px;
+  }
+  .slot{
+    font-family:'SF Mono','Consolas',monospace; font-size:11.5px;
+    border:1.5px dashed #d6d9e0; border-radius:8px; padding:7px 6px; min-height:30px;
+    display:flex; align-items:center; justify-content:center; color:#bbb;
+    transition:all .3s;
+  }
+  .slot.full{ border-style:solid; border-color:var(--c2); background:color-mix(in srgb,var(--c2) 9%,#fff); color:#0369a1; font-weight:600; }
+
+  .termline{ font-family:'SF Mono','Consolas',monospace; font-size:12px; background:#0b0f18; color:#9af7c0;
+             border-radius:8px; padding:8px 9px; margin-top:2px; text-align:left; min-height:30px; }
+  .termline .p{ color:#6ee7ff; }
+  .cur{ display:inline-block; width:7px; height:13px; background:#9af7c0; vertical-align:-2px; animation:blink 1s steps(1) infinite; }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  .packet{
+    position:absolute; z-index:5; top:50%; left:0;
+    transform:translate(-50%,-50%) scale(.6); opacity:0;
+    font-family:'SF Mono','Consolas',monospace; font-size:12px; font-weight:600; color:#fff;
+    background:var(--c1); padding:5px 11px; border-radius:20px; white-space:nowrap;
+    box-shadow:0 4px 14px rgba(99,102,241,.5);
+  }
+
+  .status{ text-align:center; font-size:13px; color:#555; margin:30px auto 16px; min-height:20px; max-width:620px; letter-spacing:.01em; }
+  .status b{ color:#222; }
+
+  .controls{ display:flex; gap:10px; justify-content:center; }
+  .controls button{ font-family:inherit; font-size:13.5px; font-weight:600; cursor:pointer; border:none; border-radius:10px; padding:9px 20px; color:#fff; transition:transform .12s, opacity .2s, filter .2s; }
+  .controls button:active{ transform:scale(.95); }
+  .controls button:disabled{ opacity:.4; cursor:default; }
+  #play{ background:#10b981; } #pause{ background:#64748b; } #stop{ background:#ef4444; }
+  .controls button:not(:disabled):hover{ filter:brightness(1.07); }
+
+  @media (max-width:560px){
+    body{ padding:40px 12px; } h2{ font-size:20px; } .code{ font-size:12px; }
+    .track{ gap:6px; min-height:155px; } .box{ padding:10px 6px; }
+    .box .name{ font-size:11px; } .box .detail{ font-size:9px; } .nameplate{ font-size:10px; } .slot{ font-size:9.5px; }
+    .packet{ font-size:10px; padding:4px 8px; }
+  }
+</style>
+</head>
+<body>
+  <h1>Python 3</h1>
+  <h2>What is a Variable?</h2>
+  <div class="subtitle">a named box that stores a value — so you can use it again by name</div>
+
+  <div class="stage-wrap">
+
+    <div class="code">
+      <div class="cl" id="line1"><span class="gut">1</span><span class="v-name">my_variable</span> <span class="v-op">=</span> <span class="v-str">'Hi Valentina'</span></div>
+      <div class="cl" id="line2"><span class="gut">2</span><span class="v-fn">print</span><span class="v-punc">(</span><span class="v-name">my_variable</span><span class="v-punc">)</span></div>
+    </div>
+
+    <div class="track" id="track">
+      <div class="rail"></div>
+      <div class="rail-fill" id="railFill"></div>
+
+      <div class="box" data-c="1" style="--bc:var(--c1)">
+        <div class="tag">Value</div>
+        <div class="name">'Hi Valentina'</div>
+        <div class="detail">a piece of<br>text (a string)</div>
+      </div>
+
+      <div class="box varbox" data-c="2" style="--bc:var(--c2)">
+        <div class="tag">Variable</div>
+        <div class="nameplate">my_variable</div>
+        <div class="slot" id="slot">empty</div>
+      </div>
+
+      <div class="box" data-c="3" style="--bc:var(--c3)">
+        <div class="tag">I/O built-in</div>
+        <div class="name">print()</div>
+        <div class="detail">show the<br>value</div>
+      </div>
+
+      <div class="box" data-c="4" style="--bc:var(--c4)">
+        <div class="tag">Output</div>
+        <div class="name">Terminal</div>
+        <div class="termline"><span class="p">$</span> <span id="termout"></span><span class="cur" id="cur"></span></div>
+      </div>
+
+      <div class="packet" id="packet">'Hi Valentina'</div>
+    </div>
+
+    <div class="status" id="status">Press Play to start</div>
+
+    <div class="controls">
+      <button id="play">▶ Play</button>
+      <button id="pause" disabled>❚❚ Pause</button>
+      <button id="stop" disabled>■ Stop</button>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const track=document.getElementById('track');
+  const boxes=[...track.querySelectorAll('.box')];
+  const packet=document.getElementById('packet');
+  const railFill=document.getElementById('railFill');
+  const slot=document.getElementById('slot');
+  const termout=document.getElementById('termout');
+  const cur=document.getElementById('cur');
+  const status=document.getElementById('status');
+  const line1=document.getElementById('line1'), line2=document.getElementById('line2');
+  const btnPlay=document.getElementById('play'), btnPause=document.getElementById('pause'), btnStop=document.getElementById('stop');
+
+  const COLORS=['#6366f1','#0ea5e9','#f59e0b','#10b981'];
+  const VAL="'Hi Valentina'";
+  const OUT="Hi Valentina";
+
+  // timeline ----------------------------------------------------
+  // box index: 0 value, 1 variable, 2 print, 3 terminal
+  let t=0; const seg=[];
+  const add=(d,o)=>{ seg.push(Object.assign({s:t,e:t+d},o)); t+=d; };
+  add(500 ,{type:'dwell',  i:0, st:0, line:1});                 // value appears
+  add(800 ,{type:'travel', from:0,to:1, st:1, line:1});         // value → variable
+  add(650 ,{type:'store',  i:1, st:2, line:1});                 // store into box
+  add(750 ,{type:'midhold',i:1, st:3, line:1});                 // explain
+  add(450 ,{type:'emerge', i:1, st:4, line:2});                 // line2: look up name
+  add(800 ,{type:'travel', from:1,to:2, st:5, line:2});         // value → print
+  add(350 ,{type:'dwell',  i:2, st:6, line:2});                 // print dwell
+  add(800 ,{type:'travel', from:2,to:3, st:7, line:2});         // → terminal
+  add(800 ,{type:'type',   i:3, st:8, line:2});                 // type output
+  add(950 ,{type:'hold',   i:3, st:9, line:2});                 // done
+  const CYCLE=t;
+  const TYPE_SEG=seg.find(s=>s.type==='type');
+  const STORE_START=seg.find(s=>s.type==='store').s;
+
+  const STATUS=[
+    "A <b>value</b>: the text 'Hi Valentina' (a string).",
+    "The <b>=</b> sign assigns the value — it flows into a box…",
+    "<b>Stored!</b> The box named <b>my_variable</b> now holds 'Hi Valentina'.",
+    "A <b>variable</b> is a named box that remembers a value for later.",
+    "Line 2 — <b>print(my_variable)</b>: look up the name to get its value.",
+    "The stored value is handed to <b>print()</b>.",
+    "print() sends the value toward standard output…",
+    "…on its way to the terminal.",
+    "The terminal shows the value held by my_variable.",
+    "Done — and <b>my_variable still holds its value</b>, ready to reuse."
+  ];
+
+  function centerX(i){ const tr=track.getBoundingClientRect(), b=boxes[i].getBoundingClientRect(); return b.left-tr.left+b.width/2; }
+  function railLeft(){ return track.clientWidth*0.06; }
+  function setActive(idx){ boxes.forEach((b,i)=> b.classList.toggle('active', i===idx)); }
+  function setPacketColor(i){ packet.style.background=COLORS[i]; packet.style.boxShadow='0 4px 14px '+COLORS[i]+'88'; }
+
+  let playing=false, elapsed=0, last=0, raf=null, started=false;
+
+  function render(ms){
+    const s=seg.find(g=> ms>=g.s && ms<g.e) || seg[seg.length-1];
+    let x, activeIdx=null, pVisible=true, pScale=1;
+
+    if(s.type==='dwell' || s.type==='emerge'){ x=centerX(s.i); activeIdx=s.i; setPacketColor(s.i); }
+    else if(s.type==='travel'){ const p=(ms-s.s)/(s.e-s.s); x=centerX(s.from)+(centerX(s.to)-centerX(s.from))*p; const c=p<0.5?s.from:s.to; setPacketColor(c); activeIdx=c; }
+    else if(s.type==='store'){ x=centerX(1); activeIdx=1; const p=(ms-s.s)/(s.e-s.s); pScale=1-p*0.5; pVisible=p<0.85; setPacketColor(1); }
+    else if(s.type==='midhold'){ x=centerX(1); activeIdx=1; pVisible=false; }
+    else { x=centerX(3); activeIdx=3; pVisible=false; } // type / hold
+
+    packet.style.left=x+'px';
+    packet.style.opacity=pVisible?1:0;
+    packet.style.transform='translate(-50%,-50%) scale('+(pVisible?pScale:0.6)+')';
+    railFill.style.width=Math.max(0,x-railLeft())+'px';
+
+    setActive(activeIdx);
+
+    // variable box holding state + slot fill
+    const filled = ms>=STORE_START;
+    boxes[1].classList.toggle('holding', filled);
+    slot.classList.toggle('full', filled);
+    slot.textContent = filled ? VAL : 'empty';
+
+    // active code line
+    line1.classList.toggle('on', s.line===1);
+    line2.classList.toggle('on', s.line===2);
+
+    // terminal typing
+    let chars=0;
+    if(ms>=TYPE_SEG.s){ const p=Math.min(1,(ms-TYPE_SEG.s)/(TYPE_SEG.e-TYPE_SEG.s)); chars=Math.round(p*OUT.length); }
+    termout.textContent=OUT.slice(0,chars);
+    cur.style.display=(activeIdx===3)?'inline-block':'none';
+
+    status.innerHTML=STATUS[s.st];
+  }
+
+  function frame(now){ if(!playing) return; const dt=now-last; last=now; elapsed=(elapsed+dt)%CYCLE; render(elapsed); raf=requestAnimationFrame(frame); }
+  function play(){ if(playing) return; playing=true; started=true; last=performance.now(); btnPlay.disabled=true; btnPause.disabled=false; btnStop.disabled=false; raf=requestAnimationFrame(frame); }
+  function pause(){ if(!playing) return; playing=false; cancelAnimationFrame(raf); btnPlay.disabled=false; btnPause.disabled=true; status.innerHTML='Paused — press Play to resume'; }
+  function stop(){
+    playing=false; cancelAnimationFrame(raf); elapsed=0; started=false;
+    btnPlay.disabled=false; btnPause.disabled=true; btnStop.disabled=true;
+    setActive(null); termout.textContent=''; railFill.style.width='0px';
+    packet.style.opacity=0; cur.style.display='none';
+    boxes[1].classList.remove('holding'); slot.classList.remove('full'); slot.textContent='empty';
+    line1.classList.remove('on'); line2.classList.remove('on');
+    status.innerHTML='Press Play to start';
+  }
+
+  btnPlay.addEventListener('click',play);
+  btnPause.addEventListener('click',pause);
+  btnStop.addEventListener('click',stop);
+  window.addEventListener('resize',()=>{ if(started) render(elapsed); });
+  stop();
+})();
+</script>
+</body>
+</html>

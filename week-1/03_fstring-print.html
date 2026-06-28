@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python f-strings — Data Flow</title>
+<style>
+  :root{
+    --c0:#6366f1;  /* variables  */
+    --c1:#f59e0b;  /* f-string   */
+    --c2:#ec4899;  /* print()    */
+    --c3:#10b981;  /* terminal   */
+    --nameC:#6366f1; --scoreC:#0ea5e9;
+    --ink:#111; --muted:#9a9a9a;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{
+    background:#fff; font-family:'Segoe UI', system-ui, sans-serif; color:var(--ink);
+    display:flex; flex-direction:column; align-items:center;
+    min-height:100vh; padding:54px 20px; overflow-x:hidden;
+  }
+  h1{ font-size:13px; font-weight:500; letter-spacing:.18em; text-transform:uppercase; color:#999; margin-bottom:8px; }
+  h2{ font-size:26px; font-weight:600; letter-spacing:-.02em; text-align:center; margin-bottom:6px; }
+  .subtitle{ font-size:13px; color:var(--muted); margin-bottom:32px; text-align:center; }
+
+  .stage-wrap{ width:100%; max-width:940px; }
+
+  .code{ background:#1e2030; border-radius:12px; padding:14px 16px; margin-bottom:36px;
+    font-family:'SF Mono','Consolas',monospace; font-size:13.5px; line-height:1.9; box-shadow:0 8px 22px rgba(0,0,0,.13); }
+  .cl{ display:flex; align-items:center; gap:10px; border-radius:7px; padding:2px 8px; transition:background .25s; }
+  .cl .gut{ color:#5a6080; width:14px; text-align:right; user-select:none; }
+  .cl.on{ background:rgba(255,255,255,.08); } .cl.on .gut{ color:#cfd4e8; }
+  .t-name{ color:#89ddff; } .t-op{ color:#c792ea; } .t-str{ color:#c3e88d; }
+  .t-num{ color:#f78c6c; } .t-fn{ color:#ffcb6b; } .t-punc{ color:#9aa4c0; } .t-f{ color:#ffcb6b; font-weight:700; }
+  .t-brace{ color:#ff9cee; }
+
+  .track{ position:relative; display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:180px; }
+  .rail{ position:absolute; left:6%; right:6%; top:50%; height:3px; background:#eee; border-radius:3px; transform:translateY(-50%); z-index:0; }
+  .rail-fill{ position:absolute; left:6%; top:50%; height:3px; width:0; border-radius:3px; z-index:0; transform:translateY(-50%);
+              background:linear-gradient(90deg,var(--c0),var(--c1),var(--c2),var(--c3)); }
+
+  .box{ position:relative; z-index:2; background:#fff; border:2px solid #ececec; border-radius:14px;
+    padding:14px 11px 13px; text-align:center; transition:border-color .25s, box-shadow .25s, transform .25s; }
+  .box .tag{ font-size:9.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#bbb; transition:color .25s; }
+  .box .name{ font-size:14px; font-weight:600; margin:5px 0 6px; letter-spacing:-.01em; }
+  .box .detail{ font-family:'SF Mono','Consolas',monospace; font-size:11px; color:#777; line-height:1.45; }
+  .box.active{ transform:translateY(-4px); }
+  .box.active[data-c="0"]{ border-color:var(--c0); box-shadow:0 8px 22px color-mix(in srgb,var(--c0) 28%,transparent); }
+  .box.active[data-c="1"]{ border-color:var(--c1); box-shadow:0 8px 22px color-mix(in srgb,var(--c1) 28%,transparent); }
+  .box.active[data-c="2"]{ border-color:var(--c2); box-shadow:0 8px 22px color-mix(in srgb,var(--c2) 28%,transparent); }
+  .box.active[data-c="3"]{ border-color:var(--c3); box-shadow:0 8px 22px color-mix(in srgb,var(--c3) 28%,transparent); }
+  .box.active .tag{ color:var(--bc); }
+
+  .b-var{ flex:1.05; } .b-tmpl{ flex:1.85; } .b-print{ flex:.8; } .b-term{ flex:1.4; }
+
+  /* variable chips */
+  .chip{ font-family:'SF Mono','Consolas',monospace; font-size:11.5px; border:1.5px solid #e6e6ee; border-radius:8px;
+         padding:5px 7px; margin-top:7px; color:#666; transition:all .3s; }
+  .chip .ck{ color:var(--nameC); font-weight:600; }
+  .chip#chipScore .ck{ color:var(--scoreC); }
+  .chip.full{ background:#f7f8ff; border-color:#d8dbf2; color:#333; }
+  .chip .cv{ font-weight:600; }
+
+  /* f-string template */
+  .tmpl{ font-family:'SF Mono','Consolas',monospace; font-size:12.5px; line-height:1.85; color:#444;
+         margin-top:8px; transition:all .3s; padding:8px 6px; border-radius:9px; border:1.5px solid transparent; }
+  .tmpl.assembled{ background:color-mix(in srgb,var(--c1) 9%,#fff); border-color:var(--c1); }
+  .fq{ color:#c9a23a; } .fpre{ color:var(--c1); font-weight:700; }
+  .slot{ display:inline-block; padding:0 5px; border-radius:5px; transition:all .3s; font-weight:600; }
+  .slot.ph{ color:#c9871a; background:#fff5e6; border:1px dashed #f0c479; }
+  .slot.filled{ color:#fff; border:1px solid var(--fc); background:var(--fc); }
+
+  .termline{ font-family:'SF Mono','Consolas',monospace; font-size:11.5px; background:#0b0f18; color:#9af7c0;
+             border-radius:8px; padding:8px 9px; margin-top:2px; text-align:left; min-height:46px; line-height:1.5; }
+  .termline .p{ color:#6ee7ff; }
+  .cur{ display:inline-block; width:7px; height:12px; background:#9af7c0; vertical-align:-2px; animation:blink 1s steps(1) infinite; }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  .packet{ position:absolute; z-index:6; left:0; top:50%;
+    transform:translate(-50%,-50%) scale(.6); opacity:0;
+    font-family:'SF Mono','Consolas',monospace; font-size:12px; font-weight:600; color:#fff;
+    background:var(--c0); padding:5px 11px; border-radius:20px; white-space:nowrap;
+    box-shadow:0 4px 14px rgba(0,0,0,.3); }
+
+  .status{ text-align:center; font-size:13px; color:#555; margin:30px auto 16px; min-height:20px; max-width:660px; }
+  .status b{ color:#222; }
+
+  .controls{ display:flex; gap:10px; justify-content:center; }
+  .controls button{ font-family:inherit; font-size:13.5px; font-weight:600; cursor:pointer; border:none; border-radius:10px; padding:9px 20px; color:#fff; transition:transform .12s, opacity .2s, filter .2s; }
+  .controls button:active{ transform:scale(.95); }
+  .controls button:disabled{ opacity:.4; cursor:default; }
+  #play{ background:#10b981; } #pause{ background:#64748b; } #stop{ background:#ef4444; }
+  .controls button:not(:disabled):hover{ filter:brightness(1.07); }
+
+  @media (max-width:600px){
+    body{ padding:40px 10px; } h2{ font-size:19px; } .code{ font-size:11px; }
+    .track{ gap:5px; } .box{ padding:9px 5px; } .box .name{ font-size:10.5px; }
+    .chip{ font-size:9px; } .tmpl{ font-size:9.5px; } .termline{ font-size:9px; }
+    .packet{ font-size:9px; padding:4px 7px; }
+  }
+</style>
+</head>
+<body>
+  <h1>Python 3</h1>
+  <h2>f-strings — Dynamic Formatting</h2>
+  <div class="subtitle">put <b>{placeholders}</b> in text — Python fills them with your values</div>
+
+  <div class="stage-wrap">
+
+    <div class="code">
+      <div class="cl" id="line1"><span class="gut">1</span><span class="t-name">name</span> <span class="t-op">=</span> <span class="t-str">"Valentina"</span></div>
+      <div class="cl" id="line2"><span class="gut">2</span><span class="t-name">score</span> <span class="t-op">=</span> <span class="t-num">95</span></div>
+      <div class="cl" id="line3"><span class="gut">3</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-f">f</span><span class="t-str">"User </span><span class="t-brace">{name}</span><span class="t-str"> scored </span><span class="t-brace">{score}</span><span class="t-str"> points."</span><span class="t-punc">)</span></div>
+    </div>
+
+    <div class="track" id="track">
+      <div class="rail"></div>
+      <div class="rail-fill" id="railFill"></div>
+
+      <div class="box b-var" data-c="0" style="--bc:var(--c0)">
+        <div class="tag">Variables</div>
+        <div class="chip" id="chipName"><span class="ck">name</span> = <span class="cv" id="cvName">?</span></div>
+        <div class="chip" id="chipScore"><span class="ck">score</span> = <span class="cv" id="cvScore">?</span></div>
+      </div>
+
+      <div class="box b-tmpl" data-c="1" style="--bc:var(--c1)">
+        <div class="tag">f-string template</div>
+        <div class="tmpl" id="tmpl">
+          <span class="fpre">f</span><span class="fq">"</span>User <span class="slot ph" id="sName">{name}</span> scored <span class="slot ph" id="sScore">{score}</span> points.<span class="fq">"</span>
+        </div>
+      </div>
+
+      <div class="box b-print" data-c="2" style="--bc:var(--c2)">
+        <div class="tag">I/O</div>
+        <div class="name">print()</div>
+        <div class="detail">show the<br>string</div>
+      </div>
+
+      <div class="box b-term" data-c="3" style="--bc:var(--c3)">
+        <div class="tag">Output</div>
+        <div class="name">Terminal</div>
+        <div class="termline"><span class="p">$</span> <span id="termout"></span><span class="cur" id="cur"></span></div>
+      </div>
+
+      <div class="packet" id="packet">value</div>
+    </div>
+
+    <div class="status" id="status">Press Play to start</div>
+
+    <div class="controls">
+      <button id="play">▶ Play</button>
+      <button id="pause" disabled>❚❚ Pause</button>
+      <button id="stop" disabled>■ Stop</button>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const track=document.getElementById('track');
+  const boxes=[...track.querySelectorAll('.box')];
+  const packet=document.getElementById('packet');
+  const railFill=document.getElementById('railFill');
+  const chipName=document.getElementById('chipName'), chipScore=document.getElementById('chipScore');
+  const cvName=document.getElementById('cvName'), cvScore=document.getElementById('cvScore');
+  const sName=document.getElementById('sName'), sScore=document.getElementById('sScore');
+  const tmpl=document.getElementById('tmpl');
+  const termout=document.getElementById('termout'), cur=document.getElementById('cur');
+  const status=document.getElementById('status');
+  const line1=document.getElementById('line1'),line2=document.getElementById('line2'),line3=document.getElementById('line3');
+  const btnPlay=document.getElementById('play'),btnPause=document.getElementById('pause'),btnStop=document.getElementById('stop');
+
+  const NAME='#6366f1', SCORE='#0ea5e9', FS='#f59e0b';
+  const RESULT='User Valentina scored 95 points.';
+
+  const REF={ chipName:()=>chipName, chipScore:()=>chipScore, sName:()=>sName, sScore:()=>sScore,
+    box0:()=>boxes[0], box1:()=>boxes[1], box2:()=>boxes[2], box3:()=>boxes[3] };
+  function center(el){ const tr=track.getBoundingClientRect(), r=el.getBoundingClientRect();
+    return { x:r.left-tr.left+r.width/2, y:r.top-tr.top+r.height/2 }; }
+  function P(k){ return center(REF[k]()); }
+
+  // timeline ----------------------------------------------------
+  let t=0; const seg=[]; const add=(d,o)=>{ seg.push(Object.assign({s:t,e:t+d},o)); t+=d; };
+  add(620,{type:'pop', at:'chipName', val:'"Valentina"', col:NAME, st:0, line:1});
+  add(620,{type:'pop', at:'chipScore',val:'95',          col:SCORE,st:1, line:2});
+  add(720,{type:'intro', box:1, st:2, line:3});
+  add(820,{type:'fly', from:'chipName', to:'sName', val:'Valentina', col:NAME, st:3, line:3});
+  add(360,{type:'pause', box:1, st:4, line:3});
+  add(820,{type:'fly', from:'chipScore', to:'sScore', val:'95', col:SCORE, st:5, line:3});
+  add(780,{type:'assemble', box:1, st:6, line:3});
+  add(820,{type:'travel', from:'box1', to:'box2', val:RESULT, col:FS, st:7, line:3});
+  add(340,{type:'dwell', at:'box2', val:RESULT, col:FS, st:8, line:3});
+  add(820,{type:'travel', from:'box2', to:'box3', val:RESULT, col:FS, st:9, line:3});
+  add(980,{type:'type', box:3, st:10, line:3});
+  add(1050,{type:'hold', box:3, st:11, line:3});
+  const CYCLE=t;
+  const TYPE_SEG=seg.find(s=>s.type==='type');
+  const TH_name=seg[0].e, TH_score=seg[1].e, TH_sName=seg[3].e, TH_sScore=seg[5].e, TH_assemble=seg[6].s;
+
+  const STATUS=[
+    'The variable <b>name</b> holds the text <b>"Valentina"</b>.',
+    'The variable <b>score</b> holds the number <b>95</b>.',
+    'An <b>f-string</b> begins with <b>f"…"</b> and contains <b>{placeholders}</b>.',
+    'Python looks up <b>{name}</b> and drops in its value, <b>Valentina</b>.',
+    '<b>{name}</b> is now replaced by its actual value.',
+    'Next <b>{score}</b> → <b>95</b> (a number, auto-converted to text).',
+    'All placeholders filled — one finished string is built.',
+    'The formatted string is handed to <b>print()</b>.',
+    'print() sends the finished string onward…',
+    '…to the terminal.',
+    'The terminal shows the dynamically formatted result.',
+    'Done — values were inserted into the text on the fly. ✨'
+  ];
+
+  let playing=false, elapsed=0, last=0, raf=null, started=false;
+  function setActive(i){ boxes.forEach((b,k)=> b.classList.toggle('active', k===i)); }
+  function setPC(c){ packet.style.background=c; packet.style.boxShadow='0 4px 14px '+c+'88'; }
+
+  function render(ms){
+    const s=seg.find(g=> ms>=g.s && ms<g.e) || seg[seg.length-1];
+    let pos={x:0,y:0}, pVis=true, pScale=1, activeIdx=null;
+
+    if(s.type==='pop'){ pos=P(s.at); activeIdx=0; setPC(s.col); packet.textContent=s.val;
+      const p=(ms-s.s)/(s.e-s.s); pScale=1-Math.max(0,p-0.7)/0.3*0.4; pVis=p<0.92; }
+    else if(s.type==='fly'){ const p=(ms-s.s)/(s.e-s.s); const a=P(s.from),b=P(s.to);
+      pos={x:a.x+(b.x-a.x)*p, y:a.y+(b.y-a.y)*p}; setPC(s.col); packet.textContent=s.val; activeIdx=1;
+      pScale=1-Math.max(0,p-0.8)/0.2*0.4; pVis=p<0.94; }
+    else if(s.type==='travel'){ const p=(ms-s.s)/(s.e-s.s); const a=P(s.from),b=P(s.to);
+      pos={x:a.x+(b.x-a.x)*p, y:a.y+(b.y-a.y)*p}; setPC(s.col); packet.textContent=s.val;
+      activeIdx = p<0.5 ? (s.from==='box1'?1:2) : (s.to==='box2'?2:3); }
+    else if(s.type==='dwell'){ pos=P(s.at); setPC(s.col); packet.textContent=s.val; activeIdx=2; }
+    else if(s.type==='intro' || s.type==='pause' || s.type==='assemble'){ pos=P('box1'); activeIdx=1; pVis=false; }
+    else { pos=P('box3'); activeIdx=3; pVis=false; } // type / hold
+
+    packet.style.left=pos.x+'px'; packet.style.top=pos.y+'px';
+    packet.style.opacity=pVis?1:0;
+    packet.style.transform='translate(-50%,-50%) scale('+(pVis?pScale:0.6)+')';
+    railFill.style.width=Math.max(0,pos.x-track.clientWidth*0.06)+'px';
+
+    setActive(activeIdx);
+
+    // chip fills
+    const nf=ms>=TH_name, sf=ms>=TH_score;
+    chipName.classList.toggle('full',nf); cvName.textContent= nf?'"Valentina"':'?'; cvName.style.color=nf?NAME:'#bbb';
+    chipScore.classList.toggle('full',sf); cvScore.textContent= sf?'95':'?'; cvScore.style.color=sf?SCORE:'#bbb';
+
+    // slot fills
+    const fn=ms>=TH_sName, fs2=ms>=TH_sScore;
+    if(fn){ sName.textContent='Valentina'; sName.className='slot filled'; sName.style.setProperty('--fc',NAME); }
+    else { sName.textContent='{name}'; sName.className='slot ph'; }
+    if(fs2){ sScore.textContent='95'; sScore.className='slot filled'; sScore.style.setProperty('--fc',SCORE); }
+    else { sScore.textContent='{score}'; sScore.className='slot ph'; }
+    tmpl.classList.toggle('assembled', ms>=TH_assemble);
+
+    // code line highlight
+    line1.classList.toggle('on',s.line===1);
+    line2.classList.toggle('on',s.line===2);
+    line3.classList.toggle('on',s.line===3);
+
+    // terminal typing
+    let chars=0;
+    if(ms>=TYPE_SEG.s){ const p=Math.min(1,(ms-TYPE_SEG.s)/(TYPE_SEG.e-TYPE_SEG.s)); chars=Math.round(p*RESULT.length); }
+    termout.textContent=RESULT.slice(0,chars);
+    cur.style.display=(activeIdx===3)?'inline-block':'none';
+
+    status.innerHTML=STATUS[s.st];
+  }
+
+  function frame(now){ if(!playing) return; const dt=now-last; last=now; elapsed=(elapsed+dt)%CYCLE; render(elapsed); raf=requestAnimationFrame(frame); }
+  function play(){ if(playing) return; playing=true; started=true; last=performance.now(); btnPlay.disabled=true; btnPause.disabled=false; btnStop.disabled=false; raf=requestAnimationFrame(frame); }
+  function pause(){ if(!playing) return; playing=false; cancelAnimationFrame(raf); btnPlay.disabled=false; btnPause.disabled=true; status.innerHTML='Paused — press Play to resume'; }
+  function stop(){
+    playing=false; cancelAnimationFrame(raf); elapsed=0; started=false;
+    btnPlay.disabled=false; btnPause.disabled=true; btnStop.disabled=true;
+    setActive(null); termout.textContent=''; railFill.style.width='0px'; packet.style.opacity=0; cur.style.display='none';
+    chipName.classList.remove('full'); chipScore.classList.remove('full');
+    cvName.textContent='?'; cvName.style.color='#bbb'; cvScore.textContent='?'; cvScore.style.color='#bbb';
+    sName.textContent='{name}'; sName.className='slot ph'; sScore.textContent='{score}'; sScore.className='slot ph';
+    tmpl.classList.remove('assembled');
+    line1.classList.remove('on'); line2.classList.remove('on'); line3.classList.remove('on');
+    status.innerHTML='Press Play to start';
+  }
+
+  btnPlay.addEventListener('click',play);
+  btnPause.addEventListener('click',pause);
+  btnStop.addEventListener('click',stop);
+  window.addEventListener('resize',()=>{ if(started) render(elapsed); });
+  stop();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python “hello world” — Data Flow</title>
+<style>
+  :root{
+    --c1:#6366f1;  /* code      */
+    --c2:#0ea5e9;  /* python.exe*/
+    --c3:#f59e0b;  /* print()   */
+    --c4:#10b981;  /* terminal  */
+    --ink:#111; --muted:#9a9a9a;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{
+    background:#fff; font-family:'Segoe UI', system-ui, sans-serif; color:var(--ink);
+    display:flex; flex-direction:column; align-items:center;
+    min-height:100vh; padding:56px 20px;
+  }
+  h1{ font-size:13px; font-weight:500; letter-spacing:.18em; text-transform:uppercase; color:#999; margin-bottom:8px; }
+  h2{ font-size:26px; font-weight:600; letter-spacing:-.02em; text-align:center; margin-bottom:6px; }
+  h2 code{ font-family:'SF Mono','Consolas',monospace; font-size:.85em; background:#f4f4f6; padding:2px 8px; border-radius:7px; }
+  .subtitle{ font-size:13px; color:var(--muted); margin-bottom:46px; text-align:center; }
+
+  .stage-wrap{ width:100%; max-width:900px; }
+
+  .track{
+    position:relative; display:flex; align-items:center; justify-content:space-between;
+    gap:10px; min-height:170px;
+  }
+  /* connecting rail */
+  .rail{ position:absolute; left:6%; right:6%; top:50%; height:3px; background:#eee; border-radius:3px; z-index:0; transform:translateY(-50%); }
+  .rail-fill{ position:absolute; left:6%; top:50%; height:3px; width:0; border-radius:3px; z-index:0; transform:translateY(-50%);
+              background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3),var(--c4)); transition:width .05s linear; }
+
+  .box{
+    position:relative; z-index:2; flex:1 1 0; min-width:0;
+    background:#fff; border:2px solid #ececec; border-radius:14px;
+    padding:16px 12px 14px; text-align:center;
+    transition:border-color .25s, box-shadow .25s, transform .25s;
+  }
+  .box .tag{ font-size:9.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#bbb; transition:color .25s; }
+  .box .name{ font-size:14.5px; font-weight:600; margin:5px 0 6px; letter-spacing:-.01em; }
+  .box .detail{ font-family:'SF Mono','Consolas',monospace; font-size:11.5px; color:#777; line-height:1.45; word-break:break-word; }
+  .box.active{ transform:translateY(-4px); }
+  .box.active[data-c="1"]{ border-color:var(--c1); box-shadow:0 8px 22px color-mix(in srgb,var(--c1) 28%,transparent); }
+  .box.active[data-c="2"]{ border-color:var(--c2); box-shadow:0 8px 22px color-mix(in srgb,var(--c2) 28%,transparent); }
+  .box.active[data-c="3"]{ border-color:var(--c3); box-shadow:0 8px 22px color-mix(in srgb,var(--c3) 28%,transparent); }
+  .box.active[data-c="4"]{ border-color:var(--c4); box-shadow:0 8px 22px color-mix(in srgb,var(--c4) 28%,transparent); }
+  .box.active .tag{ color:var(--bc); }
+
+  /* terminal output inside box 4 */
+  .termline{ font-family:'SF Mono','Consolas',monospace; font-size:12px; background:#0b0f18; color:#9af7c0;
+             border-radius:8px; padding:8px 9px; margin-top:2px; text-align:left; min-height:30px; }
+  .termline .p{ color:#6ee7ff; }
+  .cur{ display:inline-block; width:7px; height:13px; background:#9af7c0; vertical-align:-2px; animation:blink 1s steps(1) infinite; }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  /* travelling data packet */
+  .packet{
+    position:absolute; z-index:5; top:50%; left:0;
+    transform:translate(-50%,-50%) scale(.6); opacity:0;
+    font-family:'SF Mono','Consolas',monospace; font-size:12px; font-weight:600; color:#fff;
+    background:#6366f1; padding:5px 11px; border-radius:20px; white-space:nowrap;
+    box-shadow:0 4px 14px rgba(99,102,241,.5);
+    transition:background .3s, box-shadow .3s;
+  }
+
+  .status{ text-align:center; font-size:12.5px; color:var(--muted); margin:30px 0 16px; min-height:18px; letter-spacing:.02em; }
+
+  .controls{ display:flex; gap:10px; justify-content:center; }
+  .controls button{
+    font-family:inherit; font-size:13.5px; font-weight:600; cursor:pointer;
+    border:none; border-radius:10px; padding:9px 20px; color:#fff;
+    transition:transform .12s, opacity .2s, filter .2s;
+  }
+  .controls button:active{ transform:scale(.95); }
+  .controls button:disabled{ opacity:.4; cursor:default; }
+  #play{ background:#10b981; }
+  #pause{ background:#64748b; }
+  #stop{ background:#ef4444; }
+  .controls button:not(:disabled):hover{ filter:brightness(1.07); }
+
+  @media (max-width:560px){
+    body{ padding:42px 12px; } h2{ font-size:20px; }
+    .track{ gap:6px; min-height:150px; }
+    .box{ padding:11px 7px; } .box .name{ font-size:11.5px; } .box .detail{ font-size:9.5px; }
+    .packet{ font-size:10px; padding:4px 8px; }
+  }
+</style>
+</head>
+<body>
+  <h1>Python 3</h1>
+  <h2>How <code>print('hello world')</code> Flows</h2>
+  <div class="subtitle">a value travels left → right, from your code to the screen</div>
+
+  <div class="stage-wrap">
+    <div class="track" id="track">
+      <div class="rail"></div>
+      <div class="rail-fill" id="railFill"></div>
+
+      <div class="box" data-c="1" style="--bc:var(--c1)">
+        <div class="tag">Code</div>
+        <div class="name">Editor</div>
+        <div class="detail">print('hello&nbsp;world')</div>
+      </div>
+
+      <div class="box" data-c="2" style="--bc:var(--c2)">
+        <div class="tag">Interpreter</div>
+        <div class="name">python.exe</div>
+        <div class="detail">reads &amp; runs<br>the code</div>
+      </div>
+
+      <div class="box" data-c="3" style="--bc:var(--c3)">
+        <div class="tag">I/O built-in</div>
+        <div class="name">print()</div>
+        <div class="detail">write to<br>sys.stdout</div>
+      </div>
+
+      <div class="box" data-c="4" style="--bc:var(--c4)">
+        <div class="tag">Output</div>
+        <div class="name">Terminal</div>
+        <div class="termline" id="term"><span class="p">$</span> <span id="termout"></span><span class="cur" id="cur"></span></div>
+      </div>
+
+      <div class="packet" id="packet">'hello world'</div>
+    </div>
+
+    <div class="status" id="status">Press Play to start</div>
+
+    <div class="controls">
+      <button id="play">▶ Play</button>
+      <button id="pause" disabled>❚❚ Pause</button>
+      <button id="stop" disabled>■ Stop</button>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const track   = document.getElementById('track');
+  const boxes   = [...track.querySelectorAll('.box')];
+  const packet  = document.getElementById('packet');
+  const railFill= document.getElementById('railFill');
+  const termout = document.getElementById('termout');
+  const cur     = document.getElementById('cur');
+  const status  = document.getElementById('status');
+  const btnPlay = document.getElementById('play');
+  const btnPause= document.getElementById('pause');
+  const btnStop = document.getElementById('stop');
+
+  const COLORS = ['#6366f1','#0ea5e9','#f59e0b','#10b981'];
+  const OUT = 'hello world';
+
+  // timeline (ms) ------------------------------------------------
+  const DWELL=380, TRAVEL=820, TYPE=750, HOLD=900;
+  const T0 = 0;
+  const segs = [];           // {start,end, type, from,to}
+  let t = DWELL;             // start: dwell at box0
+  segs.push({s:0, e:t, type:'dwell', i:0});
+  for(let i=0;i<3;i++){
+    segs.push({s:t, e:t+TRAVEL, type:'travel', from:i, to:i+1}); t+=TRAVEL;
+    if(i<2){ segs.push({s:t, e:t+DWELL, type:'dwell', i:i+1}); t+=DWELL; }
+  }
+  const typeSeg = {s:t, e:t+TYPE, type:'type', i:3}; segs.push(typeSeg); t+=TYPE;
+  segs.push({s:t, e:t+HOLD, type:'hold', i:3}); t+=HOLD;
+  const CYCLE = t;
+
+  const STATUS = {
+    0:'① Your code is just text, saved in a .py file',
+    1:'② python.exe reads the file and runs it',
+    2:'③ print() sends the text to standard output',
+    3:'④ The terminal displays the result'
+  };
+
+  // geometry -----------------------------------------------------
+  function centerX(i){
+    const tr = track.getBoundingClientRect();
+    const b  = boxes[i].getBoundingClientRect();
+    return b.left - tr.left + b.width/2;
+  }
+  function railLeft(){ return track.clientWidth*0.06; }
+
+  // state --------------------------------------------------------
+  let playing=false, elapsed=0, last=0, raf=null, started=false;
+
+  function setActive(idx){
+    boxes.forEach((b,i)=> b.classList.toggle('active', i===idx));
+  }
+  function setPacketColor(i){
+    packet.style.background = COLORS[i];
+    packet.style.boxShadow = '0 4px 14px ' + COLORS[i] + '88';
+  }
+
+  function render(ms){
+    const seg = segs.find(s=> ms>=s.s && ms<s.e) || segs[segs.length-1];
+
+    // packet position + color + active box
+    let x, activeIdx=null, showPacket=true;
+    if(seg.type==='dwell'){
+      x = centerX(seg.i); activeIdx=seg.i; setPacketColor(seg.i);
+    } else if(seg.type==='travel'){
+      const p=(ms-seg.s)/(seg.e-seg.s);
+      x = centerX(seg.from) + (centerX(seg.to)-centerX(seg.from))*p;
+      setPacketColor(p<0.5?seg.from:seg.to);
+      activeIdx = p<0.5?seg.from:seg.to;
+    } else { // type / hold at terminal
+      x = centerX(3); activeIdx=3; setPacketColor(3); showPacket = (seg.type!=='hold');
+    }
+
+    packet.style.left = x+'px';
+    packet.style.opacity = showPacket?1:0;
+    packet.style.transform = 'translate(-50%,-50%) scale(' + (showPacket?1:0.6) + ')';
+
+    // rail fill follows packet
+    railFill.style.width = Math.max(0, x - railLeft()) + 'px';
+
+    setActive(activeIdx);
+    status.textContent = STATUS[activeIdx] ?? '';
+
+    // terminal typing
+    let chars = 0;
+    if(ms >= typeSeg.s){
+      const p = Math.min(1,(ms-typeSeg.s)/(typeSeg.e-typeSeg.s));
+      chars = Math.round(p*OUT.length);
+    }
+    termout.textContent = OUT.slice(0,chars);
+    cur.style.display = (activeIdx===3)?'inline-block':'none';
+  }
+
+  function frame(now){
+    if(!playing) return;
+    const dt = now-last; last=now;
+    elapsed = (elapsed+dt) % CYCLE;
+    render(elapsed);
+    raf = requestAnimationFrame(frame);
+  }
+
+  function play(){
+    if(playing) return;
+    playing=true; started=true; last=performance.now();
+    btnPlay.disabled=true; btnPause.disabled=false; btnStop.disabled=false;
+    raf=requestAnimationFrame(frame);
+  }
+  function pause(){
+    if(!playing) return;
+    playing=false; cancelAnimationFrame(raf);
+    btnPlay.disabled=false; btnPause.disabled=true;
+    status.textContent='Paused — press Play to resume';
+  }
+  function stop(){
+    playing=false; cancelAnimationFrame(raf); elapsed=0; started=false;
+    btnPlay.disabled=false; btnPause.disabled=true; btnStop.disabled=true;
+    setActive(null); termout.textContent=''; railFill.style.width='0px';
+    packet.style.opacity=0; cur.style.display='none';
+    status.textContent='Press Play to start';
+  }
+
+  btnPlay.addEventListener('click', play);
+  btnPause.addEventListener('click', pause);
+  btnStop.addEventListener('click', stop);
+  window.addEventListener('resize', ()=>{ if(started) render(elapsed); });
+
+  // initial paint
+  stop();
+})();
+</script>
+</body>
+</html>

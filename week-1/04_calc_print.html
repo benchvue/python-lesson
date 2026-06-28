@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — Calculating with Variables</title>
+<style>
+  :root{
+    --c0:#6366f1;  /* variables  */
+    --c1:#f59e0b;  /* calculate  */
+    --c2:#0ea5e9;  /* print()    */
+    --c3:#14b8a6;  /* terminal   */
+    --revC:#6366f1; --expC:#ec4899; --proC:#10b981;
+    --muted:#9a9a9a;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{ background:#fff; font-family:'Segoe UI',system-ui,sans-serif; color:#111;
+    display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:52px 18px; overflow-x:hidden; }
+  h1{ font-size:13px; font-weight:500; letter-spacing:.18em; text-transform:uppercase; color:#999; margin-bottom:8px; }
+  h2{ font-size:25px; font-weight:600; letter-spacing:-.02em; text-align:center; margin-bottom:6px; }
+  .subtitle{ font-size:13px; color:var(--muted); margin-bottom:30px; text-align:center; }
+  .stage-wrap{ width:100%; max-width:960px; }
+
+  .code{ background:#1e2030; border-radius:12px; padding:13px 16px; margin-bottom:34px;
+    font-family:'SF Mono','Consolas',monospace; font-size:13px; line-height:1.85; box-shadow:0 8px 22px rgba(0,0,0,.13); }
+  .cl{ display:flex; align-items:center; gap:10px; border-radius:7px; padding:1px 8px; transition:background .25s; min-height:22px; }
+  .cl .gut{ color:#5a6080; width:14px; text-align:right; user-select:none; }
+  .cl.on{ background:rgba(255,255,255,.08); } .cl.on .gut{ color:#cfd4e8; }
+  .t-name{ color:#89ddff; } .t-op{ color:#c792ea; } .t-str{ color:#c3e88d; } .t-num{ color:#f78c6c; }
+  .t-fn{ color:#ffcb6b; } .t-punc{ color:#9aa4c0; }
+
+  .track{ position:relative; display:flex; align-items:center; justify-content:space-between; gap:9px; min-height:190px; }
+  .rail{ position:absolute; left:5%; right:5%; top:50%; height:3px; background:#eee; border-radius:3px; transform:translateY(-50%); z-index:0; }
+  .rail-fill{ position:absolute; left:5%; top:50%; height:3px; width:0; border-radius:3px; z-index:0; transform:translateY(-50%);
+              background:linear-gradient(90deg,var(--c0),var(--c1),var(--c2),var(--c3)); }
+
+  .box{ position:relative; z-index:2; background:#fff; border:2px solid #ececec; border-radius:14px;
+    padding:13px 10px 12px; text-align:center; transition:border-color .25s, box-shadow .25s, transform .25s; }
+  .box .tag{ font-size:9.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:#bbb; transition:color .25s; }
+  .box .name{ font-size:13.5px; font-weight:600; margin:5px 0 5px; }
+  .box .detail{ font-family:'SF Mono','Consolas',monospace; font-size:10.5px; color:#777; }
+  .box.active{ transform:translateY(-4px); }
+  .box.active[data-c="0"]{ border-color:var(--c0); box-shadow:0 8px 22px color-mix(in srgb,var(--c0) 28%,transparent); }
+  .box.active[data-c="1"]{ border-color:var(--c1); box-shadow:0 8px 22px color-mix(in srgb,var(--c1) 28%,transparent); }
+  .box.active[data-c="2"]{ border-color:var(--c2); box-shadow:0 8px 22px color-mix(in srgb,var(--c2) 28%,transparent); }
+  .box.active[data-c="3"]{ border-color:var(--c3); box-shadow:0 8px 22px color-mix(in srgb,var(--c3) 28%,transparent); }
+  .box.active .tag{ color:var(--bc); }
+
+  .b-var{ flex:1.15; } .b-calc{ flex:1.25; } .b-print{ flex:.78; } .b-term{ flex:1.45; }
+
+  .chip{ font-family:'SF Mono','Consolas',monospace; font-size:11px; border:1.5px solid #e6e6ee; border-radius:8px;
+         padding:4px 6px; margin-top:6px; color:#888; transition:all .3s; text-align:left; }
+  .chip .ck{ font-weight:700; }
+  #chipRev .ck{ color:var(--revC); } #chipExp .ck{ color:var(--expC); } #chipProfit .ck{ color:var(--proC); }
+  .chip.full{ background:#f7f8ff; border-color:#dadcef; color:#333; }
+  .chip .cv{ font-weight:600; }
+
+  .op{ font-size:22px; font-weight:700; color:var(--c1); line-height:1; margin:3px 0 4px; }
+  .calc-disp{ font-family:'SF Mono','Consolas',monospace; font-size:11.5px; color:#555;
+    border:1.5px solid #f0e2c4; background:#fffaf0; border-radius:8px; padding:6px 5px; transition:all .3s; }
+  .calc-disp.done{ border-color:var(--c1); background:color-mix(in srgb,var(--c1) 11%,#fff); color:#9a6a06; font-weight:600; }
+  .calc-disp b{ color:var(--proC); }
+
+  .termline{ font-family:'SF Mono','Consolas',monospace; font-size:11px; background:#0b0f18; color:#9af7c0;
+             border-radius:8px; padding:8px 9px; margin-top:2px; text-align:left; min-height:86px; line-height:1.55; }
+  .termline .p{ color:#6ee7ff; }
+  .oline{ opacity:0; transform:translateY(3px); transition:opacity .3s, transform .3s; }
+  .oline.show{ opacity:1; transform:none; }
+  .cur{ display:inline-block; width:7px; height:11px; background:#9af7c0; vertical-align:-1px; animation:blink 1s steps(1) infinite; }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  .packet{ position:absolute; z-index:6; left:0; top:50%; transform:translate(-50%,-50%) scale(.6); opacity:0;
+    font-family:'SF Mono','Consolas',monospace; font-size:12.5px; font-weight:700; color:#fff;
+    background:var(--c0); padding:5px 12px; border-radius:20px; white-space:nowrap; box-shadow:0 4px 14px rgba(0,0,0,.3); }
+
+  .status{ text-align:center; font-size:13px; color:#555; margin:28px auto 16px; min-height:20px; max-width:640px; }
+  .status b{ color:#222; }
+
+  .controls{ display:flex; gap:10px; justify-content:center; }
+  .controls button{ font-family:inherit; font-size:13.5px; font-weight:600; cursor:pointer; border:none; border-radius:10px; padding:9px 20px; color:#fff; transition:transform .12s, opacity .2s, filter .2s; }
+  .controls button:active{ transform:scale(.95); } .controls button:disabled{ opacity:.4; cursor:default; }
+  #play{ background:#10b981; } #pause{ background:#64748b; } #stop{ background:#ef4444; }
+  .controls button:not(:disabled):hover{ filter:brightness(1.07); }
+
+  @media (max-width:600px){
+    body{ padding:38px 9px; } h2{ font-size:18px; } .code{ font-size:10.5px; }
+    .track{ gap:5px; } .box{ padding:9px 5px; } .box .name{ font-size:10px; }
+    .chip{ font-size:8.5px; } .calc-disp{ font-size:9px; } .op{ font-size:17px; } .termline{ font-size:9px; min-height:74px; }
+    .packet{ font-size:10px; padding:4px 8px; }
+  }
+</style>
+</head>
+<body>
+  <h1>Python 3</h1>
+  <h2>Calculating with Variables</h2>
+  <div class="subtitle">make a new variable from others — then print labeled results</div>
+
+  <div class="stage-wrap">
+
+    <div class="code">
+      <div class="cl" id="l1"><span class="gut">1</span><span class="t-name">revenue</span> <span class="t-op">=</span> <span class="t-num">2500</span></div>
+      <div class="cl" id="l2"><span class="gut">2</span><span class="t-name">expenses</span> <span class="t-op">=</span> <span class="t-num">1200</span></div>
+      <div class="cl" id="l3"><span class="gut">3</span><span class="t-name">profit</span> <span class="t-op">=</span> <span class="t-name">revenue</span> <span class="t-op">-</span> <span class="t-name">expenses</span></div>
+      <div class="cl"><span class="gut"></span></div>
+      <div class="cl" id="l5"><span class="gut">5</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Revenue:"</span><span class="t-punc">,</span> <span class="t-name">revenue</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l6"><span class="gut">6</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Expenses:"</span><span class="t-punc">,</span> <span class="t-name">expenses</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l7"><span class="gut">7</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Profit:"</span><span class="t-punc">,</span> <span class="t-name">profit</span><span class="t-punc">)</span></div>
+    </div>
+
+    <div class="track" id="track">
+      <div class="rail"></div>
+      <div class="rail-fill" id="railFill"></div>
+
+      <div class="box b-var" data-c="0" style="--bc:var(--c0)">
+        <div class="tag">Variables</div>
+        <div class="chip" id="chipRev"><span class="ck">revenue</span> = <span class="cv" id="cvRev">?</span></div>
+        <div class="chip" id="chipExp"><span class="ck">expenses</span> = <span class="cv" id="cvExp">?</span></div>
+        <div class="chip" id="chipProfit"><span class="ck">profit</span> = <span class="cv" id="cvProfit">?</span></div>
+      </div>
+
+      <div class="box b-calc" data-c="1" style="--bc:var(--c1)">
+        <div class="tag">Calculate</div>
+        <div class="op">−</div>
+        <div class="calc-disp" id="calcDisp">revenue − expenses</div>
+      </div>
+
+      <div class="box b-print" data-c="2" style="--bc:var(--c2)">
+        <div class="tag">I/O</div>
+        <div class="name">print()</div>
+        <div class="detail">label +<br>value</div>
+      </div>
+
+      <div class="box b-term" data-c="3" style="--bc:var(--c3)">
+        <div class="tag">Output</div>
+        <div class="name">Terminal</div>
+        <div class="termline">
+          <div><span class="p">$</span> python budget.py</div>
+          <div class="oline" id="o0">Revenue: 2500</div>
+          <div class="oline" id="o1">Expenses: 1200</div>
+          <div class="oline" id="o2">Profit: 1300<span class="cur" id="cur"></span></div>
+        </div>
+      </div>
+
+      <div class="packet" id="packet">2500</div>
+    </div>
+
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls">
+      <button id="play">▶ Play</button>
+      <button id="pause" disabled>❚❚ Pause</button>
+      <button id="stop" disabled>■ Stop</button>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const track=document.getElementById('track');
+  const boxes=[...track.querySelectorAll('.box')];
+  const packet=document.getElementById('packet'), railFill=document.getElementById('railFill');
+  const chipRev=document.getElementById('chipRev'),chipExp=document.getElementById('chipExp'),chipProfit=document.getElementById('chipProfit');
+  const cvRev=document.getElementById('cvRev'),cvExp=document.getElementById('cvExp'),cvProfit=document.getElementById('cvProfit');
+  const calcDisp=document.getElementById('calcDisp');
+  const o0=document.getElementById('o0'),o1=document.getElementById('o1'),o2=document.getElementById('o2'),cur=document.getElementById('cur');
+  const status=document.getElementById('status');
+  const L={1:document.getElementById('l1'),2:document.getElementById('l2'),3:document.getElementById('l3'),5:document.getElementById('l5'),6:document.getElementById('l6'),7:document.getElementById('l7')};
+  const btnPlay=document.getElementById('play'),btnPause=document.getElementById('pause'),btnStop=document.getElementById('stop');
+
+  const REV='#6366f1', EXP='#ec4899', PRO='#10b981';
+  const REF={ chipRev:()=>chipRev, chipExp:()=>chipExp, chipProfit:()=>chipProfit,
+    calc:()=>boxes[1], print:()=>boxes[2], term:()=>boxes[3] };
+  function center(el){ const tr=track.getBoundingClientRect(), r=el.getBoundingClientRect(); return {x:r.left-tr.left+r.width/2, y:r.top-tr.top+r.height/2}; }
+  function P(k){ return center(REF[k]()); }
+
+  // build timeline ---------------------------------------------
+  let t=0; const seg=[]; const mark={};
+  function add(d,o){ const s=Object.assign({s:t,e:t+d},o); seg.push(s); if(o.id) mark[o.id]=s; t+=d; }
+
+  add(540,{type:'pop', at:'chipRev', val:'2500', col:REV, active:0, line:1, id:'popRev', status:'<b>revenue</b> holds the number <b>2500</b>.'});
+  add(540,{type:'pop', at:'chipExp', val:'1200', col:EXP, active:0, line:2, id:'popExp', status:'<b>expenses</b> holds the number <b>1200</b>.'});
+  add(450,{type:'still', active:1, line:3, status:'Line 3 — build a <b>new</b> variable from the others.'});
+  add(620,{type:'fly', from:'chipRev', to:'calc', val:'2500', col:REV, active:1, line:3, id:'flyRev', status:'Take the value of <b>revenue</b> → 2500.'});
+  add(620,{type:'fly', from:'chipExp', to:'calc', val:'1200', col:EXP, active:1, line:3, id:'flyExp', status:'Take the value of <b>expenses</b> → 1200.'});
+  add(660,{type:'still', active:1, line:3, id:'compute', status:'Subtract: <b>2500 − 1200 = 1300</b>.'});
+  add(640,{type:'fly', from:'calc', to:'chipProfit', val:'1300', col:PRO, active:0, line:3, id:'flyProfit', status:'Store the result in a new variable, <b>profit</b>.'});
+  add(520,{type:'still', active:0, line:3, status:'<b>profit</b> now holds <b>1300</b> — a value you calculated.'});
+
+  const PRINTS=[
+    {chip:'chipRev', val:'2500', line:5, oid:0, label:'Revenue: 2500'},
+    {chip:'chipExp', val:'1200', line:6, oid:1, label:'Expenses: 1200'},
+    {chip:'chipProfit', val:'1300', line:7, oid:2, label:'Profit: 1300'}
+  ];
+  PRINTS.forEach((pr,i)=>{
+    add(500,{type:'fly', from:pr.chip, to:'print', val:pr.val, col:[REV,EXP,PRO][i], active:2, line:pr.line, status:'<b>print(\"'+['Revenue:','Expenses:','Profit:'][i]+'\", '+['revenue','expenses','profit'][i]+')</b> — hand the value to print().'});
+    add(190,{type:'dwell', at:'print', val:pr.val, col:[REV,EXP,PRO][i], active:2, line:pr.line, status:'print() pairs the label with the value…'});
+    add(500,{type:'fly', from:'print', to:'term', val:pr.val, col:[REV,EXP,PRO][i], active:3, line:pr.line, id:'pt'+i, status:'…and writes one line: <b>'+pr.label+'</b>'});
+    add(240,{type:'still', active:3, line:pr.line, status:'Printed: <b>'+pr.label+'</b>'});
+  });
+  add(950,{type:'still', active:3, line:7, status:'All three values printed — calculation complete. ✅'});
+  const CYCLE=t;
+
+  const TH={ rev:mark.popRev.e, exp:mark.popExp.e, c1:mark.flyRev.e, c2:mark.flyExp.e, c3:mark.compute.e,
+    profit:mark.flyProfit.e, o0:mark.pt0.e, o1:mark.pt1.e, o2:mark.pt2.e };
+
+  let playing=false, elapsed=0, last=0, raf=null, started=false;
+  function setActive(i){ boxes.forEach((b,k)=> b.classList.toggle('active', k===i)); }
+  function setPC(c){ packet.style.background=c; packet.style.boxShadow='0 4px 14px '+c+'88'; }
+
+  function render(ms){
+    const s=seg.find(g=> ms>=g.s && ms<g.e) || seg[seg.length-1];
+    let pos={x:0,y:0}, pVis=true, pScale=1;
+
+    if(s.type==='pop'){ pos=P(s.at); setPC(s.col); packet.textContent=s.val; const p=(ms-s.s)/(s.e-s.s); pScale=1-Math.max(0,p-0.7)/0.3*0.4; pVis=p<0.92; }
+    else if(s.type==='dwell'){ pos=P(s.at); setPC(s.col); packet.textContent=s.val; }
+    else if(s.type==='fly'){ const p=(ms-s.s)/(s.e-s.s); const a=P(s.from),b=P(s.to); pos={x:a.x+(b.x-a.x)*p,y:a.y+(b.y-a.y)*p}; setPC(s.col); packet.textContent=s.val; pScale=1-Math.max(0,p-0.82)/0.18*0.4; pVis=p<0.95; }
+    else { pos = (s.active===1)?P('calc') : (s.active===0?P('chipProfit'):P('term')); pVis=false; }
+
+    packet.style.left=pos.x+'px'; packet.style.top=pos.y+'px'; packet.style.opacity=pVis?1:0;
+    packet.style.transform='translate(-50%,-50%) scale('+(pVis?pScale:0.6)+')';
+    railFill.style.width=Math.max(0,pos.x-track.clientWidth*0.05)+'px';
+    setActive(s.active);
+
+    // chip fills
+    const rf=ms>=TH.rev, ef=ms>=TH.exp, pf=ms>=TH.profit;
+    chipRev.classList.toggle('full',rf); cvRev.textContent=rf?'2500':'?'; cvRev.style.color=rf?REV:'#bbb';
+    chipExp.classList.toggle('full',ef); cvExp.textContent=ef?'1200':'?'; cvExp.style.color=ef?EXP:'#bbb';
+    chipProfit.classList.toggle('full',pf); cvProfit.textContent=pf?'1300':'?'; cvProfit.style.color=pf?PRO:'#bbb';
+
+    // calc display
+    if(ms>=TH.c3){ calcDisp.innerHTML='2500 − 1200 = <b>1300</b>'; calcDisp.classList.add('done'); }
+    else if(ms>=TH.c2){ calcDisp.textContent='2500 − 1200'; calcDisp.classList.remove('done'); }
+    else if(ms>=TH.c1){ calcDisp.textContent='2500 − expenses'; calcDisp.classList.remove('done'); }
+    else { calcDisp.textContent='revenue − expenses'; calcDisp.classList.remove('done'); }
+
+    // terminal lines
+    o0.classList.toggle('show', ms>=TH.o0);
+    o1.classList.toggle('show', ms>=TH.o1);
+    o2.classList.toggle('show', ms>=TH.o2);
+    cur.style.display=(s.active===3)?'inline-block':'none';
+
+    // code line
+    [1,2,3,5,6,7].forEach(n=> L[n].classList.toggle('on', s.line===n));
+
+    status.innerHTML=s.status;
+  }
+
+  function frame(now){ if(!playing) return; const dt=now-last; last=now; elapsed=(elapsed+dt)%CYCLE; render(elapsed); raf=requestAnimationFrame(frame); }
+  function play(){ if(playing) return; playing=true; started=true; last=performance.now(); btnPlay.disabled=true; btnPause.disabled=false; btnStop.disabled=false; raf=requestAnimationFrame(frame); }
+  function pause(){ if(!playing) return; playing=false; cancelAnimationFrame(raf); btnPlay.disabled=false; btnPause.disabled=true; status.innerHTML='Paused — press Play to resume'; }
+  function stop(){
+    playing=false; cancelAnimationFrame(raf); elapsed=0; started=false;
+    btnPlay.disabled=false; btnPause.disabled=true; btnStop.disabled=true;
+    setActive(null); railFill.style.width='0px'; packet.style.opacity=0; cur.style.display='none';
+    [chipRev,chipExp,chipProfit].forEach(c=>c.classList.remove('full'));
+    cvRev.textContent='?';cvRev.style.color='#bbb'; cvExp.textContent='?';cvExp.style.color='#bbb'; cvProfit.textContent='?';cvProfit.style.color='#bbb';
+    calcDisp.textContent='revenue − expenses'; calcDisp.classList.remove('done');
+    [o0,o1,o2].forEach(o=>o.classList.remove('show'));
+    [1,2,3,5,6,7].forEach(n=> L[n].classList.remove('on'));
+    status.innerHTML='Press Play to start';
+  }
+
+  btnPlay.addEventListener('click',play); btnPause.addEventListener('click',pause); btnStop.addEventListener('click',stop);
+  window.addEventListener('resize',()=>{ if(started) render(elapsed); });
+  stop();
+})();
+</script>
+</body>
+</html>

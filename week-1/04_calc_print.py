@@ -1,5 +1,5 @@
-revenue = 125000
-expenses = 87500
+revenue = 2500
+expenses = 1200
 profit = revenue - expenses
 
 print("Revenue:", revenue)

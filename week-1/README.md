@@ -1,34 +1,34 @@
-# Week 1 - Python Basics for Accounting
+# Week 1 — Python Basics
 
-## 1-Hour Lesson Goal
+Animated, click-to-play lessons on how Python runs, variables, printing, and a simple profit calculation.
 
-Learn how to run Python, use variables, print results, and perform basic accounting calculations.
+**Live site:** https://benchvue.github.io/python-lesson/week-1/
 
-## Topics
+## Lessons
 
-- Python installation check
-- Running `.py` files
-- `print()`
-- Variables
-- Data types: string, integer, float, boolean
-- Basic math operators
-- Simple profit calculation
+| # | Topic | Animation | Code | Idea |
+|---|-------|-----------|------|------|
+| 01 | Hello World | [▶ Demo](https://benchvue.github.io/python-lesson/week-1/01_hello_world.html) | [.py](01_hello_world.py) | Code → interpreter → `print()` → terminal. |
+| 02 | Variables | [▶ Demo](https://benchvue.github.io/python-lesson/week-1/02_variable.html) | [.py](02_variable.py) | A named box that stores a value to reuse. |
+| 03 | f-strings | [▶ Demo](https://benchvue.github.io/python-lesson/week-1/03_fstring-print.html) | [.py](03_fstring-print.py) | `{placeholders}` filled with variable values. |
+| 04 | Calculate | [▶ Demo](https://benchvue.github.io/python-lesson/week-1/04_calc_print.html) | [.py](04_calc_print.py) | Make a variable from others, print labeled results. |
 
-## Run Examples
+## Reference & Concepts
+
+| Page | Open | Idea |
+|------|------|------|
+| How Python runs | [open](https://benchvue.github.io/python-lesson/week-1/python_run_flow.html) | Editor → interpreter → terminal, step by step. |
+| Reserved keywords | [open](https://benchvue.github.io/python-lesson/week-1/python_keywords.html) | 35 keywords grouped by category. |
+| Built-in functions | [open](https://benchvue.github.io/python-lesson/week-1/python_builtin_functions.html) | 71 built-ins grouped by category. |
+| Setup tools | [open](https://benchvue.github.io/python-lesson/week-1/tools_page.html) | Install Python, VS Code, and the Python extension. |
+
+## Run locally
 
 ```bash
-python 01_hello_accounting.py
-python 02_profit_calculation.py
-python 03_data_types.py
+python 01_hello_world.py
+python 02_variable.py
+python 03_fstring-print.py
+python 04_calc_print.py
 ```
 
-## Practice
-
-Create variables for:
-
-- Revenue
-- Cost of goods sold
-- Operating expense
-- Net income
-
-Then print a simple income statement.
+Each animation has **▶ Play / ❚❚ Pause / ■ Stop** controls and runs in any browser.

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — 35 Reserved Keywords</title>
+<style>
+  :root{
+    --c-const:  #6366f1;  /* Value & Logic Constants  */
+    --c-flow:   #0ea5e9;  /* Control Flow & Loops     */
+    --c-struct: #10b981;  /* Structural Definitions   */
+    --c-mod:    #f59e0b;  /* Modules & Contexts       */
+    --c-err:    #ef4444;  /* Error & Exception Handling */
+    --c-scope:  #14b8a6;  /* Scope & Objects          */
+    --c-async:  #ec4899;  /* Asynchronous Programming */
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{
+    background:#ffffff;
+    font-family:'Segoe UI', system-ui, sans-serif;
+    color:#111;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-height:100vh;
+    padding:64px 24px;
+  }
+  h1{
+    font-size:13px; font-weight:500; letter-spacing:0.18em;
+    text-transform:uppercase; color:#999; margin-bottom:8px;
+  }
+  h2{
+    font-size:28px; font-weight:600; color:#111;
+    letter-spacing:-0.02em; margin-bottom:6px; text-align:center;
+  }
+  .subtitle{
+    font-size:13px; color:#aaa; letter-spacing:0.02em; margin-bottom:52px;
+  }
+
+  .grid{
+    width:100%; max-width:760px;
+    display:flex; flex-direction:column; gap:34px;
+  }
+
+  .category{ }
+  .cat-head{
+    display:flex; align-items:baseline; gap:10px; margin-bottom:14px;
+  }
+  .dot{ width:9px; height:9px; border-radius:50%; flex:none; transform:translateY(-1px); }
+  .cat-name{ font-size:15px; font-weight:600; color:#1a1a1a; letter-spacing:-0.01em; }
+  .cat-count{
+    font-size:11px; font-weight:600; color:#bbb;
+    border:1px solid #eee; border-radius:20px; padding:1px 8px;
+  }
+  .cat-desc{ font-size:12.5px; color:#9a9a9a; margin:-6px 0 14px 19px; }
+
+  .badges{ display:flex; flex-wrap:wrap; gap:9px; }
+  .badge{
+    --col:#888;
+    font-family:'SF Mono','Cascadia Code','Consolas',monospace;
+    font-size:14px; font-weight:600; color:#fff;
+    background:var(--col);
+    padding:7px 14px; border-radius:9px;
+    letter-spacing:0.01em;
+    box-shadow:0 1px 2px rgba(0,0,0,.08);
+    cursor:default;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .badge:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 14px color-mix(in srgb, var(--col) 38%, transparent);
+  }
+
+  .footer{
+    margin-top:58px; font-size:12px; color:#ccc; letter-spacing:0.05em;
+    text-align:center;
+  }
+  .footer b{ color:#aaa; font-weight:600; }
+
+  @media (max-width:480px){
+    h2{ font-size:23px; }
+    body{ padding:48px 18px; }
+  }
+</style>
+</head>
+<body>
+  <h1>Python 3</h1>
+  <h2>35 Reserved Keywords</h2>
+  <div class="subtitle">grouped into 7 categories · color-coded · hover a badge for its meaning</div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="footer">
+    <b>8 + 8 + 5 + 4 + 5 + 3 + 2 = 35</b><br>
+    these names are reserved by the language and cannot be used as identifiers
+  </div>
+
+<script>
+const CATEGORIES = [
+  {
+    name:"Value & Logic Constants", color:"var(--c-const)",
+    desc:"Built-in constants and the logical / membership operators.",
+    items:[
+      ["True","Boolean literal — truth value true."],
+      ["False","Boolean literal — truth value false."],
+      ["None","Represents a null value or absence of value."],
+      ["and","Logical AND — true only if both sides are true."],
+      ["or","Logical OR — true if either side is true."],
+      ["not","Logical negation — inverts a condition."],
+      ["in","Checks membership within an iterable."],
+      ["is","Tests object identity (same object in memory)."],
+    ]
+  },
+  {
+    name:"Control Flow & Loops", color:"var(--c-flow)",
+    desc:"Conditional branches and loop control.",
+    items:[
+      ["if","Core conditional branch."],
+      ["elif","Else-if: an additional conditional branch."],
+      ["else","Fallback branch when conditions fail."],
+      ["for","Iterates over a sequence or iterable."],
+      ["while","Loops while a condition stays true."],
+      ["break","Exits the current loop entirely."],
+      ["continue","Skips the rest of the current iteration."],
+      ["pass","Null statement used as a placeholder."],
+    ]
+  },
+  {
+    name:"Structural Definitions", color:"var(--c-struct)",
+    desc:"Declaring functions, classes, and the values they emit.",
+    items:[
+      ["def","Declares a function."],
+      ["class","Declares a class for object-oriented programming."],
+      ["return","Exits a function and passes back a value."],
+      ["yield","Pauses a generator and emits a value."],
+      ["lambda","Defines an anonymous, inline function."],
+    ]
+  },
+  {
+    name:"Modules & Contexts", color:"var(--c-mod)",
+    desc:"Importing code and managing context.",
+    items:[
+      ["import","Imports a library or module into the script."],
+      ["from","Imports specific names from a module."],
+      ["as","Creates an alias for a module or context manager."],
+      ["with","Wraps a block with setup / clean-up handling."],
+    ]
+  },
+  {
+    name:"Error & Exception Handling", color:"var(--c-err)",
+    desc:"Catching, raising, and asserting against errors.",
+    items:[
+      ["try","Wraps code that might raise an exception."],
+      ["except","Catches and responds to a raised exception."],
+      ["finally","Runs clean-up code no matter what happened."],
+      ["raise","Deliberately triggers a specific exception."],
+      ["assert","Checks that an internal condition holds true."],
+    ]
+  },
+  {
+    name:"Scope & Objects", color:"var(--c-scope)",
+    desc:"Managing names, references, and variable scope.",
+    items:[
+      ["del","Deletes references to objects or variables."],
+      ["global","Binds a name to the module-level scope."],
+      ["nonlocal","Binds a name to an outer enclosing function."],
+    ]
+  },
+  {
+    name:"Asynchronous Programming", color:"var(--c-async)",
+    desc:"Coroutines and concurrent operations.",
+    items:[
+      ["async","Declares a coroutine function."],
+      ["await","Pauses a coroutine until an awaitable completes."],
+    ]
+  },
+];
+
+const grid = document.getElementById("grid");
+CATEGORIES.forEach(cat=>{
+  const sec = document.createElement("div");
+  sec.className = "category";
+  sec.innerHTML = `
+    <div class="cat-head">
+      <span class="dot" style="background:${cat.color}"></span>
+      <span class="cat-name">${cat.name}</span>
+      <span class="cat-count">${cat.items.length}</span>
+    </div>
+    <div class="cat-desc">${cat.desc}</div>
+    <div class="badges">
+      ${cat.items.map(([kw,desc])=>
+        `<span class="badge" style="--col:${cat.color}" title="${desc}">${kw}</span>`
+      ).join("")}
+    </div>`;
+  grid.appendChild(sec);
+});
+</script>
+</body>
+</html>
