@@ -21,6 +21,22 @@ Lists · Tuples · Dictionaries · Sets · Function parameters · Local & global
 | 07 | Text → number | [▶ Demo](https://benchvue.github.io/python-lesson/week-3/07_input_casting.html) | [.py](07_input_casting.py) | `int(input())` — cast a string to an int. |
 | 08 | input() → function | [▶ Demo](https://benchvue.github.io/python-lesson/week-3/08_input_to_function.html) | [.py](08_input_to_function.py) | Read a value, convert it, pass it to a function. |
 
+## Quiz
+
+Test yourself after the lessons — 5 quick questions with instant feedback and score.
+
+| Quiz | Open | Covers |
+|------|------|--------|
+| Week 3 Quiz | [▶ Start](https://benchvue.github.io/python-lesson/week-3/quiz_week3.html) | input, casting, function parameters, scope, sets. |
+
+**Questions**
+
+1. What type does `input()` always return? → **str**
+2. If the user types 25, `print(int(age) + 1)` → **26**
+3. `add_tax(100, 0.1)` where it returns `price + price * rate` → **110.0**
+4. Reading a local variable outside its function → **NameError**
+5. `len(set(["Amazon", "Amazon", "Staples"]))` → **2**
+
 ## Run in Terminal (macOS)
 
 ```bash
