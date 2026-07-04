@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — input() into a function</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:30px;text-align:center}
+  .wrap{width:100%;max-width:700px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:30px;font-family:'SF Mono','Consolas',monospace;font-size:12.5px;line-height:1.8;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:flex;align-items:center;gap:10px;border-radius:7px;padding:1px 8px;transition:.25s;min-height:22px;white-space:nowrap}
+  .cl .gut{color:#5a6080;width:14px;text-align:right}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-num{color:#f78c6c}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}.t-com{color:#5a6080}
+  .win{border-radius:11px;overflow:hidden;box-shadow:0 10px 26px rgba(0,0,0,.16);margin-bottom:18px}
+  .win-bar{display:flex;align-items:center;gap:7px;padding:9px 13px;background:#2a2d3a}
+  .win-bar .d{width:11px;height:11px;border-radius:50%}.d.r{background:#ff5f57}.d.y{background:#febc2e}.d.g{background:#28c840}
+  .win-bar .ttl{margin-left:8px;font-size:11.5px;color:#aeb3c2;font-family:'SF Mono','Consolas',monospace}
+  .win-body{background:#0b0f18;padding:15px 16px;min-height:96px;font-family:'SF Mono','Consolas',monospace;font-size:13px;line-height:1.75;color:#d7dce8;white-space:pre-wrap}
+  .prm{color:#c0c6d6}.inp{color:#ffe08a}.out{color:#9af7c0}
+  .cur{display:inline-block;width:8px;height:14px;background:#ffe08a;vertical-align:-2px;animation:blink 1s steps(1) infinite}@keyframes blink{50%{opacity:0}}
+  .cast{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;margin-bottom:6px}
+  .chip{font-family:'SF Mono','Consolas',monospace;font-size:12.5px;font-weight:600;padding:8px 11px;border-radius:10px;border:1.5px dashed #d6d9e0;color:#bbb;transition:.3s}
+  .chip .ty{font-size:9.5px;opacity:.75;margin-left:4px}
+  .chip.str{border-style:solid;border-color:#c3a95e;background:#fbf3df;color:#8a6d1e}
+  .chip.int{border-style:solid;border-color:#0ea5e9;background:#e8f6fe;color:#0369a1}
+  .chip.res{border-style:solid;border-color:#10b981;background:#e9fbf3;color:#0a7d57}
+  .gate{font-family:'SF Mono','Consolas',monospace;font-size:11.5px;font-weight:700;color:#fff;padding:6px 10px;border-radius:9px;opacity:.35;transition:.3s}
+  .gate.i{background:#0ea5e9}.gate.d{background:#f59e0b}
+  .gate.on{opacity:1}
+  .arrow{color:#ccc;font-weight:700}
+  .status{text-align:center;font-size:13px;color:#555;margin:24px auto 16px;min-height:20px;max-width:600px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 20px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}
+  @media(max-width:560px){h2{font-size:20px}.code{font-size:10.5px}.chip{font-size:10.5px}.gate{font-size:10px}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 3</h1>
+  <h2>input() → Function</h2>
+  <div class="subtitle">read a value, convert it, then pass it straight into a function</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l1"><span class="gut">1</span><span class="t-kw">def</span> <span class="t-fn">double</span><span class="t-punc">(</span><span class="t-name">n</span><span class="t-punc">):</span></div>
+      <div class="cl" id="l2"><span class="gut">2</span>    <span class="t-kw">return</span> <span class="t-name">n</span> <span class="t-op">*</span> <span class="t-num">2</span></div>
+      <div class="cl" id="l4"><span class="gut">4</span><span class="t-name">number</span> <span class="t-op">=</span> <span class="t-fn">int</span><span class="t-punc">(</span><span class="t-fn">input</span><span class="t-punc">(</span><span class="t-str">"Enter a number: "</span><span class="t-punc">))</span></div>
+      <div class="cl" id="l5"><span class="gut">5</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Doubled:"</span><span class="t-punc">,</span> <span class="t-fn">double</span><span class="t-punc">(</span><span class="t-name">number</span><span class="t-punc">))</span></div>
+    </div>
+    <div class="win">
+      <div class="win-bar"><span class="d r"></span><span class="d y"></span><span class="d g"></span><span class="ttl">Terminal</span></div>
+      <div class="win-body" id="term"></div>
+    </div>
+    <div class="cast">
+      <span class="chip" id="chipStr">"5"</span>
+      <span class="arrow">→</span><span class="gate i" id="gInt">int()</span><span class="arrow">→</span>
+      <span class="chip" id="chipInt">5</span>
+      <span class="arrow">→</span><span class="gate d" id="gDbl">double(n)</span><span class="arrow">→</span>
+      <span class="chip" id="chipRes">10</span>
+    </div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const term=document.getElementById('term'),status=document.getElementById('status');
+const chipStr=document.getElementById('chipStr'),chipInt=document.getElementById('chipInt'),chipRes=document.getElementById('chipRes');
+const gInt=document.getElementById('gInt'),gDbl=document.getElementById('gDbl');
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop');
+const PROMPT='Enter a number: ', ANS='5';
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d},o));t+=d;};
+add(650,{type:'prompt',line:4,st:'input() shows the prompt and waits.'});
+add(900,{type:'typing',line:4,st:'You type <b>5</b> — input() reads it as text.'});
+add(700,{type:'store',line:4,st:'input() returns <b>"5"</b> (a string).'});
+add(800,{type:'cast',line:4,st:'<b>int(...)</b> converts it to the number <b>5</b>, stored in <b>number</b>.'});
+add(950,{type:'call',line:5,st:'<b>double(number)</b> passes 5 in as <b>n</b> → returns <b>10</b>.'});
+add(900,{type:'print',line:5,st:'print() shows the result.'});
+add(1300,{type:'hold',line:5,st:'One line can do it all: double(int(input(...))).'});
+const CYCLE=t, TYPE=seg.find(s=>s.type==='typing');
+let playing=false,elapsed=0,last=0,raf=null;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  let typed=0,waiting=false,showOut=false;
+  if(s.type==='prompt'){waiting=true;}
+  else if(s.type==='typing'){typed=Math.round((ms-TYPE.s)/(TYPE.e-TYPE.s)*ANS.length);waiting=true;}
+  else {typed=ANS.length; showOut=(s.type==='print'||s.type==='hold');}
+  let html='<span class="prm">$ python calc.py</span>\n<span class="prm">'+PROMPT+'</span><span class="inp">'+ANS.slice(0,typed)+'</span>';
+  if(waiting) html+='<span class="cur"></span>';
+  if(showOut) html+='\n<span class="out">Doubled: 10</span>';
+  term.innerHTML=html;
+  const strOn=['store','cast','call','print','hold'].includes(s.type);
+  const intOn=['cast','call','print','hold'].includes(s.type);
+  const resOn=['call','print','hold'].includes(s.type);
+  chipStr.className='chip'+(strOn?' str':'');chipStr.innerHTML=strOn?'"5"<span class="ty">str</span>':'"?"';
+  gInt.classList.toggle('on', s.type==='cast');
+  chipInt.className='chip'+(intOn?' int':'');chipInt.innerHTML=intOn?'5<span class="ty">int</span>':'?';
+  gDbl.classList.toggle('on', s.type==='call');
+  chipRes.className='chip'+(resOn?' res':'');chipRes.innerHTML=resOn?'10':'?';
+  ['l1','l2','l4','l5'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const lid={4:'l4',5:'l5'}[s.line];if(lid)document.getElementById(lid).classList.add('on');
+  if(s.type==='call') document.getElementById('l1').classList.add('on');
+  status.innerHTML=s.st;
+}
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;bP.disabled=false;bPa.disabled=true;bS.disabled=true;term.innerHTML='';chipStr.className='chip';chipStr.innerHTML='"?"';chipInt.className='chip';chipInt.innerHTML='?';chipRes.className='chip';chipRes.innerHTML='?';gInt.classList.remove('on');gDbl.classList.remove('on');['l1','l2','l4','l5'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;stop();
+</script>
+</body>
+</html>
