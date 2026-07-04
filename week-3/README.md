@@ -21,6 +21,12 @@ Lists · Tuples · Dictionaries · Sets · Function parameters · Local & global
 | 07 | Text → number | [▶ Demo](https://benchvue.github.io/python-lesson/week-3/07_input_casting.html) | [.py](07_input_casting.py) | `int(input())` — cast a string to an int. |
 | 08 | input() → function | [▶ Demo](https://benchvue.github.io/python-lesson/week-3/08_input_to_function.html) | [.py](08_input_to_function.py) | Read a value, convert it, pass it to a function. |
 
+## Reference
+
+| Page | Open | Idea |
+|------|------|------|
+| Symbols cheat sheet | [open](https://benchvue.github.io/python-lesson/week-3/python_symbols.html) | `[] {} () "" ''` and `! @ # $ % ^ & *` — what each means, with examples. |
+
 ## Quiz
 
 Test yourself after the lessons — 5 quick questions with instant feedback and score.
