@@ -17,6 +17,17 @@ Animated, click-to-play lessons on Python's data types, type conversion, decisio
 | 07 | while loop | [▶ Demo](https://benchvue.github.io/python-lesson/week-2/07_while_loop.html) | [.py](07_while_loop.py) | Repeat while a condition is true. |
 | 08 | Functions | [▶ Demo](https://benchvue.github.io/python-lesson/week-2/08_function.html) | [.py](08_function.py) | Pass a value in, get a result back. |
 
+## Reference
+
+Quick lookup pages. On the keywords and built-ins pages you can **click an item to check it off** — your progress is saved and shown as a bar.
+
+| Page | Open | Idea |
+|------|------|------|
+| Arithmetic operators | [open](https://benchvue.github.io/python-lesson/week-2/python_arithmetic_operators.html) | `+  -  *  /  //  %  **` with worked examples. |
+| Comparison operators | [open](https://benchvue.github.io/python-lesson/week-2/python_comparison_operators.html) | `==  !=  >  <  >=  <=` → True / False. |
+| Reserved keywords | [open](https://benchvue.github.io/python-lesson/week-2/python_keywords.html) | 35 keywords by category · click to track progress. |
+| Built-in functions | [open](https://benchvue.github.io/python-lesson/week-2/python_builtin_functions.html) | 71 functions by category · click to track progress. |
+
 ## Quiz
 
 Test yourself after the lessons — 5 quick questions with instant feedback and score.

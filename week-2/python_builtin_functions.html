@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — 71 Built-in Functions</title>
+<style>
+  :root{
+    --c-type:   #6366f1;  /* Type Constructors        */
+    --c-num:    #0ea5e9;  /* Numeric & Conversion     */
+    --c-iter:   #10b981;  /* Iteration & Sequences    */
+    --c-introsp:#f59e0b;  /* Object Introspection     */
+    --c-scope:  #ef4444;  /* Scope & Execution        */
+    --c-oop:    #14b8a6;  /* OOP Helpers              */
+    --c-io:     #ec4899;  /* I/O & Interaction        */
+    --learn:    #10b981;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{
+    background:#ffffff;
+    font-family:'Segoe UI', system-ui, sans-serif;
+    color:#111;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-height:100vh;
+    padding:64px 24px;
+  }
+  h1{
+    font-size:13px; font-weight:500; letter-spacing:0.18em;
+    text-transform:uppercase; color:#999; margin-bottom:8px;
+  }
+  h2{
+    font-size:28px; font-weight:600; color:#111;
+    letter-spacing:-0.02em; margin-bottom:6px; text-align:center;
+  }
+  .subtitle{
+    font-size:13px; color:#aaa; letter-spacing:0.02em; margin-bottom:18px;
+    text-align:center;
+  }
+
+  .progress{ width:100%; max-width:820px; margin-bottom:44px; }
+  .pbar{ height:8px; background:#f0f0f3; border-radius:20px; overflow:hidden; }
+  .pfill{ height:100%; width:0; background:linear-gradient(90deg,var(--learn),#34d399); border-radius:20px; transition:width .3s ease; }
+  .ptext{ display:flex; align-items:center; justify-content:center; gap:6px; font-size:12.5px; color:#888; margin-top:11px; }
+  .ptext b{ color:var(--learn); font-weight:700; }
+  #reset{ margin-left:8px; font:inherit; font-size:11.5px; color:#bbb; background:none; border:1px solid #eee; border-radius:7px; padding:2px 9px; cursor:pointer; transition:.15s; }
+  #reset:hover{ color:#666; border-color:#ccc; }
+
+  .grid{
+    width:100%; max-width:820px;
+    display:flex; flex-direction:column; gap:34px;
+  }
+
+  .cat-head{
+    display:flex; align-items:baseline; gap:10px; margin-bottom:8px;
+  }
+  .dot{ width:9px; height:9px; border-radius:50%; flex:none; transform:translateY(-1px); }
+  .cat-name{ font-size:15px; font-weight:600; color:#1a1a1a; letter-spacing:-0.01em; }
+  .cat-count{
+    font-size:11px; font-weight:600; color:#bbb;
+    border:1px solid #eee; border-radius:20px; padding:1px 8px;
+  }
+  .cat-done{ font-size:11px; font-weight:600; color:var(--learn); }
+  .cat-desc{ font-size:12.5px; color:#9a9a9a; margin:0 0 14px 19px; }
+
+  .badges{ display:flex; flex-wrap:wrap; gap:10px; padding-top:6px; }
+  .badge{
+    --col:#888;
+    position:relative;
+    font-family:'SF Mono','Cascadia Code','Consolas',monospace;
+    font-size:13.5px; font-weight:600; color:#fff;
+    background:var(--col);
+    padding:7px 13px; border-radius:9px;
+    letter-spacing:0.01em;
+    box-shadow:0 1px 2px rgba(0,0,0,.08);
+    cursor:pointer; user-select:none;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .badge::after{ content:"()"; opacity:.55; font-weight:500; }
+  .badge:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 14px color-mix(in srgb, var(--col) 38%, transparent);
+  }
+  .badge .chk{
+    position:absolute; top:-7px; right:-7px; width:17px; height:17px; border-radius:50%;
+    background:var(--learn); color:#fff; font-size:10px; font-weight:700;
+    display:none; align-items:center; justify-content:center;
+    border:2px solid #fff; box-shadow:0 1px 3px rgba(0,0,0,.25);
+  }
+  .badge.learned{ outline:2px solid var(--learn); outline-offset:2px; }
+  .badge.learned .chk{ display:flex; }
+
+  .footer{
+    margin-top:58px; font-size:12px; color:#ccc; letter-spacing:0.05em;
+    text-align:center;
+  }
+  .footer b{ color:#aaa; font-weight:600; }
+
+  @media (max-width:480px){
+    h2{ font-size:23px; }
+    body{ padding:48px 18px; }
+  }
+</style>
+</head>
+<body>
+  <h1>Python 3</h1>
+  <h2>71 Built-in Functions</h2>
+  <div class="subtitle">grouped into 7 categories · hover for meaning · click to check off what you've learned</div>
+
+  <div class="progress">
+    <div class="pbar"><div class="pfill" id="pfill"></div></div>
+    <div class="ptext"><b id="pcount">0</b> / <span id="ptotal">71</span> learned · <span id="ppct">0%</span><button id="reset">reset</button></div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="footer">
+    <b>16 + 9 + 16 + 15 + 6 + 4 + 5 = 71</b><br>
+    source: docs.python.org/3/library/functions.html
+  </div>
+
+<script>
+const CATEGORIES = [
+  {
+    name:"Type Constructors", color:"var(--c-type)",
+    desc:"Built-in types you call to create objects.",
+    items:[
+      ["bool","Convert a value to a Boolean — True or False."],
+      ["int","Construct an integer from a number or string."],
+      ["float","Construct a floating-point number."],
+      ["complex","Create a complex number from parts or a string."],
+      ["str","Return the string version of an object."],
+      ["bytes","Create an immutable sequence of bytes."],
+      ["bytearray","Create a mutable sequence of bytes."],
+      ["list","Create a mutable sequence (list)."],
+      ["tuple","Create an immutable sequence (tuple)."],
+      ["dict","Create a dictionary (key–value mapping)."],
+      ["set","Create a mutable set of unique items."],
+      ["frozenset","Create an immutable set of unique items."],
+      ["range","Create an immutable sequence of numbers."],
+      ["memoryview","Expose a buffer's memory without copying."],
+      ["object","Return a new featureless base object."],
+      ["slice","Create a slice object for indexing."],
+    ]
+  },
+  {
+    name:"Numeric & Conversion", color:"var(--c-num)",
+    desc:"Math operations and base / character conversions.",
+    items:[
+      ["abs","Return the absolute value of a number."],
+      ["divmod","Return the quotient and remainder as a pair."],
+      ["pow","Raise a base to a power, optionally modulo."],
+      ["round","Round a number to a given precision."],
+      ["bin","Convert an integer to a binary string '0b…'."],
+      ["hex","Convert an integer to a hex string '0x…'."],
+      ["oct","Convert an integer to an octal string '0o…'."],
+      ["chr","Return the character for a Unicode code point."],
+      ["ord","Return the Unicode code point of a character."],
+    ]
+  },
+  {
+    name:"Iteration & Sequences", color:"var(--c-iter)",
+    desc:"Tools for looping over and transforming iterables.",
+    items:[
+      ["iter","Return an iterator over an object."],
+      ["next","Get the next item from an iterator."],
+      ["aiter","Return an async iterator over an object."],
+      ["anext","Get the next item from an async iterator."],
+      ["enumerate","Pair each item with a running index."],
+      ["zip","Aggregate items from several iterables in parallel."],
+      ["map","Apply a function to every item of an iterable."],
+      ["filter","Keep items for which a function is true."],
+      ["sorted","Return a new sorted list from an iterable."],
+      ["reversed","Return a reverse iterator over a sequence."],
+      ["len","Return the number of items in an object."],
+      ["sum","Add the items of an iterable to a start value."],
+      ["min","Return the smallest item or argument."],
+      ["max","Return the largest item or argument."],
+      ["all","True if every item is true (or empty)."],
+      ["any","True if at least one item is true."],
+    ]
+  },
+  {
+    name:"Object & Attribute Introspection", color:"var(--c-introsp)",
+    desc:"Inspect types, attributes, and identity at runtime.",
+    items:[
+      ["type","Return an object's type, or build a new class."],
+      ["isinstance","Check if an object is an instance of a type."],
+      ["issubclass","Check if a class is a subclass of another."],
+      ["callable","True if an object can be called."],
+      ["hasattr","Check whether an object has an attribute."],
+      ["getattr","Get the value of a named attribute."],
+      ["setattr","Set the value of a named attribute."],
+      ["delattr","Delete a named attribute from an object."],
+      ["dir","List an object's attributes and names."],
+      ["vars","Return an object's __dict__ namespace."],
+      ["id","Return an object's unique identity number."],
+      ["hash","Return the hash value of an object."],
+      ["repr","Return a printable representation of an object."],
+      ["ascii","Like repr(), but escape non-ASCII characters."],
+      ["format","Format a value using a format spec."],
+    ]
+  },
+  {
+    name:"Scope & Execution", color:"var(--c-scope)",
+    desc:"Namespaces and dynamic execution of code.",
+    items:[
+      ["globals","Return the current module's namespace dict."],
+      ["locals","Return the current local namespace."],
+      ["eval","Evaluate a single Python expression."],
+      ["exec","Execute dynamically generated Python code."],
+      ["compile","Compile source into a code or AST object."],
+      ["__import__","Low-level hook invoked by the import statement."],
+    ]
+  },
+  {
+    name:"OOP Helpers", color:"var(--c-oop)",
+    desc:"Decorators and descriptors for class design.",
+    items:[
+      ["classmethod","Turn a method into a class method."],
+      ["staticmethod","Turn a method into a static method."],
+      ["property","Create a managed attribute (getter/setter)."],
+      ["super","Delegate method calls to a parent class."],
+    ]
+  },
+  {
+    name:"I/O & Interaction", color:"var(--c-io)",
+    desc:"Reading, writing, and interactive helpers.",
+    items:[
+      ["print","Print objects to a text stream."],
+      ["input","Read a line of text from input."],
+      ["open","Open a file and return a file object."],
+      ["help","Launch the interactive help system."],
+      ["breakpoint","Drop into the debugger at the call site."],
+    ]
+  },
+];
+
+const LS_KEY='py-builtins-learned';
+let learned=new Set();
+try{ const s=localStorage.getItem(LS_KEY); if(s) learned=new Set(JSON.parse(s)); }catch(e){}
+function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify([...learned])); }catch(e){} }
+
+const grid = document.getElementById("grid");
+CATEGORIES.forEach(cat=>{
+  const sec = document.createElement("div");
+  sec.className = "category";
+  sec.innerHTML = `
+    <div class="cat-head">
+      <span class="dot" style="background:${cat.color}"></span>
+      <span class="cat-name">${cat.name}</span>
+      <span class="cat-count">${cat.items.length}</span>
+      <span class="cat-done" data-cat="${cat.name}"></span>
+    </div>
+    <div class="cat-desc">${cat.desc}</div>
+    <div class="badges">
+      ${cat.items.map(([fn,desc])=>
+        `<span class="badge" style="--col:${cat.color}" data-id="${fn}" data-cat="${cat.name}" title="${desc}"><span class="chk">✓</span>${fn}</span>`
+      ).join("")}
+    </div>`;
+  grid.appendChild(sec);
+});
+
+const badges=[...document.querySelectorAll('.badge')];
+const TOTAL=badges.length;
+document.getElementById('ptotal').textContent=TOTAL;
+const pcount=document.getElementById('pcount'),ppct=document.getElementById('ppct'),pfill=document.getElementById('pfill');
+
+function updateProgress(){
+  const n=learned.size;
+  pcount.textContent=n;
+  const pct=TOTAL?Math.round(n/TOTAL*100):0;
+  ppct.textContent=pct+'%';
+  pfill.style.width=pct+'%';
+  document.querySelectorAll('.cat-done').forEach(el=>{
+    const cat=el.dataset.cat;
+    const inCat=CATEGORIES.find(c=>c.name===cat).items;
+    const done=inCat.filter(([fn])=>learned.has(fn)).length;
+    el.textContent = done ? `✓ ${done}/${inCat.length}` : '';
+  });
+}
+
+badges.forEach(b=>{
+  const id=b.dataset.id;
+  if(learned.has(id)) b.classList.add('learned');
+  b.addEventListener('click',()=>{
+    if(learned.has(id)){ learned.delete(id); b.classList.remove('learned'); }
+    else { learned.add(id); b.classList.add('learned'); }
+    save(); updateProgress();
+  });
+});
+document.getElementById('reset').addEventListener('click',()=>{
+  learned.clear(); badges.forEach(b=>b.classList.remove('learned')); save(); updateProgress();
+});
+updateProgress();
+</script>
+</body>
+</html>

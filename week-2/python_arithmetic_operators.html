@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — Arithmetic Operators</title>
+<style>
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{ background:#fff; font-family:'Segoe UI', system-ui, sans-serif; color:#111;
+    display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:60px 22px; }
+  h1{ font-size:13px; font-weight:500; letter-spacing:.18em; text-transform:uppercase; color:#999; margin-bottom:8px; }
+  h2{ font-size:28px; font-weight:600; letter-spacing:-.02em; text-align:center; margin-bottom:6px; }
+  .subtitle{ font-size:13px; color:#aaa; letter-spacing:.02em; margin-bottom:46px; text-align:center; }
+  .grid{ width:100%; max-width:820px; display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; }
+  .op{ --c:#888; border:1.5px solid #eee; border-radius:16px; padding:18px 16px; transition:transform .14s, box-shadow .14s, border-color .14s; }
+  .op:hover{ transform:translateY(-4px); border-color:color-mix(in srgb,var(--c) 45%,#fff); box-shadow:0 10px 24px color-mix(in srgb,var(--c) 22%,transparent); }
+  .sym{ display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:44px; padding:0 10px;
+    font-family:'SF Mono','Consolas',monospace; font-size:20px; font-weight:700; color:#fff; background:var(--c);
+    border-radius:11px; box-shadow:0 3px 8px color-mix(in srgb,var(--c) 40%,transparent); }
+  .nm{ font-size:14px; font-weight:600; margin:12px 0 2px; }
+  .note{ font-size:11.5px; color:#999; line-height:1.4; margin-bottom:12px; min-height:32px; }
+  .ex{ display:flex; align-items:center; gap:8px; font-family:'SF Mono','Consolas',monospace; font-size:13px; }
+  .ex .expr{ color:#555; background:#f5f5f8; padding:3px 8px; border-radius:6px; }
+  .ex .arrow{ color:#ccc; }
+  .ex .res{ color:color-mix(in srgb,var(--c) 78%,#111); font-weight:700; }
+  .footer{ margin-top:52px; font-size:12px; color:#ccc; letter-spacing:.04em; text-align:center; }
+  .footer b{ color:#aaa; font-weight:600; }
+  @media(max-width:480px){ h2{ font-size:23px; } body{ padding:46px 16px; } .grid{ grid-template-columns:1fr 1fr; } }
+</style>
+</head>
+<body>
+  <h1>Python 3</h1>
+  <h2>Arithmetic Operators</h2>
+  <div class="subtitle">the 7 symbols Python uses to do math on numbers</div>
+  <div class="grid" id="grid"></div>
+  <div class="footer"><b>+  −  *  /  //  %  **</b><br>numbers in, a number out</div>
+<script>
+const OPS=[
+  ['+','Addition','Adds two numbers.','5 + 3','8','#6366f1'],
+  ['−','Subtraction','Subtracts the right from the left.','5 - 3','2','#0ea5e9'],
+  ['*','Multiplication','Multiplies two numbers.','5 * 3','15','#10b981'],
+  ['/','Division','Divides — the result is always a float.','5 / 2','2.5','#f59e0b'],
+  ['//','Floor Division','Divides, then drops the remainder.','5 // 2','2','#ef4444'],
+  ['%','Modulus','Gives the remainder after division.','5 % 2','1','#14b8a6'],
+  ['**','Exponent','Raises to a power (5 squared).','5 ** 2','25','#ec4899'],
+];
+const grid=document.getElementById('grid');
+OPS.forEach(([sym,nm,note,expr,res,c])=>{
+  const el=document.createElement('div'); el.className='op'; el.style.setProperty('--c',c);
+  el.innerHTML=`<span class="sym">${sym}</span>
+    <div class="nm">${nm}</div>
+    <div class="note">${note}</div>
+    <div class="ex"><span class="expr">${expr}</span><span class="arrow">→</span><span class="res">${res}</span></div>`;
+  grid.appendChild(el);
+});
+</script>
+</body>
+</html>
