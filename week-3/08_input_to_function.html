@@ -47,7 +47,7 @@
   <div class="wrap">
     <div class="code">
       <div class="cl" id="l1"><span class="gut">1</span><span class="t-kw">def</span> <span class="t-fn">double</span><span class="t-punc">(</span><span class="t-name">n</span><span class="t-punc">):</span></div>
-      <div class="cl" id="l2"><span class="gut">2</span>    <span class="t-kw">return</span> <span class="t-name">n</span> <span class="t-op">*</span> <span class="t-num">2</span></div>
+      <div class="cl" id="l2"><span class="gut">2</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">return</span> <span class="t-name">n</span> <span class="t-op">*</span> <span class="t-num">2</span></div>
       <div class="cl" id="l4"><span class="gut">4</span><span class="t-name">number</span> <span class="t-op">=</span> <span class="t-fn">int</span><span class="t-punc">(</span><span class="t-fn">input</span><span class="t-punc">(</span><span class="t-str">"Enter a number: "</span><span class="t-punc">))</span></div>
       <div class="cl" id="l5"><span class="gut">5</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Doubled:"</span><span class="t-punc">,</span> <span class="t-fn">double</span><span class="t-punc">(</span><span class="t-name">number</span><span class="t-punc">))</span></div>
     </div>
@@ -76,8 +76,9 @@ add(650,{type:'prompt',line:4,st:'input() shows the prompt and waits.'});
 add(900,{type:'typing',line:4,st:'You type <b>5</b> — input() reads it as text.'});
 add(700,{type:'store',line:4,st:'input() returns <b>"5"</b> (a string).'});
 add(800,{type:'cast',line:4,st:'<b>int(...)</b> converts it to the number <b>5</b>, stored in <b>number</b>.'});
-add(950,{type:'call',line:5,st:'<b>double(number)</b> passes 5 in as <b>n</b> → returns <b>10</b>.'});
-add(900,{type:'print',line:5,st:'print() shows the result.'});
+add(850,{type:'call',line:5,st:'<b>double(number)</b> is called — 5 goes in as <b>n</b>.'});
+add(900,{type:'body',line:2,st:'Jump into the function: <b>return n * 2</b> → <b>10</b>.'});
+add(900,{type:'print',line:5,st:'Back at line 5 → print shows <b>Doubled: 10</b>.'});
 add(1300,{type:'hold',line:5,st:'One line can do it all: double(int(input(...))).'});
 const CYCLE=t, TYPE=seg.find(s=>s.type==='typing');
 let playing=false,elapsed=0,last=0,raf=null;
@@ -91,17 +92,17 @@ function render(ms){
   if(waiting) html+='<span class="cur"></span>';
   if(showOut) html+='\n<span class="out">Doubled: 10</span>';
   term.innerHTML=html;
-  const strOn=['store','cast','call','print','hold'].includes(s.type);
-  const intOn=['cast','call','print','hold'].includes(s.type);
-  const resOn=['call','print','hold'].includes(s.type);
+  const strOn=['store','cast','call','body','print','hold'].includes(s.type);
+  const intOn=['cast','call','body','print','hold'].includes(s.type);
+  const resOn=['body','print','hold'].includes(s.type);
   chipStr.className='chip'+(strOn?' str':'');chipStr.innerHTML=strOn?'"5"<span class="ty">str</span>':'"?"';
   gInt.classList.toggle('on', s.type==='cast');
   chipInt.className='chip'+(intOn?' int':'');chipInt.innerHTML=intOn?'5<span class="ty">int</span>':'?';
-  gDbl.classList.toggle('on', s.type==='call');
+  gDbl.classList.toggle('on', s.type==='call'||s.type==='body');
   chipRes.className='chip'+(resOn?' res':'');chipRes.innerHTML=resOn?'10':'?';
   ['l1','l2','l4','l5'].forEach(id=>document.getElementById(id).classList.remove('on'));
-  const lid={4:'l4',5:'l5'}[s.line];if(lid)document.getElementById(lid).classList.add('on');
-  if(s.type==='call') document.getElementById('l1').classList.add('on');
+  if(s.type==='body'){document.getElementById('l1').classList.add('on');document.getElementById('l2').classList.add('on');}
+  else {const lid={4:'l4',5:'l5'}[s.line];if(lid)document.getElementById(lid).classList.add('on');}
   status.innerHTML=s.st;
 }
 function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}

@@ -50,8 +50,8 @@
     <div class="code">
       <div class="cl" id="l1"><span class="gut">1</span><span class="t-name">company</span> <span class="t-op">=</span> <span class="t-str">"Acme"</span>       <span class="t-com"># global</span></div>
       <div class="cl" id="l3"><span class="gut">3</span><span class="t-kw">def</span> <span class="t-fn">show</span><span class="t-punc">():</span></div>
-      <div class="cl" id="l4"><span class="gut">4</span>    <span class="t-name">note</span> <span class="t-op">=</span> <span class="t-str">"internal"</span>  <span class="t-com"># local</span></div>
-      <div class="cl" id="l5"><span class="gut">5</span>    <span class="t-fn">print</span><span class="t-punc">(</span><span class="t-name">company</span><span class="t-punc">,</span> <span class="t-name">note</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l4"><span class="gut">4</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-name">note</span> <span class="t-op">=</span> <span class="t-str">"internal"</span>  <span class="t-com"># local</span></div>
+      <div class="cl" id="l5"><span class="gut">5</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-fn">print</span><span class="t-punc">(</span><span class="t-name">company</span><span class="t-punc">,</span> <span class="t-name">note</span><span class="t-punc">)</span></div>
       <div class="cl" id="l7"><span class="gut">7</span><span class="t-fn">show</span><span class="t-punc">()</span></div>
       <div class="cl" id="l8"><span class="gut">8</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-name">company</span><span class="t-punc">)</span></div>
       <div class="cl" id="l9"><span class="gut">9</span><span class="t-com"># print(note)  → NameError</span></div>
@@ -75,31 +75,35 @@ const vNote=document.getElementById('vNote'),localEmpty=document.getElementById(
 const status=document.getElementById('status');
 const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop');
 let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d},o));t+=d;};
-add(650,{type:'g',open:false,line:1,o:-1,st:'<b>company</b> is created in the <b>global scope</b> — outside any function.'});
-add(950,{type:'callopen',open:true,line:4,o:-1,st:'Call <b>show()</b> → a <b>local scope</b> opens and <b>note</b> is created inside it.'});
-add(950,{type:'inside',open:true,reads:true,line:5,o:0,st:'Inside show(): it reads <b>note</b> (local) and <b>company</b> (global) → prints them.'});
-add(950,{type:'close',open:false,line:7,o:0,st:'show() finishes → the <b>local scope closes</b>, and <b>note</b> is destroyed.'});
-add(850,{type:'g',open:false,line:8,o:1,st:'<b>print(company)</b> still works — <b>company</b> is global.'});
-add(1150,{type:'err',open:false,line:9,o:2,st:'<b>print(note)</b> would fail — <b>note</b> only existed inside show().'});
-add(1250,{type:'hold',open:false,line:9,o:2,st:'Global = everywhere · Local = only inside its function.'});
+add(700,{type:'g',    line:1, open:false, note:false, reads:false, gl:true,  o:-1, st:'<b>company</b> is created in the <b>global scope</b> — outside any function.'});
+add(850,{type:'call', line:7, open:true,  note:false, reads:false, gl:false, o:-1, st:'<b>show()</b> is called → a new <b>local scope</b> opens for it.'});
+add(600,{type:'enter',line:3, open:true,  note:false, reads:false, gl:false, o:-1, st:'Jump into the function body…'});
+add(850,{type:'note', line:4, open:true,  note:true,  reads:false, gl:false, o:-1, st:'<b>note</b> is created inside — a <b>local</b> variable.'});
+add(950,{type:'print',line:5, open:true,  note:true,  reads:true,  gl:true,  o:0,  st:'It reads <b>note</b> (local) and <b>company</b> (global) → prints them.'});
+add(950,{type:'ret',  line:7, open:false, note:false, reads:false, gl:false, o:0,  st:'show() finishes → the <b>local scope closes</b> and <b>note</b> is destroyed.'});
+add(850,{type:'pc',   line:8, open:false, note:false, reads:false, gl:true,  o:1,  st:'<b>print(company)</b> still works — company is global.'});
+add(1200,{type:'err', line:9, open:false, note:false, reads:false, gl:true,  o:2,  st:'<b>print(note)</b> would fail — note only existed inside show().'});
+add(1250,{type:'hold',line:9, open:false, note:false, reads:false, gl:false, o:2,  st:'Global = everywhere · Local = only inside its function.'});
 const CYCLE=t;
 let playing=false,elapsed=0,last=0,raf=null;
 function render(ms){
   const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
-  sGlobal.classList.toggle('on', s.type==='g'||s.type==='err');
-  sLocal.classList.toggle('on', s.open && s.type!=='g');
+  sGlobal.classList.toggle('on', !!s.gl);
+  sLocal.classList.toggle('on', s.open);
   sLocal.classList.toggle('closed', !s.open);
   localEmpty.style.display = s.open ? 'none':'block';
+  vNote.style.opacity = s.note ? '1':'0';
+  vNote.style.transform = s.note ? 'none':'scale(.85)';
   reads.classList.toggle('on', !!s.reads);
   for(let i=0;i<3;i++){let show=false;seg.forEach(g=>{if(g.o===i&&ms>=g.s+(g.e-g.s)*0.45)show=true;});document.getElementById('o'+i).classList.toggle('show',show);}
   ['l1','l3','l4','l5','l7','l8','l9'].forEach(id=>document.getElementById(id).classList.remove('on'));
-  const lid={1:'l1',4:'l4',5:'l5',7:'l7',8:'l8',9:'l9'}[s.line];if(lid)document.getElementById(lid).classList.add('on');
+  const lid={1:'l1',3:'l3',4:'l4',5:'l5',7:'l7',8:'l8',9:'l9'}[s.line];if(lid)document.getElementById(lid).classList.add('on');
   status.innerHTML=s.st;
 }
 function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
 function play(){if(playing)return;playing=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
 function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
-function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;bP.disabled=false;bPa.disabled=true;bS.disabled=true;sGlobal.classList.remove('on');sLocal.classList.remove('on');sLocal.classList.add('closed');localEmpty.style.display='block';reads.classList.remove('on');[0,1,2].forEach(i=>document.getElementById('o'+i).classList.remove('show'));['l1','l3','l4','l5','l7','l8','l9'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;bP.disabled=false;bPa.disabled=true;bS.disabled=true;sGlobal.classList.remove('on');sLocal.classList.remove('on');sLocal.classList.add('closed');localEmpty.style.display='block';vNote.style.opacity='0';vNote.style.transform='scale(.85)';reads.classList.remove('on');[0,1,2].forEach(i=>document.getElementById('o'+i).classList.remove('show'));['l1','l3','l4','l5','l7','l8','l9'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
 bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;stop();
 </script>
 </body>
