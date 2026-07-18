@@ -35,10 +35,10 @@
   .oline{opacity:0;transform:translateY(3px);transition:.3s}.oline.show{opacity:1;transform:none}
   .oerr{color:#ff8a8a}
   .status{text-align:center;font-size:13px;color:#555;margin:24px auto 16px;min-height:20px;max-width:600px}.status b{color:#222}
-  .controls{display:flex;gap:10px;justify-content:center}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
   .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 20px;color:#fff;transition:.15s}
   .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
-  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
   @media(max-width:560px){h2{font-size:20px}.code{font-size:11px}.scopes{flex-direction:column}}
 </style>
 </head>
@@ -67,7 +67,7 @@
       <div class="oline oerr" id="o2">NameError: name 'note' is not defined</div>
     </div>
     <div class="status" id="status">Press Play to start</div>
-    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="stop" disabled>■ Stop</button></div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
   </div>
 <script>
 const sGlobal=document.getElementById('sGlobal'),sLocal=document.getElementById('sLocal');
@@ -85,7 +85,8 @@ add(850,{type:'pc',   line:8, open:false, note:false, reads:false, gl:true,  o:1
 add(1200,{type:'err', line:9, open:false, note:false, reads:false, gl:true,  o:2,  st:'<b>print(note)</b> would fail — note only existed inside show().'});
 add(1250,{type:'hold',line:9, open:false, note:false, reads:false, gl:false, o:2,  st:'Global = everywhere · Local = only inside its function.'});
 const CYCLE=t;
-let playing=false,elapsed=0,last=0,raf=null;
+seg.forEach(s=>s.dep=[3,4,5].includes(s.line)?1:0);
+let playing=false,elapsed=0,last=0,raf=null,started=false;
 function render(ms){
   const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
   sGlobal.classList.toggle('on', !!s.gl);
@@ -101,10 +102,16 @@ function render(ms){
   status.innerHTML=s.st;
 }
 function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
-function play(){if(playing)return;playing=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
 function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
-function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;bP.disabled=false;bPa.disabled=true;bS.disabled=true;sGlobal.classList.remove('on');sLocal.classList.remove('on');sLocal.classList.add('closed');localEmpty.style.display='block';vNote.style.opacity='0';vNote.style.transform='scale(.85)';reads.classList.remove('on');[0,1,2].forEach(i=>document.getElementById('o'+i).classList.remove('show'));['l1','l3','l4','l5','l7','l8','l9'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
-bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;stop();
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;sGlobal.classList.remove('on');sLocal.classList.remove('on');sLocal.classList.add('closed');localEmpty.style.display='block';vNote.style.opacity='0';vNote.style.transform='scale(.85)';reads.classList.remove('on');[0,1,2].forEach(i=>document.getElementById('o'+i).classList.remove('show'));['l1','l3','l4','l5','l7','l8','l9'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+const bI=document.getElementById('into'),bO=document.getElementById('over');
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
 </script>
 </body>
 </html>

@@ -37,10 +37,10 @@
   .cur{display:inline-block;width:7px;height:12px;background:#9af7c0;vertical-align:-1px;animation:blink 1s steps(1) infinite}@keyframes blink{50%{opacity:0}}
   .packet{position:absolute;z-index:6;left:0;top:50%;transform:translate(-50%,-50%) scale(.6);opacity:0;font-family:'SF Mono','Consolas',monospace;font-size:12px;font-weight:700;color:#fff;background:#6366f1;padding:5px 11px;border-radius:18px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.3)}
   .status{text-align:center;font-size:13px;color:#555;margin:28px auto 16px;min-height:20px;max-width:620px}.status b{color:#222}
-  .controls{display:flex;gap:10px;justify-content:center}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
   .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 20px;color:#fff;transition:.15s}
   .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
-  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
   @media(max-width:600px){h2{font-size:20px}.code{font-size:11px}.track{gap:6px}.box{padding:10px 6px}.box .name{font-size:11px}.packet{font-size:10px}}
 </style>
 </head>
@@ -51,7 +51,7 @@
   <div class="wrap">
     <div class="code">
       <div class="cl" id="l1"><span class="gut">1</span><span class="t-kw">def</span> <span class="t-fn">greet</span><span class="t-punc">(</span><span class="t-name">name</span><span class="t-punc">):</span></div>
-      <div class="cl" id="l2"><span class="gut">2</span>    <span class="t-kw">return</span> <span class="t-f">f</span><span class="t-str">"Hi </span><span class="t-brace">{name}</span><span class="t-str">"</span></div>
+      <div class="cl" id="l2"><span class="gut">2</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">return</span> <span class="t-f">f</span><span class="t-str">"Hi </span><span class="t-brace">{name}</span><span class="t-str">"</span></div>
       <div class="cl" id="l4"><span class="gut">4</span><span class="t-name">message</span> <span class="t-op">=</span> <span class="t-fn">greet</span><span class="t-punc">(</span><span class="t-str">"Valentina"</span><span class="t-punc">)</span></div>
       <div class="cl" id="l5"><span class="gut">5</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-name">message</span><span class="t-punc">)</span></div>
     </div>
@@ -64,7 +64,7 @@
       <div class="packet" id="packet">"Valentina"</div>
     </div>
     <div class="status" id="status">Press Play to start</div>
-    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="stop" disabled>■ Stop</button></div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
   </div>
 <script>
 const track=document.getElementById('track'),boxes=[...track.querySelectorAll('.box')];
@@ -87,7 +87,8 @@ add(1150,{type:'hold',i:3,line:5,st:'Call greet() again with any name to reuse i
 const CYCLE=t,TS=seg.find(s=>s.type==='type');
 const TH_param=seg.find(s=>s.type==='morph').s;            // name known once inside
 const TH_slot=seg.find(s=>s.type==='travel'&&s.to===2).e;  // message filled after return arrives
-let playing=false,elapsed=0,last=0,raf=null;
+seg.forEach(s=>s.dep=(s.line===1||s.line===2)?1:0);
+let playing=false,elapsed=0,last=0,raf=null,started=false;
 function setC(i){packet.style.background=COL[i];packet.style.boxShadow='0 4px 14px '+COL[i]+'88';}
 function render(ms){
   const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];let x,vis=true,act=s.i;
@@ -106,10 +107,16 @@ function render(ms){
   status.innerHTML=s.st;
 }
 function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
-function play(){if(playing)return;playing=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
 function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
-function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;bP.disabled=false;bPa.disabled=true;bS.disabled=true;boxes.forEach(b=>b.classList.remove('active'));termout.textContent='';railFill.style.width='0px';packet.style.opacity=0;cur.style.display='none';param.classList.remove('full');param.textContent='name = ?';slot.classList.remove('full');slot.textContent='empty';['l1','l2','l4','l5'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
-bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;window.addEventListener('resize',()=>{if(elapsed)render(elapsed);});stop();
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;boxes.forEach(b=>b.classList.remove('active'));termout.textContent='';railFill.style.width='0px';packet.style.opacity=0;cur.style.display='none';param.classList.remove('full');param.textContent='name = ?';slot.classList.remove('full');slot.textContent='empty';['l1','l2','l4','l5'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+const bI=document.getElementById('into'),bO=document.getElementById('over');
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;window.addEventListener('resize',()=>{if(elapsed)render(elapsed);});stop();
 </script>
 </body>
 </html>

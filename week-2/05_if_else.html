@@ -36,10 +36,10 @@
   .termbox{font-family:'SF Mono','Consolas',monospace;font-size:11.5px;background:#0b0f18;color:#9af7c0;border-radius:7px;padding:5px 7px;margin-top:5px;min-height:24px}
   .packet{position:absolute;z-index:6;transform:translate(-50%,-50%) scale(.6);opacity:0;font-family:'SF Mono','Consolas',monospace;font-size:12px;font-weight:700;color:#fff;background:#6366f1;padding:4px 11px;border-radius:18px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.3)}
   .status{text-align:center;font-size:13px;color:#555;margin:26px auto 16px;min-height:20px;max-width:600px}.status b{color:#222}
-  .controls{display:flex;gap:10px;justify-content:center}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
   .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 20px;color:#fff;transition:.15s}
   .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
-  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
   @media(max-width:600px){h2{font-size:20px}.code{font-size:11px}.flow{min-height:250px}
     #nValue{width:84px}#nCond{left:96px;width:120px}#nPass,#nFail{right:74px;width:120px}#nTerm{width:66px}.nm{font-size:11px}}
 </style>
@@ -52,9 +52,9 @@
     <div class="code">
       <div class="cl" id="l1"><span class="gut">1</span><span class="t-name">score</span> <span class="t-op">=</span> <span class="t-num">75</span></div>
       <div class="cl" id="l2"><span class="gut">2</span><span class="t-kw">if</span> <span class="t-name">score</span> <span class="t-op">&gt;=</span> <span class="t-num">60</span><span class="t-punc">:</span></div>
-      <div class="cl" id="l3"><span class="gut">3</span>    <span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Pass"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l3"><span class="gut">3</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Pass"</span><span class="t-punc">)</span></div>
       <div class="cl" id="l4"><span class="gut">4</span><span class="t-kw">else</span><span class="t-punc">:</span></div>
-      <div class="cl" id="l5"><span class="gut">5</span>    <span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Fail"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l5"><span class="gut">5</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Fail"</span><span class="t-punc">)</span></div>
     </div>
     <div class="flow" id="flow">
       <svg class="wires"><path class="wire" id="w1"/><path class="wire" id="w2"/><path class="wire" id="w3"/><path class="wire" id="w4"/></svg>
@@ -66,7 +66,7 @@
       <div class="packet" id="packet">75</div>
     </div>
     <div class="status" id="status">Press Play to start</div>
-    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="stop" disabled>■ Stop</button></div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
   </div>
 <script>
 const flow=document.getElementById('flow');
@@ -94,7 +94,8 @@ function run(score,pass){
 }
 run(75,true); run(45,false);
 const CYCLE=t;
-let playing=false,elapsed=0,last=0,raf=null;
+seg.forEach(s=>s.dep=0);
+let playing=false,elapsed=0,last=0,raf=null,started=false;
 function setC(c){packet.style.background=c;packet.style.boxShadow='0 4px 14px '+c+'88';}
 function clearNodes(){['nValue','nCond','nPass','nFail','nTerm'].forEach(id=>document.getElementById(id).classList.remove('on-t','on-f','dim','condon'));}
 function render(ms){
@@ -126,10 +127,16 @@ function render(ms){
   status.innerHTML=s.st;
 }
 function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
-function play(){if(playing)return;playing=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;wires();raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;wires();raf=requestAnimationFrame(frame);}
 function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
-function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;bP.disabled=false;bPa.disabled=true;bS.disabled=true;clearNodes();packet.style.opacity=0;term.textContent='';res.className='res';res.innerHTML='&nbsp;';vScore.textContent='score = 75';['l1','l2','l3','l4','l5'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';wires();}
-bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;clearNodes();packet.style.opacity=0;term.textContent='';res.className='res';res.innerHTML='&nbsp;';vScore.textContent='score = 75';['l1','l2','l3','l4','l5'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';wires();}
+const bI=document.getElementById('into'),bO=document.getElementById('over');
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;
 window.addEventListener('resize',()=>{wires();if(elapsed)render(elapsed);});
 setTimeout(()=>{wires();stop();},50);
 </script>

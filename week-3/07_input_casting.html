@@ -31,10 +31,10 @@
   .gate.on{opacity:1;box-shadow:0 4px 12px #0ea5e955}
   .arrow{color:#ccc;font-weight:700}
   .status{text-align:center;font-size:13px;color:#555;margin:24px auto 16px;min-height:20px;max-width:600px}.status b{color:#222}
-  .controls{display:flex;gap:10px;justify-content:center}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
   .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 20px;color:#fff;transition:.15s}
   .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
-  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
   @media(max-width:560px){h2{font-size:20px}.code{font-size:10.5px}.chip{font-size:11px}}
 </style>
 </head>
@@ -62,7 +62,7 @@
       <span class="chip" id="chipRes">age + 1 = ?</span>
     </div>
     <div class="status" id="status">Press Play to start</div>
-    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="stop" disabled>■ Stop</button></div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
   </div>
 <script>
 const term=document.getElementById('term'),status=document.getElementById('status');
@@ -77,7 +77,8 @@ add(850,{type:'cast',line:2,st:'<b>int("25")</b> converts the text into the numb
 add(950,{type:'math',line:3,st:'Now <b>25 + 1 = 26</b> works, and print shows the result.'});
 add(1300,{type:'hold',line:3,st:'Always cast input to int (or float) before doing math.'});
 const CYCLE=t, TYPE=seg.find(s=>s.type==='typing');
-let playing=false,elapsed=0,last=0,raf=null;
+seg.forEach(s=>s.dep=0);
+let playing=false,elapsed=0,last=0,raf=null,started=false;
 function render(ms){
   const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
   let typed=0,waiting=false,showOut=false;
@@ -99,10 +100,16 @@ function render(ms){
   status.innerHTML=s.st;
 }
 function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
-function play(){if(playing)return;playing=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
 function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
-function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;bP.disabled=false;bPa.disabled=true;bS.disabled=true;term.innerHTML='';chipStr.className='chip';chipStr.innerHTML='age_text = ?';chipInt.className='chip';chipInt.innerHTML='age = ?';chipRes.className='chip';chipRes.innerHTML='age + 1 = ?';gate.classList.remove('on');['l1','l2','l3'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
-bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;stop();
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;term.innerHTML='';chipStr.className='chip';chipStr.innerHTML='age_text = ?';chipInt.className='chip';chipInt.innerHTML='age = ?';chipRes.className='chip';chipRes.innerHTML='age + 1 = ?';gate.classList.remove('on');['l1','l2','l3'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+const bI=document.getElementById('into'),bO=document.getElementById('over');
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
 </script>
 </body>
 </html>

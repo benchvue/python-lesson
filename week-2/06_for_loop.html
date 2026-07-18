@@ -28,10 +28,10 @@
   .termline .p{color:#6ee7ff}
   .oline{opacity:0;transform:translateY(3px);transition:.3s}.oline.show{opacity:1;transform:none}
   .status{text-align:center;font-size:13px;color:#555;margin:24px auto 16px;min-height:20px;max-width:600px}.status b{color:#222}
-  .controls{display:flex;gap:10px;justify-content:center}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
   .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 20px;color:#fff;transition:.15s}
   .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
-  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
   @media(max-width:560px){h2{font-size:20px}.code{font-size:11px}.it{font-size:11.5px;padding:7px 9px}}
 </style>
 </head>
@@ -43,7 +43,7 @@
     <div class="code">
       <div class="cl" id="l1"><span class="gut">1</span><span class="t-name">fruits</span> <span class="t-op">=</span> <span class="t-punc">[</span><span class="t-str">"apple"</span><span class="t-punc">,</span> <span class="t-str">"banana"</span><span class="t-punc">,</span> <span class="t-str">"cherry"</span><span class="t-punc">]</span></div>
       <div class="cl" id="l2"><span class="gut">2</span><span class="t-kw">for</span> <span class="t-name">fruit</span> <span class="t-kw">in</span> <span class="t-name">fruits</span><span class="t-punc">:</span></div>
-      <div class="cl" id="l3"><span class="gut">3</span>    <span class="t-fn">print</span><span class="t-punc">(</span><span class="t-name">fruit</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l3"><span class="gut">3</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-fn">print</span><span class="t-punc">(</span><span class="t-name">fruit</span><span class="t-punc">)</span></div>
     </div>
     <div class="listrow">
       <span class="lbl">fruits =</span><span class="brk">[</span>
@@ -58,7 +58,7 @@
       <div class="oline" id="o2">cherry</div>
     </div>
     <div class="status" id="status">Press Play to start</div>
-    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="stop" disabled>■ Stop</button></div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
   </div>
 <script>
 const items=['i0','i1','i2'],vals=['apple','banana','cherry'];
@@ -73,7 +73,8 @@ for(let i=0;i<3;i++){
 add(700,{type:'done',line:2,st:'No items left — the loop ends. ✅'});
 add(700,{type:'hold',line:2,st:'Three items → the body ran three times.'});
 const CYCLE=t;
-let playing=false,elapsed=0,last=0,raf=null;
+seg.forEach(s=>s.dep=0);
+let playing=false,elapsed=0,last=0,raf=null,started=false;
 function render(ms){
   const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
   // current index = highest pick reached
@@ -87,10 +88,16 @@ function render(ms){
   status.innerHTML=s.st;
 }
 function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
-function play(){if(playing)return;playing=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
 function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
-function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;bP.disabled=false;bPa.disabled=true;bS.disabled=true;items.forEach(id=>document.getElementById(id).classList.remove('cur','done'));loopvar.textContent='fruit = —';[0,1,2].forEach(i=>document.getElementById('o'+i).classList.remove('show'));['l1','l2','l3'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
-bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;stop();
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;items.forEach(id=>document.getElementById(id).classList.remove('cur','done'));loopvar.textContent='fruit = —';[0,1,2].forEach(i=>document.getElementById('o'+i).classList.remove('show'));['l1','l2','l3'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+const bI=document.getElementById('into'),bO=document.getElementById('over');
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
 </script>
 </body>
 </html>
