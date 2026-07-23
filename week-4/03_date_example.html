@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — Dates with datetime</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:28px;text-align:center}
+  .wrap{width:100%;max-width:720px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:26px;font-family:'SF Mono','Consolas',monospace;font-size:12.5px;line-height:1.8;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:block;border-radius:7px;padding:1px 8px;transition:.25s;min-height:21px;white-space:nowrap}
+  .cl .gut{color:#5a6080;display:inline-block;width:14px;text-align:right;margin-right:10px}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}
+  .obj{border:2px solid #ececf2;border-radius:16px;padding:16px;text-align:center;margin-bottom:18px;transition:.25s}
+  .obj.on{border-color:#6366f1;box-shadow:0 8px 22px #6366f125}
+  .ph{font-size:9.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#bbb;margin-bottom:8px}
+  .obj.on .ph{color:#6366f1}
+  .stamp{font-family:'SF Mono','Consolas',monospace;font-size:19px;font-weight:700;color:#4f46e5;letter-spacing:.02em}
+  .stamp .p{padding:2px 5px;border-radius:6px;transition:.3s}
+  .stamp .p.hi{background:#eef0ff}
+  .parts{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:6px}
+  .part{border:2px solid #ececf2;border-radius:13px;padding:12px 8px;text-align:center;transition:.28s;opacity:.45}
+  .part.on{opacity:1;transform:translateY(-4px)}
+  .part[data-c="0"].on{border-color:#0ea5e9;box-shadow:0 8px 18px #0ea5e928}
+  .part[data-c="1"].on{border-color:#10b981;box-shadow:0 8px 18px #10b98128}
+  .part[data-c="2"].on{border-color:#f59e0b;box-shadow:0 8px 18px #f59e0b28}
+  .part[data-c="3"].on{border-color:#ec4899;box-shadow:0 8px 18px #ec489928}
+  .pcode{font-family:'SF Mono','Consolas',monospace;font-size:10.5px;color:#888}
+  .pval{font-family:'SF Mono','Consolas',monospace;font-size:15px;font-weight:700;margin-top:5px;color:#333}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:12px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:10px 12px;margin-top:18px;min-height:112px;line-height:1.75}
+  .termline .p{color:#6ee7ff}.oline{opacity:0;transform:translateY(3px);transition:.3s}.oline.show{opacity:1;transform:none}
+  .status{text-align:center;font-size:13px;color:#555;margin:20px auto 16px;min-height:20px;max-width:620px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 18px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
+  @media(max-width:600px){h2{font-size:20px}.code{font-size:10.5px}.parts{grid-template-columns:1fr 1fr}.stamp{font-size:15px}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 4</h1>
+  <h2>Dates with datetime</h2>
+  <div class="subtitle">one date object holds many pieces — pull out just what you need</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l1"><span class="gut">1</span><span class="t-kw">from</span> <span class="t-name">datetime</span> <span class="t-kw">import</span> <span class="t-name">datetime</span></div>
+      <div class="cl" id="l3"><span class="gut">3</span><span class="t-name">today</span> <span class="t-op">=</span> <span class="t-name">datetime</span><span class="t-punc">.</span><span class="t-fn">today</span><span class="t-punc">()</span></div>
+      <div class="cl" id="l5"><span class="gut">5</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Today:"</span><span class="t-punc">,</span> <span class="t-name">today</span><span class="t-punc">.</span><span class="t-fn">strftime</span><span class="t-punc">(</span><span class="t-str">"%Y-%m-%d"</span><span class="t-punc">))</span></div>
+      <div class="cl" id="l6"><span class="gut">6</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Year:"</span><span class="t-punc">,</span> <span class="t-name">today</span><span class="t-punc">.</span><span class="t-name">year</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l7"><span class="gut">7</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Month:"</span><span class="t-punc">,</span> <span class="t-name">today</span><span class="t-punc">.</span><span class="t-name">month</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l8"><span class="gut">8</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Day:"</span><span class="t-punc">,</span> <span class="t-name">today</span><span class="t-punc">.</span><span class="t-name">day</span><span class="t-punc">)</span></div>
+    </div>
+    <div class="obj" id="obj"><div class="ph">today — a datetime object</div>
+      <div class="stamp"><span class="p" id="sy">2026</span>-<span class="p" id="sm">03</span>-<span class="p" id="sd">17</span> <span style="color:#b9bcd0">14:05:22</span></div></div>
+    <div class="parts">
+      <div class="part" data-c="0" id="p0"><div class="pcode">strftime("%Y-%m-%d")</div><div class="pval" id="v0">—</div></div>
+      <div class="part" data-c="1" id="p1"><div class="pcode">.year</div><div class="pval" id="v1">—</div></div>
+      <div class="part" data-c="2" id="p2"><div class="pcode">.month</div><div class="pval" id="v2">—</div></div>
+      <div class="part" data-c="3" id="p3"><div class="pcode">.day</div><div class="pval" id="v3">—</div></div>
+    </div>
+    <div class="termline"><div><span class="p">$</span> python 03_date_example.py</div>
+      <div class="oline" id="o0">Today: 2026-03-17</div><div class="oline" id="o1">Year: 2026</div>
+      <div class="oline" id="o2">Month: 3</div><div class="oline" id="o3">Day: 17</div></div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const VALS=['2026-03-17','2026','3','17'];
+const status=document.getElementById('status'),obj=document.getElementById('obj');
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d,dep:0},o));t+=d;};
+add(700,{part:-1,objOn:false,line:1,st:'Import the <b>datetime</b> class from the datetime module.'});
+add(900,{part:-1,objOn:true,line:3,st:'<b>datetime.today()</b> captures the current date <i>and</i> time as one object.'});
+add(950,{part:0,objOn:true,line:5,st:'<b>strftime("%Y-%m-%d")</b> formats it as text: year-month-day.'});
+add(800,{part:1,objOn:true,line:6,st:'<b>.year</b> pulls out just the year — as a number.'});
+add(800,{part:2,objOn:true,line:7,st:'<b>.month</b> gives the month number (no leading zero).'});
+add(800,{part:3,objOn:true,line:8,st:'<b>.day</b> gives the day of the month.'});
+add(1300,{part:4,objOn:false,line:8,st:'Handy for month-end work: <b>%Y-%m</b> groups records by month.'});
+const CYCLE=t;
+let playing=false,elapsed=0,last=0,raf=null,started=false;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  obj.classList.toggle('on',s.objOn);
+  ['sy','sm','sd'].forEach((id,i)=>document.getElementById(id).classList.toggle('hi', s.part===0 || s.part===i+1));
+  for(let i=0;i<4;i++){
+    const on = s.part>=i && s.part<4 ? i<=s.part : (s.part===4);
+    document.getElementById('p'+i).classList.toggle('on', s.part===i || s.part===4);
+    document.getElementById('v'+i).textContent = (s.part>=i||s.part===4) ? VALS[i] : '—';
+    document.getElementById('o'+i).classList.toggle('show', s.part>=i && s.part>=0);
+  }
+  ['l1','l3','l5','l6','l7','l8'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
+  status.innerHTML=s.st;
+}
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop'),bI=document.getElementById('into'),bO=document.getElementById('over');
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
+  obj.classList.remove('on');['sy','sm','sd'].forEach(id=>document.getElementById(id).classList.remove('hi'));
+  for(let i=0;i<4;i++){document.getElementById('p'+i).classList.remove('on');document.getElementById('v'+i).textContent='—';document.getElementById('o'+i).classList.remove('show');}
+  ['l1','l3','l5','l6','l7','l8'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
+</script>
+</body>
+</html>

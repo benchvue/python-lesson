@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — Read a CSV</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:28px;text-align:center}
+  .wrap{width:100%;max-width:760px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:26px;font-family:'SF Mono','Consolas',monospace;font-size:12.5px;line-height:1.75;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:block;border-radius:7px;padding:1px 8px;transition:.25s;min-height:21px;white-space:nowrap}
+  .cl .gut{color:#5a6080;display:inline-block;width:16px;text-align:right;margin-right:10px}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}
+  .panes{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+  .pane{flex:1;min-width:250px;border:2px solid #ececf2;border-radius:14px;padding:13px;transition:.25s}
+  .pane.on{border-color:#0ea5e9;box-shadow:0 8px 22px #0ea5e922}
+  .ph{font-size:9.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#bbb;margin-bottom:9px}
+  .pane.on .ph{color:#0ea5e9}
+  .fname{font-family:'SF Mono','Consolas',monospace;font-size:11px;color:#0a7d57;background:#e9fbf3;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:8px}
+  table{width:100%;border-collapse:collapse;font-family:'SF Mono','Consolas',monospace;font-size:11px}
+  th,td{padding:5px 6px;text-align:left;border-bottom:1px solid #f2f2f6}
+  th{color:#888;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.05em}
+  tr.row{opacity:0;transition:.3s}tr.row.show{opacity:1}
+  tr.row.cur td{background:#eef0ff;color:#4f46e5;font-weight:700}
+  tr.row.done td{color:#aaa}
+  .amt{text-align:right}
+  .acc{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;font-family:'SF Mono','Consolas',monospace;font-size:13px}
+  .chip{padding:7px 13px;border-radius:10px;border:1.5px solid #d8dbef;background:#f7f8ff;color:#4f46e5;font-weight:700;transition:.25s}
+  .chip.pulse{border-color:#6366f1;box-shadow:0 6px 16px #6366f130;transform:translateY(-3px)}
+  .plus{color:#aaa;font-size:12px}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:12px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:9px 12px;margin-top:16px;min-height:44px;line-height:1.7}
+  .termline .p{color:#6ee7ff}.oline{opacity:0;transition:.3s}.oline.show{opacity:1}
+  .status{text-align:center;font-size:13px;color:#555;margin:20px auto 16px;min-height:20px;max-width:620px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 18px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
+  @media(max-width:600px){h2{font-size:20px}.code{font-size:10px}.pane{min-width:0}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 4</h1>
+  <h2>Read a CSV File</h2>
+  <div class="subtitle">write rows to a .csv, then read them back and total the amounts</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l1"><span class="gut">1</span><span class="t-kw">import</span> <span class="t-name">csv</span></div>
+      <div class="cl" id="l2"><span class="gut">2</span><span class="t-kw">with</span> <span class="t-fn">open</span><span class="t-punc">(</span><span class="t-name">csv_file</span><span class="t-punc">,</span> <span class="t-str">"w"</span><span class="t-punc">, ...)</span> <span class="t-kw">as</span> <span class="t-name">file</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l3"><span class="gut">3</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-name">writer</span><span class="t-punc">.</span><span class="t-fn">writerows</span><span class="t-punc">(</span><span class="t-name">sample_data</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l4"><span class="gut">4</span><span class="t-name">total</span> <span class="t-op">=</span> <span class="t-punc">0</span></div>
+      <div class="cl" id="l5"><span class="gut">5</span><span class="t-kw">with</span> <span class="t-fn">open</span><span class="t-punc">(</span><span class="t-name">csv_file</span><span class="t-punc">,</span> <span class="t-str">"r"</span><span class="t-punc">, ...)</span> <span class="t-kw">as</span> <span class="t-name">file</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l6"><span class="gut">6</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-name">reader</span> <span class="t-op">=</span> <span class="t-name">csv</span><span class="t-punc">.</span><span class="t-fn">DictReader</span><span class="t-punc">(</span><span class="t-name">file</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l7"><span class="gut">7</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">for</span> <span class="t-name">row</span> <span class="t-kw">in</span> <span class="t-name">reader</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l8"><span class="gut">8</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-name">total</span> <span class="t-op">+=</span> <span class="t-fn">float</span><span class="t-punc">(</span><span class="t-name">row</span><span class="t-punc">[</span><span class="t-str">"amount"</span><span class="t-punc">])</span></div>
+      <div class="cl" id="l9"><span class="gut">9</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Total transaction amount:"</span><span class="t-punc">,</span> <span class="t-name">total</span><span class="t-punc">)</span></div>
+    </div>
+    <div class="panes">
+      <div class="pane" id="paneFile"><div class="ph">The CSV on disk</div><span class="fname">transactions.csv</span>
+        <table><thead><tr><th>date</th><th>account</th><th class="amt">amount</th></tr></thead>
+        <tbody>
+          <tr class="row" id="r0"><td>2026-01-01</td><td>Cash</td><td class="amt">1000</td></tr>
+          <tr class="row" id="r1"><td>2026-01-02</td><td>Supplies Expense</td><td class="amt">-150</td></tr>
+          <tr class="row" id="r2"><td>2026-01-03</td><td>Revenue</td><td class="amt">2500</td></tr>
+        </tbody></table></div>
+      <div class="pane" id="paneRead"><div class="ph">Reading row by row</div>
+        <div class="acc"><span class="chip" id="chipRow">row = —</span></div>
+        <div class="acc" style="margin-top:10px"><span class="plus">total</span><span class="chip" id="chipTotal">0</span></div>
+      </div>
+    </div>
+    <div class="termline"><div><span class="p">$</span> python 02_read_csv_transactions.py</div>
+      <div class="oline" id="o0">Total transaction amount: 3350.0</div></div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const ROWS=[['2026-01-01','Cash',1000],['2026-01-02','Supplies Expense',-150],['2026-01-03','Revenue',2500]];
+const status=document.getElementById('status'),chipRow=document.getElementById('chipRow'),chipTotal=document.getElementById('chipTotal');
+const paneFile=document.getElementById('paneFile'),paneRead=document.getElementById('paneRead');
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d,dep:0},o));t+=d;};
+add(700,{rows:0,cur:-1,tot:null,pane:0,line:1,st:'<b>import csv</b> loads Python\'s CSV helper.'});
+add(1000,{rows:3,cur:-1,tot:null,pane:0,line:3,st:'<b>writerows()</b> writes the header + 3 rows into transactions.csv.'});
+add(650,{rows:3,cur:-1,tot:0,pane:1,line:4,st:'Start a running <b>total = 0</b>.'});
+add(700,{rows:3,cur:-1,tot:0,pane:1,line:6,st:'<b>DictReader</b> reads each line as a dict keyed by the header.'});
+let run=0;
+ROWS.forEach((r,i)=>{
+  add(750,{rows:3,cur:i,tot:run,pane:1,line:7,dep:1,st:`Row ${i+1}: <b>row["amount"] = "${r[2]}"</b> (text from the file).`});
+  run+=r[2];
+  add(750,{rows:3,cur:i,tot:run,pane:1,line:8,dep:1,st:`<b>float()</b> converts it, then adds → total = <b>${run.toFixed(1)}</b>.`});
+});
+add(900,{rows:3,cur:-1,tot:run,pane:1,line:9,out:true,st:'No rows left → print the final total.'});
+add(1200,{rows:3,cur:-1,tot:run,pane:-1,line:9,out:true,st:'CSV values arrive as <b>strings</b> — always convert before math.'});
+const CYCLE=t;
+let playing=false,elapsed=0,last=0,raf=null,started=false;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  for(let i=0;i<3;i++){const el=document.getElementById('r'+i);
+    el.classList.toggle('show',i<s.rows);el.classList.toggle('cur',i===s.cur);el.classList.toggle('done',s.cur>i);}
+  paneFile.classList.toggle('on',s.pane===0);paneRead.classList.toggle('on',s.pane===1);
+  chipRow.textContent = s.cur>=0 ? `row = {…, "amount": "${ROWS[s.cur][2]}"}` : 'row = —';
+  chipTotal.textContent = s.tot===null ? '—' : Number(s.tot).toFixed(1);
+  document.getElementById('o0').classList.toggle('show',!!s.out);
+  ['l1','l2','l3','l4','l5','l6','l7','l8','l9'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
+  status.innerHTML=s.st;
+}
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop'),bI=document.getElementById('into'),bO=document.getElementById('over');
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
+  for(let i=0;i<3;i++)document.getElementById('r'+i).classList.remove('show','cur','done');
+  paneFile.classList.remove('on');paneRead.classList.remove('on');chipRow.textContent='row = —';chipTotal.textContent='—';
+  document.getElementById('o0').classList.remove('show');
+  ['l1','l2','l3','l4','l5','l6','l7','l8','l9'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
+</script>
+</body>
+</html>

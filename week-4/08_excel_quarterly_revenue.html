@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — 5 Years of Quarterly Revenue</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8a5e08;background:#fff3dc;border:1px solid #f0d9a8;border-radius:20px;padding:2px 10px;margin-bottom:8px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:26px;text-align:center}
+  .wrap{width:100%;max-width:840px}
+  .code{background:#1e2030;border-radius:12px;padding:12px 15px;margin-bottom:22px;font-family:'SF Mono','Consolas',monospace;font-size:12px;line-height:1.7;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:block;border-radius:7px;padding:1px 8px;transition:.25s;min-height:20px;white-space:nowrap}
+  .cl .gut{color:#5a6080;display:inline-block;width:16px;text-align:right;margin-right:10px}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-num{color:#f78c6c}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}
+  .toggle{display:flex;justify-content:center;gap:8px;margin-bottom:11px}
+  .tg{font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;border:1.5px solid #e6e6ee;color:#aaa;transition:.3s}
+  .tg.on{border-color:#10b981;background:#e9fbf3;color:#0a7d57}
+  .book{border:2px solid #ececf2;border-radius:14px;overflow:hidden;transition:.25s}
+  .book.on{border-color:#0ea5e9;box-shadow:0 10px 26px #0ea5e91f}
+  .tabbar{display:flex;align-items:center;gap:8px;background:#f6f7fa;padding:8px 12px;border-bottom:1px solid #ececf2}
+  .tab{font-size:11.5px;font-weight:600;color:#0369a1;background:#e8f6fe;border:1px solid #bfe0f5;border-radius:7px 7px 0 0;padding:5px 12px}
+  .fname{margin-left:auto;font-family:'SF Mono','Consolas',monospace;font-size:10.5px;color:#bbb;transition:.3s}.fname.on{color:#0a7d57}
+  .tblwrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-family:'SF Mono','Consolas',monospace;font-size:11.5px;min-width:520px}
+  th,td{border:1px solid #eef0f4;padding:6px 8px;height:30px;transition:.3s;text-align:right}
+  th{background:#fafafc;color:#aaa;font-size:9.5px;font-weight:700;text-align:center}
+  th.rh{width:38px}
+  td.yr{text-align:left;font-weight:700;color:#555;background:#fafbff}
+  td.empty{color:transparent}
+  td.fill{color:#333}
+  td.hi{background:#eef0ff;color:#4f46e5;font-weight:700;box-shadow:inset 0 0 0 2px #6366f1}
+  td.tot{background:#f4f8ff;font-weight:700;color:#0369a1}
+  td.grow{background:#f6fbf8;font-weight:700;color:#0a7d57}
+  td.avg{background:#fffaf0;font-weight:700;color:#8a5e08}
+  .fx{color:#0a7d57;font-weight:700}
+  .note{font-size:11.5px;color:#999;text-align:center;margin-top:10px;min-height:18px}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:11px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:10px 12px;margin-top:14px;min-height:126px;line-height:1.65;white-space:pre}
+  .dim{color:#7f8798}.oline{opacity:0;transition:.3s;display:block}.oline.show{opacity:1}
+  .status{text-align:center;font-size:13px;color:#555;margin:18px auto 16px;min-height:20px;max-width:650px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 18px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
+  @media(max-width:620px){h2{font-size:19px}.code{font-size:9.5px}table{font-size:10px}.termline{font-size:9px}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 4</h1>
+  <div class="badge">advanced</div>
+  <h2>5 Years of Quarterly Revenue</h2>
+  <div class="subtitle">build a 5 × 4 grid, then let Excel formulas do the totals, growth and averages</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l1"><span class="gut">1</span><span class="t-name">ws</span><span class="t-punc">.</span><span class="t-fn">append</span><span class="t-punc">([</span><span class="t-str">"Year"</span><span class="t-punc">]</span> <span class="t-op">+</span> <span class="t-name">QUARTERS</span> <span class="t-op">+</span> <span class="t-punc">[</span><span class="t-str">"Total"</span><span class="t-punc">,</span> <span class="t-str">"Growth %"</span><span class="t-punc">])</span></div>
+      <div class="cl" id="l3"><span class="gut">3</span><span class="t-kw">for</span> <span class="t-name">i</span><span class="t-punc">,</span> <span class="t-name">year</span> <span class="t-kw">in</span> <span class="t-fn">enumerate</span><span class="t-punc">(</span><span class="t-name">YEARS</span><span class="t-punc">):</span></div>
+      <div class="cl" id="l4"><span class="gut">4</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">for</span> <span class="t-name">q</span> <span class="t-kw">in</span> <span class="t-fn">range</span><span class="t-punc">(</span><span class="t-num">4</span><span class="t-punc">):</span> <span class="t-name">ws</span><span class="t-punc">.</span><span class="t-fn">cell</span><span class="t-punc">(</span><span class="t-name">row</span><span class="t-op">=</span><span class="t-name">r</span><span class="t-punc">,</span> <span class="t-name">column</span><span class="t-op">=</span><span class="t-name">q</span><span class="t-op">+</span><span class="t-num">2</span><span class="t-punc">,</span> <span class="t-name">value</span><span class="t-op">=</span><span class="t-name">revenue</span><span class="t-punc">[</span><span class="t-name">year</span><span class="t-punc">][</span><span class="t-name">q</span><span class="t-punc">])</span></div>
+      <div class="cl" id="l5"><span class="gut">5</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-name">ws</span><span class="t-punc">.</span><span class="t-fn">cell</span><span class="t-punc">(</span><span class="t-name">row</span><span class="t-op">=</span><span class="t-name">r</span><span class="t-punc">,</span> <span class="t-name">column</span><span class="t-op">=</span><span class="t-num">6</span><span class="t-punc">,</span> <span class="t-name">value</span><span class="t-op">=</span><span class="t-str">f"=SUM(B{r}:E{r})"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l6"><span class="gut">6</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">if</span> <span class="t-name">i</span> <span class="t-op">&gt;</span> <span class="t-num">0</span><span class="t-punc">:</span> <span class="t-name">ws</span><span class="t-punc">.</span><span class="t-fn">cell</span><span class="t-punc">(...,</span> <span class="t-name">value</span><span class="t-op">=</span><span class="t-str">f"=(F{r}-F{r-1})/F{r-1}"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l8"><span class="gut">8</span><span class="t-name">ws</span><span class="t-punc">.</span><span class="t-fn">cell</span><span class="t-punc">(</span><span class="t-name">row</span><span class="t-op">=</span><span class="t-num">8</span><span class="t-punc">,</span> <span class="t-name">column</span><span class="t-op">=</span><span class="t-name">q</span><span class="t-op">+</span><span class="t-num">2</span><span class="t-punc">,</span> <span class="t-name">value</span><span class="t-op">=</span><span class="t-str">f"=AVERAGE({col}2:{col}6)"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l10"><span class="gut">10</span><span class="t-name">ws</span><span class="t-punc">.</span><span class="t-name">freeze_panes</span> <span class="t-op">=</span> <span class="t-str">"B2"</span><span class="t-punc">;</span> <span class="t-name">wb</span><span class="t-punc">.</span><span class="t-fn">save</span><span class="t-punc">(</span><span class="t-str">"quarterly_revenue.xlsx"</span><span class="t-punc">)</span></div>
+    </div>
+    <div class="toggle"><span class="tg" id="tgPy">formulas as written</span><span class="tg" id="tgXl">values as Excel shows</span></div>
+    <div class="book" id="book">
+      <div class="tabbar"><span class="tab">Quarterly Revenue</span><span class="fname" id="fname">unsaved</span></div>
+      <div class="tblwrap"><table id="grid"></table></div>
+    </div>
+    <div class="note" id="note"></div>
+    <div class="termline"><span class="dim">$ python 08_excel_quarterly_revenue.py</span>
+<span class="oline" id="t0">quarterly_revenue.xlsx created (5 years x 4 quarters).</span><span class="oline" id="t1">
+Year           Total    Growth</span><span class="oline" id="t2">2022         533,000          </span><span class="oline" id="t3">2023         612,000     14.8%</span><span class="oline" id="t4">2024         714,000     16.7%</span><span class="oline" id="t5">2025         828,000     16.0%</span><span class="oline" id="t6">2026         943,000     13.9%</span></div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const YEARS=[2022,2023,2024,2025,2026];
+const REV={2022:[120000,135000,128000,150000],2023:[140000,152000,149000,171000],2024:[165000,178000,172000,199000],2025:[190000,205000,201000,232000],2026:[215000,236000,228000,264000]};
+const TOTALS=YEARS.map(y=>REV[y].reduce((a,b)=>a+b,0));
+const AVGS=[0,1,2,3].map(q=>YEARS.reduce((a,y)=>a+REV[y][q],0)/5);
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+const grid=document.getElementById('grid'),status=document.getElementById('status'),book=document.getElementById('book');
+const fname=document.getElementById('fname'),note=document.getElementById('note');
+const tgPy=document.getElementById('tgPy'),tgXl=document.getElementById('tgXl');
+let h='<tr><th class="rh"></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th></tr>';
+h+='<tr><th class="rh">1</th><td class="yr">Year</td><td class="fill">Q1</td><td class="fill">Q2</td><td class="fill">Q3</td><td class="fill">Q4</td><td class="fill">Total</td><td class="fill">Growth %</td></tr>';
+YEARS.forEach((y,i)=>{h+=`<tr><th class="rh">${i+2}</th><td class="yr" id="y${i}">${y}</td>`+
+ [0,1,2,3].map(q=>`<td class="empty" id="c${i}_${q}"></td>`).join('')+
+ `<td class="empty" id="tt${i}"></td><td class="empty" id="gw${i}"></td></tr>`;});
+h+='<tr><th class="rh">7</th><td colspan="7" style="border:none;height:6px"></td></tr>';
+h+='<tr><th class="rh">8</th><td class="yr">Avg</td>'+[0,1,2,3].map(q=>`<td class="empty" id="av${q}"></td>`).join('')+'<td class="empty"></td><td class="empty"></td></tr>';
+grid.innerHTML=h;
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d,dep:0},o));t+=d;};
+add(800,{yr:-1,tot:-1,gw:-1,avg:false,view:'py',saved:false,line:1,out:-1,st:'Write the header row: Year, Q1–Q4, Total, Growth %.'});
+YEARS.forEach((y,i)=>{
+  add(560,{yr:i,tot:i-1,gw:i-1,avg:false,view:'py',saved:false,line:4,dep:1,out:-1,st:`<b>${y}</b>: write the four quarterly figures into B–E.`});
+  add(520,{yr:i,tot:i,gw:i-1,avg:false,view:'py',saved:false,line:5,dep:1,out:-1,st:`Column F gets a live formula: <b>=SUM(B${i+2}:E${i+2})</b>.`});
+  if(i>0) add(520,{yr:i,tot:i,gw:i,avg:false,view:'py',saved:false,line:6,dep:1,out:-1,st:`Column G compares to last year: <b>=(F${i+2}-F${i+1})/F${i+1}</b>.`});
+  else add(420,{yr:i,tot:i,gw:-1,avg:false,view:'py',saved:false,line:6,dep:1,out:-1,st:'The first year has no prior year, so Growth stays blank.'});
+});
+add(850,{yr:4,tot:4,gw:4,avg:true,view:'py',saved:false,line:8,out:-1,st:'A footer row averages each quarter across all 5 years.'});
+add(800,{yr:4,tot:4,gw:4,avg:true,view:'py',saved:true,line:10,out:0,st:'<b>freeze_panes</b> keeps headers visible, then save the workbook.'});
+add(1400,{yr:4,tot:4,gw:4,avg:true,view:'xl',saved:true,line:10,out:6,st:'Open in Excel → every formula evaluates. 2026 total: <b>943,000</b>.'});
+add(1300,{yr:-1,tot:4,gw:4,avg:true,view:'xl',saved:true,line:10,out:6,st:'Python wrote the <b>structure</b>; Excel keeps the numbers <b>live</b>.'});
+const CYCLE=t;
+let playing=false,elapsed=0,last=0,raf=null,started=false;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  book.classList.toggle('on',s.yr>=0);
+  tgPy.classList.toggle('on',s.view==='py');tgXl.classList.toggle('on',s.view==='xl');
+  fname.classList.toggle('on',s.saved);fname.textContent=s.saved?'quarterly_revenue.xlsx ✓':'unsaved';
+  YEARS.forEach((y,i)=>{
+    document.getElementById('y'+i).style.opacity = i<=s.yr?1:.35;
+    [0,1,2,3].forEach(q=>{const c=document.getElementById('c'+i+'_'+q);
+      const on=i<=s.yr;c.textContent=on?fmt(REV[y][q]):'';c.className=on?('fill'+(i===s.yr?' hi':'')):'empty';});
+    const tt=document.getElementById('tt'+i),gw=document.getElementById('gw'+i);
+    const tOn=i<=s.tot;
+    tt.textContent=tOn?(s.view==='xl'?fmt(TOTALS[i]):`=SUM(B${i+2}:E${i+2})`):'';
+    tt.className=tOn?'tot':'empty';
+    const gOn=i<=s.gw&&i>0;
+    gw.textContent=gOn?(s.view==='xl'?((TOTALS[i]-TOTALS[i-1])/TOTALS[i-1]*100).toFixed(1)+'%':`=(F${i+2}-F${i+1})/F${i+1}`):'';
+    gw.className=gOn?'grow':'empty';
+  });
+  [0,1,2,3].forEach(q=>{const a=document.getElementById('av'+q);
+    a.textContent=s.avg?(s.view==='xl'?fmt(AVGS[q]):`=AVERAGE(${'BCDE'[q]}2:${'BCDE'[q]}6)`):'';
+    a.className=s.avg?'avg':'empty';});
+  note.textContent = s.view==='xl' ? 'Excel recalculates: totals, YoY growth % and quarter averages' : (s.tot>=0?'Formula text is stored — Python never computes it':'');
+  for(let k=0;k<=6;k++)document.getElementById('t'+k).classList.toggle('show', s.out>=k && s.out>=0);
+  ['l1','l3','l4','l5','l6','l8','l10'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
+  if([4,5,6].includes(s.line))document.getElementById('l3').classList.add('on');
+  status.innerHTML=s.st;
+}
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop'),bI=document.getElementById('into'),bO=document.getElementById('over');
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
+  book.classList.remove('on');tgPy.classList.remove('on');tgXl.classList.remove('on');fname.classList.remove('on');fname.textContent='unsaved';note.textContent='';
+  YEARS.forEach((y,i)=>{document.getElementById('y'+i).style.opacity=.35;
+    [0,1,2,3].forEach(q=>{const c=document.getElementById('c'+i+'_'+q);c.textContent='';c.className='empty';});
+    document.getElementById('tt'+i).textContent='';document.getElementById('tt'+i).className='empty';
+    document.getElementById('gw'+i).textContent='';document.getElementById('gw'+i).className='empty';});
+  [0,1,2,3].forEach(q=>{const a=document.getElementById('av'+q);a.textContent='';a.className='empty';});
+  for(let k=0;k<=6;k++)document.getElementById('t'+k).classList.remove('show');
+  ['l1','l3','l4','l5','l6','l8','l10'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
+</script>
+</body>
+</html>

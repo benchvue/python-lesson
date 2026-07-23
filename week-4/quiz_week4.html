@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 4 Quiz — Files, CSV, Dates & Excel</title>
+<style>
+  :root{ --ok:#10b981; --no:#ef4444; --accent:#6366f1; --muted:#9a9a9a; }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{ background:#fff; font-family:'Segoe UI',system-ui,sans-serif; color:#111;
+    display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:54px 20px; }
+  h1{ font-size:13px; font-weight:500; letter-spacing:.18em; text-transform:uppercase; color:#999; margin-bottom:8px; }
+  h2{ font-size:26px; font-weight:600; letter-spacing:-.02em; text-align:center; margin-bottom:6px; }
+  .subtitle{ font-size:13px; color:var(--muted); margin-bottom:30px; text-align:center; }
+  .wrap{ width:100%; max-width:600px; }
+  .scorebar{ position:sticky; top:0; background:#fff; z-index:5; display:flex; align-items:center; justify-content:space-between;
+    padding:10px 0; margin-bottom:14px; border-bottom:1px solid #f0f0f4; }
+  .score{ font-size:13px; font-weight:600; color:#555; } .score b{ color:var(--accent); font-size:15px; }
+  .reset{ font-family:inherit; font-size:12.5px; font-weight:600; cursor:pointer; border:1px solid #e3e3ea; background:#fff; color:#666; border-radius:9px; padding:6px 13px; transition:all .15s; }
+  .reset:hover{ border-color:#ccc; color:#222; }
+  .q{ border:1.5px solid #ececf2; border-radius:16px; padding:20px 18px; margin-bottom:20px; }
+  .q-num{ font-size:10.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); }
+  .q-text{ font-size:15.5px; font-weight:600; margin:5px 0 13px; letter-spacing:-.01em; }
+  .code{ background:#1e2030; border-radius:10px; padding:12px 14px; margin-bottom:15px; font-family:'SF Mono','Consolas',monospace; font-size:12.5px; line-height:1.75; color:#d7dce8; overflow-x:auto; }
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-num{color:#f78c6c}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}.t-com{color:#5a6080}
+  .opts{ display:flex; flex-direction:column; gap:9px; }
+  .opt{ display:flex; align-items:center; gap:10px; text-align:left; width:100%; font-family:'SF Mono','Consolas',monospace; font-size:13px; color:#333; background:#fff; border:1.5px solid #e6e6ee; border-radius:10px; padding:11px 13px; cursor:pointer; transition:.15s; }
+  .opt:hover:not(:disabled){ border-color:#c7c7d6; } .opt:active:not(:disabled){ transform:scale(.99); }
+  .opt .mk{ width:18px; height:18px; border-radius:50%; border:2px solid #d3d3df; flex:none; display:flex; align-items:center; justify-content:center; font-size:11px; color:#fff; font-family:'Segoe UI',sans-serif; }
+  .opt:disabled{ cursor:default; }
+  .opt.correct{ border-color:var(--ok); background:color-mix(in srgb,var(--ok) 8%,#fff); color:#0a6b4d; } .opt.correct .mk{ background:var(--ok); border-color:var(--ok); }
+  .opt.wrong{ border-color:var(--no); background:color-mix(in srgb,var(--no) 8%,#fff); color:#a31818; } .opt.wrong .mk{ background:var(--no); border-color:var(--no); }
+  .explain{ font-size:12.5px; color:#666; margin-top:12px; line-height:1.5; display:none; } .explain.show{ display:block; } .explain b{ color:#222; }
+  .q.answered.right{ border-color:color-mix(in srgb,var(--ok) 40%,#fff); } .q.answered.miss{ border-color:color-mix(in srgb,var(--no) 35%,#fff); }
+  .result{ text-align:center; font-size:15px; font-weight:600; color:#111; margin-top:6px; padding:16px; border-radius:14px; background:#f6f7fb; display:none; } .result.show{ display:block; } .result span{ font-size:24px; display:block; margin-bottom:4px; }
+  @media (max-width:480px){ body{ padding:40px 14px; } h2{ font-size:21px; } .code{ font-size:11px; } }
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 4</h1>
+  <h2>Quick Quiz</h2>
+  <div class="subtitle">6 questions on files, CSV, dates & Excel</div>
+  <div class="wrap">
+    <div class="scorebar"><div class="score">Score: <b id="score">0</b> / <span id="total">6</span></div><button class="reset" id="reset">↺ Reset</button></div>
+    <div id="quiz"></div>
+    <div class="result" id="result"></div>
+  </div>
+<script>
+const QUIZ=[
+  {
+    q:'What does the "w" mode do to an existing file?',
+    code:'<span class="t-kw">with</span> <span class="t-fn">open</span><span class="t-punc">(</span><span class="t-str">"report.txt"</span><span class="t-punc">,</span> <span class="t-str">"w"</span><span class="t-punc">)</span> <span class="t-kw">as</span> <span class="t-name">file</span><span class="t-punc">:</span>\n&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-name">file</span><span class="t-punc">.</span><span class="t-fn">write</span><span class="t-punc">(</span><span class="t-name">text</span><span class="t-punc">)</span>',
+    options:['Adds to the end','Overwrites everything','Raises an error','Reads it'], answer:1,
+    explain:'<b>"w"</b> overwrites the file from scratch. Use <b>"a"</b> (append) to add to the end instead.'
+  },
+  {
+    q:'Why is float() needed here?',
+    code:'<span class="t-kw">for</span> <span class="t-name">row</span> <span class="t-kw">in</span> <span class="t-name">csv</span><span class="t-punc">.</span><span class="t-fn">DictReader</span><span class="t-punc">(</span><span class="t-name">file</span><span class="t-punc">):</span>\n&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-name">total</span> <span class="t-op">+=</span> <span class="t-fn">float</span><span class="t-punc">(</span><span class="t-name">row</span><span class="t-punc">[</span><span class="t-str">"amount"</span><span class="t-punc">])</span>',
+    options:['To round the number','CSV values come in as strings','To make it print','float() is optional'], answer:1,
+    explain:'Everything read from a CSV is <b>text</b>. Without float() you would join strings, not add numbers.'
+  },
+  {
+    q:'What does this print on 17 March 2026?',
+    code:'<span class="t-name">today</span> <span class="t-op">=</span> <span class="t-name">datetime</span><span class="t-punc">.</span><span class="t-fn">today</span><span class="t-punc">()</span>\n<span class="t-fn">print</span><span class="t-punc">(</span><span class="t-name">today</span><span class="t-punc">.</span><span class="t-fn">strftime</span><span class="t-punc">(</span><span class="t-str">"%Y-%m-%d"</span><span class="t-punc">))</span>',
+    options:['17-03-2026','2026-03-17','03/17/26','2026-3-17'], answer:1,
+    explain:'<b>%Y-%m-%d</b> means 4-digit year, then zero-padded month and day → <b>2026-03-17</b>.'
+  },
+  {
+    q:'What is missing so the file actually appears on disk?',
+    code:'<span class="t-name">wb</span> <span class="t-op">=</span> <span class="t-fn">Workbook</span><span class="t-punc">()</span>\n<span class="t-name">sheet</span> <span class="t-op">=</span> <span class="t-name">wb</span><span class="t-punc">.</span><span class="t-name">active</span>\n<span class="t-name">sheet</span><span class="t-punc">[</span><span class="t-str">"A1"</span><span class="t-punc">]</span> <span class="t-op">=</span> <span class="t-str">"Revenue"</span>\n<span class="t-com"># ???</span>',
+    options:['wb.close()','wb.save("file.xlsx")','sheet.write()','print(wb)'], answer:1,
+    explain:'A workbook lives in memory until <b>wb.save("file.xlsx")</b> writes it out.'
+  },
+  {
+    q:'Python writes "=B1-B2" into cell B3. What does Python compute?',
+    code:'<span class="t-name">sheet</span><span class="t-punc">[</span><span class="t-str">"B1"</span><span class="t-punc">]</span> <span class="t-op">=</span> <span class="t-num">120000</span>\n<span class="t-name">sheet</span><span class="t-punc">[</span><span class="t-str">"B2"</span><span class="t-punc">]</span> <span class="t-op">=</span> <span class="t-num">80000</span>\n<span class="t-name">sheet</span><span class="t-punc">[</span><span class="t-str">"B3"</span><span class="t-punc">]</span> <span class="t-op">=</span> <span class="t-str">"=B1-B2"</span>',
+    options:['40000','Nothing — Excel computes it','200000','An error'], answer:1,
+    explain:'To Python it is just a <b>string</b>. The formula is evaluated by <b>Excel</b> when the file is opened → 40000.'
+  },
+  {
+    q:'After looping every row, what is totals["Rent"]?',
+    code:'<span class="t-com"># rows: Rent -1800, Revenue 5200, Rent -1800, Rent -1800</span>\n<span class="t-name">totals</span> <span class="t-op">=</span> <span class="t-fn">defaultdict</span><span class="t-punc">(</span><span class="t-name">float</span><span class="t-punc">)</span>\n<span class="t-kw">for</span> <span class="t-name">row</span> <span class="t-kw">in</span> <span class="t-name">rows</span><span class="t-punc">:</span>\n&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-name">totals</span><span class="t-punc">[</span><span class="t-name">row</span><span class="t-punc">[</span><span class="t-str">"account"</span><span class="t-punc">]]</span> <span class="t-op">+=</span> <span class="t-fn">float</span><span class="t-punc">(</span><span class="t-name">row</span><span class="t-punc">[</span><span class="t-str">"amount"</span><span class="t-punc">])</span>',
+    options:['-1800.0','-5400.0','3400.0','KeyError'], answer:1,
+    explain:'Three Rent rows accumulate: −1800 × 3 = <b>−5400.0</b>. A <b>defaultdict</b> starts each new key at 0.0, so there is no KeyError.'
+  }
+];
+const quizEl=document.getElementById('quiz'),scoreEl=document.getElementById('score'),totalEl=document.getElementById('total'),resultEl=document.getElementById('result');
+const TOTAL=QUIZ.length; let answered=new Array(TOTAL).fill(false), score=0; totalEl.textContent=TOTAL;
+function build(){
+  quizEl.innerHTML='';
+  QUIZ.forEach((item,qi)=>{
+    const card=document.createElement('div'); card.className='q'; card.id='q'+qi;
+    card.innerHTML=`<div class="q-num">Question ${qi+1}</div><div class="q-text">${item.q}</div>`+
+      (item.code?`<pre class="code">${item.code}</pre>`:'')+
+      `<div class="opts">${item.options.map((o,oi)=>`<button class="opt" data-q="${qi}" data-o="${oi}"><span class="mk"></span><span>${o}</span></button>`).join('')}</div>`+
+      `<div class="explain" id="ex${qi}">${item.explain}</div>`;
+    quizEl.appendChild(card);
+  });
+  quizEl.querySelectorAll('.opt').forEach(b=> b.addEventListener('click', choose));
+}
+function choose(e){
+  const btn=e.currentTarget, qi=+btn.dataset.q, oi=+btn.dataset.o;
+  if(answered[qi]) return; answered[qi]=true;
+  const card=document.getElementById('q'+qi), correct=QUIZ[qi].answer;
+  card.querySelectorAll('.opt').forEach((o,i)=>{ o.disabled=true;
+    if(i===correct){ o.classList.add('correct'); o.querySelector('.mk').textContent='\u2713'; }
+    if(i===oi && oi!==correct){ o.classList.add('wrong'); o.querySelector('.mk').textContent='\u2715'; } });
+  card.classList.add('answered', oi===correct?'right':'miss');
+  document.getElementById('ex'+qi).classList.add('show');
+  if(oi===correct){ score++; scoreEl.textContent=score; }
+  if(answered.every(Boolean)) showResult();
+}
+function showResult(){
+  let emoji,text;
+  if(score===TOTAL){ emoji='🎉'; text=`Perfect! ${score} / ${TOTAL} — Week 4 mastered.`; }
+  else if(score/TOTAL>=0.6){ emoji='👍'; text=`Nice — ${score} / ${TOTAL}. Almost there!`; }
+  else { emoji='📘'; text=`${score} / ${TOTAL} — replay the lessons, then retry.`; }
+  resultEl.innerHTML=`<span>${emoji}</span>${text}`; resultEl.classList.add('show');
+}
+function reset(){ answered=new Array(TOTAL).fill(false); score=0; scoreEl.textContent='0'; resultEl.classList.remove('show'); build(); window.scrollTo({top:0,behavior:'smooth'}); }
+document.getElementById('reset').addEventListener('click', reset);
+build();
+</script>
+</body>
+</html>

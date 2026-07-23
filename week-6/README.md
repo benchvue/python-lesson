@@ -1,32 +1,31 @@
-# Week 6 - Pandas for Accounting Data Analysis
+# Week 7 - Charts, Automation, and APIs
 
 ## 1-Hour Lesson Goal
 
-Use pandas to analyze tabular accounting data.
+Create charts, automate files, and understand simple API data retrieval.
 
 ## Topics
 
-- DataFrames
-- Reading CSV
-- Filtering data
-- Grouping data
-- Pivot-table style summaries
-- Missing values
+- matplotlib charts
+- File automation with pathlib
+- Simple API concept
+- `requests`
+- Using external financial data
 
 ## Install
 
 ```bash
-pip install pandas openpyxl
+pip install matplotlib requests
 ```
 
 ## Run Examples
 
 ```bash
-python 01_dataframe_basics.py
-python 02_group_expenses.py
-python 03_filter_transactions.py
+python 01_expense_chart.py
+python 02_file_automation.py
+python 03_simple_api_example.py
 ```
 
 ## Practice
 
-Create a pandas report that summarizes expenses by category.
+Create a bar chart showing expenses by category.

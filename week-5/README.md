@@ -1,31 +1,32 @@
-# Week 5 - Excel Automation with openpyxl
+# Week 6 - Pandas for Accounting Data Analysis
 
 ## 1-Hour Lesson Goal
 
-Learn how to create, read, and update Excel files using Python.
+Use pandas to analyze tabular accounting data.
 
 ## Topics
 
-- Installing openpyxl
-- Creating Excel workbooks
-- Reading Excel data
-- Writing formulas
-- Simple formatting ideas
+- DataFrames
+- Reading CSV
+- Filtering data
+- Grouping data
+- Pivot-table style summaries
+- Missing values
 
 ## Install
 
 ```bash
-pip install openpyxl
+pip install pandas openpyxl
 ```
 
 ## Run Examples
 
 ```bash
-python 01_create_excel_report.py
-python 02_read_excel_report.py
-python 03_excel_formula.py
+python 01_dataframe_basics.py
+python 02_group_expenses.py
+python 03_filter_transactions.py
 ```
 
 ## Practice
 
-Create a monthly expense Excel file with categories and amounts.
+Create a pandas report that summarizes expenses by category.

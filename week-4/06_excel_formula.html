@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — Write an Excel Formula</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:28px;text-align:center}
+  .wrap{width:100%;max-width:740px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:24px;font-family:'SF Mono','Consolas',monospace;font-size:12.5px;line-height:1.75;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:block;border-radius:7px;padding:1px 8px;transition:.25s;min-height:21px;white-space:nowrap}
+  .cl .gut{color:#5a6080;display:inline-block;width:16px;text-align:right;margin-right:10px}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-num{color:#f78c6c}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}
+  .toggle{display:flex;justify-content:center;gap:8px;margin-bottom:12px}
+  .tg{font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;border:1.5px solid #e6e6ee;color:#aaa;transition:.3s}
+  .tg.on{border-color:#10b981;background:#e9fbf3;color:#0a7d57}
+  .book{border:2px solid #ececf2;border-radius:14px;overflow:hidden;transition:.25s}
+  .book.on{border-color:#f59e0b;box-shadow:0 10px 26px #f59e0b1f}
+  .tabbar{display:flex;align-items:center;gap:8px;background:#f6f7fa;padding:8px 12px;border-bottom:1px solid #ececf2}
+  .tab{font-size:11.5px;font-weight:600;color:#8a5e08;background:#fff3dc;border:1px solid #f0d9a8;border-radius:7px 7px 0 0;padding:5px 12px}
+  .fname{margin-left:auto;font-family:'SF Mono','Consolas',monospace;font-size:10.5px;color:#bbb;transition:.3s}.fname.on{color:#0a7d57}
+  table{width:100%;border-collapse:collapse;font-family:'SF Mono','Consolas',monospace;font-size:12.5px}
+  th,td{border:1px solid #eef0f4;padding:8px 10px;height:36px;transition:.3s}
+  th{background:#fafafc;color:#aaa;font-size:10px;font-weight:700;text-align:center;width:44px}
+  td.empty{color:transparent}
+  td.fill{background:#fafbff;color:#333}
+  td.hi{background:#fff3dc;color:#8a5e08;font-weight:700;box-shadow:inset 0 0 0 2px #f59e0b}
+  td.formula{color:#0a7d57;font-weight:700;background:#e9fbf3}
+  .num{text-align:right}
+  .note{font-size:11.5px;color:#999;text-align:center;margin-top:10px;min-height:18px;transition:.3s}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:12px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:9px 12px;margin-top:14px;min-height:44px;line-height:1.7}
+  .termline .p{color:#6ee7ff}.oline{opacity:0;transition:.3s}.oline.show{opacity:1}
+  .status{text-align:center;font-size:13px;color:#555;margin:20px auto 16px;min-height:20px;max-width:620px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 18px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
+  @media(max-width:600px){h2{font-size:20px}.code{font-size:10px}table{font-size:11px}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 4</h1>
+  <h2>Write an Excel Formula</h2>
+  <div class="subtitle">store a formula string — Excel calculates it when the file opens</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l6"><span class="gut">6</span><span class="t-name">sheet</span><span class="t-punc">[</span><span class="t-str">"A1"</span><span class="t-punc">]</span> <span class="t-op">=</span> <span class="t-str">"Revenue"</span><span class="t-punc">;</span> <span class="t-name">sheet</span><span class="t-punc">[</span><span class="t-str">"B1"</span><span class="t-punc">]</span> <span class="t-op">=</span> <span class="t-num">120000</span></div>
+      <div class="cl" id="l9"><span class="gut">9</span><span class="t-name">sheet</span><span class="t-punc">[</span><span class="t-str">"A2"</span><span class="t-punc">]</span> <span class="t-op">=</span> <span class="t-str">"Expenses"</span><span class="t-punc">;</span> <span class="t-name">sheet</span><span class="t-punc">[</span><span class="t-str">"B2"</span><span class="t-punc">]</span> <span class="t-op">=</span> <span class="t-num">80000</span></div>
+      <div class="cl" id="l12"><span class="gut">12</span><span class="t-name">sheet</span><span class="t-punc">[</span><span class="t-str">"A3"</span><span class="t-punc">]</span> <span class="t-op">=</span> <span class="t-str">"Profit"</span></div>
+      <div class="cl" id="l13"><span class="gut">13</span><span class="t-name">sheet</span><span class="t-punc">[</span><span class="t-str">"B3"</span><span class="t-punc">]</span> <span class="t-op">=</span> <span class="t-str">"=B1-B2"</span>   <span class="t-punc">← a formula string</span></div>
+      <div class="cl" id="l15"><span class="gut">15</span><span class="t-name">workbook</span><span class="t-punc">.</span><span class="t-fn">save</span><span class="t-punc">(</span><span class="t-str">"profit_formula.xlsx"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l16"><span class="gut">16</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"profit_formula.xlsx created with formula."</span><span class="t-punc">)</span></div>
+    </div>
+    <div class="toggle"><span class="tg" id="tgPy">as Python wrote it</span><span class="tg" id="tgXl">as Excel shows it</span></div>
+    <div class="book" id="book">
+      <div class="tabbar"><span class="tab">Profit</span><span class="fname" id="fname">unsaved</span></div>
+      <table>
+        <tr><th></th><th>A</th><th>B</th></tr>
+        <tr><th>1</th><td id="a1" class="empty"></td><td id="b1" class="empty num"></td></tr>
+        <tr><th>2</th><td id="a2" class="empty"></td><td id="b2" class="empty num"></td></tr>
+        <tr><th>3</th><td id="a3" class="empty"></td><td id="b3" class="empty num"></td></tr>
+      </table>
+    </div>
+    <div class="note" id="note"></div>
+    <div class="termline"><div><span class="p">$</span> python 06_excel_formula.py</div>
+      <div class="oline" id="o0">profit_formula.xlsx created with formula.</div></div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const status=document.getElementById('status'),book=document.getElementById('book'),fname=document.getElementById('fname'),note=document.getElementById('note');
+const tgPy=document.getElementById('tgPy'),tgXl=document.getElementById('tgXl');
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d,dep:0},o));t+=d;};
+add(850,{rows:1,hi:1,view:'py',saved:false,line:6,st:'Write a label in <b>A1</b> and a number in <b>B1</b>.'});
+add(850,{rows:2,hi:2,view:'py',saved:false,line:9,st:'Same for row 2 — <b>Expenses = 80000</b>.'});
+add(700,{rows:3,hi:3,view:'py',saved:false,line:12,st:'Label <b>A3</b> as "Profit".'});
+add(1100,{rows:3,hi:3,view:'py',saved:false,line:13,formula:true,st:'<b>"=B1-B2"</b> is just a <b>string</b> to Python — it does no math here.'});
+add(850,{rows:3,hi:-1,view:'py',saved:true,line:15,formula:true,st:'<b>save()</b> stores the formula text inside the .xlsx.'});
+add(800,{rows:3,hi:-1,view:'py',saved:true,line:16,formula:true,out:true,st:'Python is done — it never calculated a profit.'});
+add(1300,{rows:3,hi:3,view:'xl',saved:true,line:16,formula:true,out:true,st:'Open it in <b>Excel</b>: the formula recalculates → <b>40000</b>. ✨'});
+add(1200,{rows:3,hi:-1,view:'xl',saved:true,line:16,formula:true,out:true,st:'Formulas stay live — change B1 in Excel and the profit updates itself.'});
+const CYCLE=t;
+const A=['Revenue','Expenses','Profit'],B=['120000','80000',null];
+let playing=false,elapsed=0,last=0,raf=null,started=false;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  book.classList.toggle('on',s.hi>0);
+  tgPy.classList.toggle('on',s.view==='py');tgXl.classList.toggle('on',s.view==='xl');
+  fname.classList.toggle('on',s.saved);fname.textContent=s.saved?'profit_formula.xlsx ✓':'unsaved';
+  for(let r=1;r<=3;r++){
+    const a=document.getElementById('a'+r),b=document.getElementById('b'+r);
+    const on=r<=s.rows;
+    a.textContent=on?A[r-1]:'';
+    let bv='';
+    if(on){ bv = r<3 ? B[r-1] : (s.formula ? (s.view==='xl' ? '40000' : '=B1-B2') : ''); }
+    b.textContent=bv;
+    a.className=(on?'fill':'empty')+(r===s.hi?' hi':'');
+    b.className='num '+(on&&bv?'fill':'empty')+(r===3&&s.formula?' formula':'')+(r===s.hi?' hi':'');
+  }
+  note.textContent = s.view==='xl' ? 'Excel evaluates =B1-B2 → 120000 − 80000 = 40000' : (s.formula?'Python stored the text "=B1-B2" — no value yet':'');
+  document.getElementById('o0').classList.toggle('show',!!s.out);
+  ['l6','l9','l12','l13','l15','l16'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
+  status.innerHTML=s.st;
+}
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop'),bI=document.getElementById('into'),bO=document.getElementById('over');
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
+  book.classList.remove('on');tgPy.classList.remove('on');tgXl.classList.remove('on');fname.classList.remove('on');fname.textContent='unsaved';note.textContent='';
+  for(let r=1;r<=3;r++){const a=document.getElementById('a'+r),b=document.getElementById('b'+r);a.textContent='';b.textContent='';a.className='empty';b.className='empty num';}
+  document.getElementById('o0').classList.remove('show');
+  ['l6','l9','l12','l13','l15','l16'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
+</script>
+</body>
+</html>

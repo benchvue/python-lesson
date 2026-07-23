@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — Read an Excel File</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:28px;text-align:center}
+  .wrap{width:100%;max-width:760px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:24px;font-family:'SF Mono','Consolas',monospace;font-size:12.5px;line-height:1.8;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:block;border-radius:7px;padding:1px 8px;transition:.25s;min-height:21px;white-space:nowrap}
+  .cl .gut{color:#5a6080;display:inline-block;width:14px;text-align:right;margin-right:10px}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}
+  .panes{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .book{flex:1;min-width:260px;border:2px solid #ececf2;border-radius:14px;overflow:hidden;transition:.25s}
+  .book.on{border-color:#0ea5e9;box-shadow:0 10px 26px #0ea5e91f}
+  .tabbar{display:flex;align-items:center;gap:8px;background:#f6f7fa;padding:8px 12px;border-bottom:1px solid #ececf2}
+  .tab{font-size:11.5px;font-weight:600;color:#0a7d57;background:#e9fbf3;border:1px solid #bfe8d5;border-radius:7px 7px 0 0;padding:5px 12px}
+  .fname{margin-left:auto;font-family:'SF Mono','Consolas',monospace;font-size:10.5px;color:#bbb}
+  table{width:100%;border-collapse:collapse;font-family:'SF Mono','Consolas',monospace;font-size:12px}
+  th,td{border:1px solid #eef0f4;padding:7px 9px;height:32px;transition:.3s}
+  th{background:#fafafc;color:#aaa;font-size:10px;font-weight:700;text-align:center;width:40px}
+  td.hdr{font-weight:700;color:#555;background:#f4f5f9}
+  tr.cur td{background:#e8f6fe;color:#0369a1;font-weight:700;box-shadow:inset 0 -2px 0 #0ea5e9}
+  tr.done td{color:#b6bac6}
+  .num{text-align:right}
+  .side{flex:1;min-width:230px}
+  .lbl{font-size:9.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#bbb;margin-bottom:8px}
+  .tup{font-family:'SF Mono','Consolas',monospace;font-size:13px;font-weight:700;color:#4f46e5;background:#eef0ff;border:1.5px solid #d8dbef;border-radius:10px;padding:10px 12px;text-align:center;transition:.25s;margin-bottom:14px}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:12px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:10px 12px;min-height:112px;line-height:1.75}
+  .termline .p{color:#6ee7ff}.oline{opacity:0;transform:translateY(3px);transition:.3s}.oline.show{opacity:1;transform:none}
+  .status{text-align:center;font-size:13px;color:#555;margin:20px auto 16px;min-height:20px;max-width:620px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 18px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
+  @media(max-width:600px){h2{font-size:20px}.code{font-size:10.5px}table{font-size:10.5px}.book,.side{min-width:0}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 4</h1>
+  <h2>Read an Excel File</h2>
+  <div class="subtitle">load a workbook and walk its rows — each row comes back as a tuple</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l1"><span class="gut">1</span><span class="t-kw">from</span> <span class="t-name">openpyxl</span> <span class="t-kw">import</span> <span class="t-name">load_workbook</span></div>
+      <div class="cl" id="l3"><span class="gut">3</span><span class="t-name">workbook</span> <span class="t-op">=</span> <span class="t-fn">load_workbook</span><span class="t-punc">(</span><span class="t-str">"income_statement.xlsx"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l4"><span class="gut">4</span><span class="t-name">sheet</span> <span class="t-op">=</span> <span class="t-name">workbook</span><span class="t-punc">[</span><span class="t-str">"Income Statement"</span><span class="t-punc">]</span></div>
+      <div class="cl" id="l6"><span class="gut">6</span><span class="t-kw">for</span> <span class="t-name">row</span> <span class="t-kw">in</span> <span class="t-name">sheet</span><span class="t-punc">.</span><span class="t-fn">iter_rows</span><span class="t-punc">(</span><span class="t-name">values_only</span><span class="t-op">=</span><span class="t-kw">True</span><span class="t-punc">):</span></div>
+      <div class="cl" id="l7"><span class="gut">7</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-fn">print</span><span class="t-punc">(</span><span class="t-name">row</span><span class="t-punc">)</span></div>
+    </div>
+    <div class="panes">
+      <div class="book" id="book">
+        <div class="tabbar"><span class="tab">Income Statement</span><span class="fname">income_statement.xlsx</span></div>
+        <table>
+          <tr><th></th><th>A</th><th>B</th></tr>
+          <tr id="tr0"><td class="hdr">Account</td><td class="hdr num">Amount</td></tr>
+          <tr id="tr1"><td>Revenue</td><td class="num">100000</td></tr>
+          <tr id="tr2"><td>Expenses</td><td class="num">70000</td></tr>
+          <tr id="tr3"><td>Net Income</td><td class="num">30000</td></tr>
+        </table>
+      </div>
+      <div class="side">
+        <div class="lbl">Current row (a tuple)</div>
+        <div class="tup" id="tup">row = —</div>
+        <div class="termline"><div><span class="p">$</span> python 05_read_excel_report.py</div>
+          <div class="oline" id="o0">('Account', 'Amount')</div>
+          <div class="oline" id="o1">('Revenue', 100000)</div>
+          <div class="oline" id="o2">('Expenses', 70000)</div>
+          <div class="oline" id="o3">('Net Income', 30000)</div></div>
+      </div>
+    </div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const TUP=["('Account', 'Amount')","('Revenue', 100000)","('Expenses', 70000)","('Net Income', 30000)"];
+const status=document.getElementById('status'),book=document.getElementById('book'),tup=document.getElementById('tup');
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d,dep:0},o));t+=d;};
+add(700,{cur:-1,bookOn:false,line:1,st:'Import <b>load_workbook</b> — the reader half of openpyxl.'});
+add(850,{cur:-1,bookOn:true,line:3,st:'<b>load_workbook()</b> opens an existing .xlsx file.'});
+add(750,{cur:-1,bookOn:true,line:4,st:'Pick the sheet by its tab name, like a dict key.'});
+add(700,{cur:-1,bookOn:true,line:6,st:'<b>iter_rows(values_only=True)</b> yields plain values, not cell objects.'});
+for(let i=0;i<4;i++) add(800,{cur:i,bookOn:true,line:7,dep:1,st:`Row ${i+1} → <b>${TUP[i]}</b> is printed.`});
+add(1300,{cur:-1,bookOn:true,line:6,st:'Every row is a <b>tuple</b> — index it like row[0], row[1].'});
+const CYCLE=t;
+let playing=false,elapsed=0,last=0,raf=null,started=false;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  book.classList.toggle('on',s.bookOn);
+  for(let i=0;i<4;i++){const tr=document.getElementById('tr'+i);
+    tr.classList.toggle('cur',i===s.cur);tr.classList.toggle('done',s.cur>i);
+    document.getElementById('o'+i).classList.toggle('show', s.cur>=i && s.cur>=0);}
+  tup.textContent = s.cur>=0 ? 'row = '+TUP[s.cur] : 'row = —';
+  ['l1','l3','l4','l6','l7'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
+  if(s.line===7)document.getElementById('l6').classList.add('on');
+  status.innerHTML=s.st;
+}
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop'),bI=document.getElementById('into'),bO=document.getElementById('over');
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
+  book.classList.remove('on');for(let i=0;i<4;i++){document.getElementById('tr'+i).classList.remove('cur','done');document.getElementById('o'+i).classList.remove('show');}
+  tup.textContent='row = —';['l1','l3','l4','l6','l7'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
+</script>
+</body>
+</html>

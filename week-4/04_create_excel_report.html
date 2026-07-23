@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — Create an Excel File</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:28px;text-align:center}
+  .wrap{width:100%;max-width:740px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:24px;font-family:'SF Mono','Consolas',monospace;font-size:12.5px;line-height:1.75;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:block;border-radius:7px;padding:1px 8px;transition:.25s;min-height:21px;white-space:nowrap}
+  .cl .gut{color:#5a6080;display:inline-block;width:16px;text-align:right;margin-right:10px}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-num{color:#f78c6c}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}
+  .book{border:2px solid #ececf2;border-radius:14px;overflow:hidden;transition:.25s;margin-bottom:8px}
+  .book.on{border-color:#10b981;box-shadow:0 10px 26px #10b98122}
+  .tabbar{display:flex;align-items:center;gap:8px;background:#f6f7fa;padding:8px 12px;border-bottom:1px solid #ececf2}
+  .tab{font-size:11.5px;font-weight:600;color:#888;background:#fff;border:1px solid #e6e6ee;border-radius:7px 7px 0 0;padding:5px 12px;transition:.3s}
+  .tab.on{color:#0a7d57;border-color:#bfe8d5;background:#e9fbf3}
+  .fname{margin-left:auto;font-family:'SF Mono','Consolas',monospace;font-size:10.5px;color:#bbb;transition:.3s}
+  .fname.on{color:#0a7d57}
+  table{width:100%;border-collapse:collapse;font-family:'SF Mono','Consolas',monospace;font-size:12px}
+  th,td{border:1px solid #eef0f4;padding:7px 9px;height:32px}
+  th{background:#fafafc;color:#aaa;font-size:10px;font-weight:700;text-align:center;width:44px}
+  td{transition:.3s;color:#333}
+  td.empty{color:transparent}
+  td.fill{background:#f7f8ff}
+  td.hi{background:#eef0ff;color:#4f46e5;font-weight:700;box-shadow:inset 0 0 0 2px #6366f1}
+  td.hdr{font-weight:700;color:#555;background:#f4f5f9}
+  .num{text-align:right}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:12px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:9px 12px;margin-top:16px;min-height:44px;line-height:1.7}
+  .termline .p{color:#6ee7ff}.oline{opacity:0;transition:.3s}.oline.show{opacity:1}
+  .status{text-align:center;font-size:13px;color:#555;margin:20px auto 16px;min-height:20px;max-width:620px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 18px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
+  @media(max-width:600px){h2{font-size:20px}.code{font-size:10px}table{font-size:10.5px}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 4</h1>
+  <h2>Create an Excel File</h2>
+  <div class="subtitle">openpyxl builds a workbook in memory, then saves it as .xlsx</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l1"><span class="gut">1</span><span class="t-kw">from</span> <span class="t-name">openpyxl</span> <span class="t-kw">import</span> <span class="t-name">Workbook</span></div>
+      <div class="cl" id="l3"><span class="gut">3</span><span class="t-name">workbook</span> <span class="t-op">=</span> <span class="t-fn">Workbook</span><span class="t-punc">()</span></div>
+      <div class="cl" id="l4"><span class="gut">4</span><span class="t-name">sheet</span> <span class="t-op">=</span> <span class="t-name">workbook</span><span class="t-punc">.</span><span class="t-name">active</span></div>
+      <div class="cl" id="l5"><span class="gut">5</span><span class="t-name">sheet</span><span class="t-punc">.</span><span class="t-name">title</span> <span class="t-op">=</span> <span class="t-str">"Income Statement"</span></div>
+      <div class="cl" id="l7"><span class="gut">7</span><span class="t-name">sheet</span><span class="t-punc">[</span><span class="t-str">"A1"</span><span class="t-punc">]</span> <span class="t-op">=</span> <span class="t-str">"Account"</span><span class="t-punc">;</span> <span class="t-name">sheet</span><span class="t-punc">[</span><span class="t-str">"B1"</span><span class="t-punc">]</span> <span class="t-op">=</span> <span class="t-str">"Amount"</span></div>
+      <div class="cl" id="l13"><span class="gut">13</span><span class="t-kw">for</span> <span class="t-name">row</span> <span class="t-kw">in</span> <span class="t-name">data</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l14"><span class="gut">14</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-name">sheet</span><span class="t-punc">.</span><span class="t-fn">append</span><span class="t-punc">(</span><span class="t-name">row</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l16"><span class="gut">16</span><span class="t-name">workbook</span><span class="t-punc">.</span><span class="t-fn">save</span><span class="t-punc">(</span><span class="t-str">"income_statement.xlsx"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l17"><span class="gut">17</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"income_statement.xlsx created."</span><span class="t-punc">)</span></div>
+    </div>
+    <div class="book" id="book">
+      <div class="tabbar"><span class="tab" id="tab">Sheet</span><span class="fname" id="fname">unsaved</span></div>
+      <table>
+        <tr><th></th><th>A</th><th>B</th></tr>
+        <tr><th>1</th><td id="a1" class="empty"></td><td id="b1" class="empty num"></td></tr>
+        <tr><th>2</th><td id="a2" class="empty"></td><td id="b2" class="empty num"></td></tr>
+        <tr><th>3</th><td id="a3" class="empty"></td><td id="b3" class="empty num"></td></tr>
+        <tr><th>4</th><td id="a4" class="empty"></td><td id="b4" class="empty num"></td></tr>
+      </table>
+    </div>
+    <div class="termline"><div><span class="p">$</span> python 04_create_excel_report.py</div>
+      <div class="oline" id="o0">income_statement.xlsx created.</div></div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const CELLS=[['Account','Amount'],['Revenue','100000'],['Expenses','70000'],['Net Income','30000']];
+const status=document.getElementById('status'),book=document.getElementById('book'),tab=document.getElementById('tab'),fname=document.getElementById('fname');
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d,dep:0},o));t+=d;};
+add(650,{rows:0,hi:-1,title:false,saved:false,bookOn:false,line:1,st:'Import <b>Workbook</b> from openpyxl (install: <b>pip3 install openpyxl</b>).'});
+add(750,{rows:0,hi:-1,title:false,saved:false,bookOn:true,line:3,st:'<b>Workbook()</b> creates an empty workbook <i>in memory</i> — no file yet.'});
+add(700,{rows:0,hi:-1,title:false,saved:false,bookOn:true,line:4,st:'<b>workbook.active</b> grabs the first sheet to work on.'});
+add(750,{rows:0,hi:-1,title:true,saved:false,bookOn:true,line:5,st:'Rename the sheet tab to <b>"Income Statement"</b>.'});
+add(900,{rows:1,hi:0,title:true,saved:false,bookOn:true,line:7,st:'Write the header row by cell address: <b>A1</b> and <b>B1</b>.'});
+[1,2,3].forEach(i=>add(750,{rows:i+1,hi:i,title:true,saved:false,bookOn:true,line:14,dep:1,st:`<b>append()</b> adds the next row → <b>${CELLS[i][0]}</b>, ${CELLS[i][1]}.`}));
+add(900,{rows:4,hi:-1,title:true,saved:true,bookOn:true,line:16,st:'<b>save()</b> writes everything to disk as a real .xlsx file.'});
+add(750,{rows:4,hi:-1,title:true,saved:true,bookOn:true,line:17,out:true,st:'Confirm in the terminal.'});
+add(1200,{rows:4,hi:-1,title:true,saved:true,bookOn:false,line:17,out:true,st:'Nothing is on disk until <b>save()</b> runs — don\'t forget it!'});
+const CYCLE=t;
+let playing=false,elapsed=0,last=0,raf=null,started=false;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  book.classList.toggle('on',s.bookOn);
+  tab.classList.toggle('on',s.title);tab.textContent=s.title?'Income Statement':'Sheet';
+  fname.classList.toggle('on',s.saved);fname.textContent=s.saved?'income_statement.xlsx ✓':'unsaved';
+  for(let r=0;r<4;r++){
+    const a=document.getElementById('a'+(r+1)),b=document.getElementById('b'+(r+1));
+    const on=r<s.rows;
+    a.textContent=on?CELLS[r][0]:'';b.textContent=on?CELLS[r][1]:'';
+    a.className=(on?'':'empty ')+(r===0&&on?'hdr ':'')+(r===s.hi?'hi':on?'fill':'');
+    b.className='num '+(on?'':'empty ')+(r===0&&on?'hdr ':'')+(r===s.hi?'hi':on?'fill':'');
+  }
+  document.getElementById('o0').classList.toggle('show',!!s.out);
+  ['l1','l3','l4','l5','l7','l13','l14','l16','l17'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
+  if(s.line===14)document.getElementById('l13').classList.add('on');
+  status.innerHTML=s.st;
+}
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop'),bI=document.getElementById('into'),bO=document.getElementById('over');
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
+  book.classList.remove('on');tab.classList.remove('on');tab.textContent='Sheet';fname.classList.remove('on');fname.textContent='unsaved';
+  for(let r=1;r<=4;r++){const a=document.getElementById('a'+r),b=document.getElementById('b'+r);a.textContent='';b.textContent='';a.className='empty';b.className='empty num';}
+  document.getElementById('o0').classList.remove('show');
+  ['l1','l3','l4','l5','l7','l13','l14','l16','l17'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
+</script>
+</body>
+</html>

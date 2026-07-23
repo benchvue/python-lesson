@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — Many CSV Lines</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8a5e08;background:#fff3dc;border:1px solid #f0d9a8;border-radius:20px;padding:2px 10px;margin-bottom:8px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:26px;text-align:center}
+  .wrap{width:100%;max-width:820px}
+  .code{background:#1e2030;border-radius:12px;padding:12px 15px;margin-bottom:22px;font-family:'SF Mono','Consolas',monospace;font-size:12px;line-height:1.7;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:block;border-radius:7px;padding:1px 8px;transition:.25s;min-height:20px;white-space:nowrap}
+  .cl .gut{color:#5a6080;display:inline-block;width:16px;text-align:right;margin-right:10px}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}
+  .panes{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start}
+  .pane{flex:1;min-width:270px;border:2px solid #ececf2;border-radius:14px;padding:12px;transition:.25s}
+  .pane.on{border-color:#0ea5e9;box-shadow:0 8px 22px #0ea5e91f}
+  .ph{font-size:9.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#bbb;margin-bottom:8px;display:flex;justify-content:space-between}
+  .pane.on .ph{color:#0ea5e9}
+  .scroll{max-height:216px;overflow:hidden;position:relative}
+  .rows{transition:transform .35s ease}
+  table{width:100%;border-collapse:collapse;font-family:'SF Mono','Consolas',monospace;font-size:10.5px}
+  td{padding:4px 5px;border-bottom:1px solid #f4f4f8}
+  tr.r{opacity:.45;transition:.25s}
+  tr.r.cur{opacity:1;background:#eef0ff;box-shadow:inset 3px 0 0 #6366f1}
+  tr.r.cur td{color:#4f46e5;font-weight:700}
+  tr.r.done{opacity:.8}
+  .amt{text-align:right}
+  .accs{display:flex;flex-direction:column;gap:7px}
+  .acc{display:flex;align-items:center;justify-content:space-between;gap:8px;font-family:'SF Mono','Consolas',monospace;font-size:12px;border:1.5px solid #eee;border-radius:9px;padding:7px 10px;transition:.28s}
+  .acc .k{font-weight:700;color:#555}
+  .acc .n{font-size:9.5px;color:#bbb}
+  .acc .v{font-weight:700;color:#333}
+  .acc.hit{border-color:#6366f1;background:#f7f8ff;transform:translateX(3px)}
+  .acc.pos .v{color:#0a7d57}.acc.neg .v{color:#c12d2d}
+  .grand{display:flex;justify-content:space-between;font-family:'SF Mono','Consolas',monospace;font-size:12.5px;font-weight:700;border-top:2px solid #f0f0f4;margin-top:9px;padding-top:9px;color:#4f46e5}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:11px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:10px 12px;margin-top:16px;min-height:150px;line-height:1.65;white-space:pre}
+  .termline .p{color:#6ee7ff}.oline{opacity:0;transition:.3s;display:block}.oline.show{opacity:1}
+  .dim{color:#7f8798}
+  .status{text-align:center;font-size:13px;color:#555;margin:18px auto 16px;min-height:20px;max-width:640px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 18px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
+  @media(max-width:620px){h2{font-size:19px}.code{font-size:9.5px}.pane{min-width:0}.termline{font-size:9px}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 4</h1>
+  <div class="badge">advanced</div>
+  <h2>Handling Many CSV Lines</h2>
+  <div class="subtitle">read 12 transactions, group them by account, and write a summary file</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l1"><span class="gut">1</span><span class="t-name">totals</span> <span class="t-op">=</span> <span class="t-fn">defaultdict</span><span class="t-punc">(</span><span class="t-name">float</span><span class="t-punc">)</span>   <span class="t-name">counts</span> <span class="t-op">=</span> <span class="t-fn">defaultdict</span><span class="t-punc">(</span><span class="t-name">int</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l2"><span class="gut">2</span><span class="t-kw">with</span> <span class="t-fn">open</span><span class="t-punc">(</span><span class="t-name">SOURCE</span><span class="t-punc">)</span> <span class="t-kw">as</span> <span class="t-name">file</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l3"><span class="gut">3</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">for</span> <span class="t-name">row</span> <span class="t-kw">in</span> <span class="t-name">csv</span><span class="t-punc">.</span><span class="t-fn">DictReader</span><span class="t-punc">(</span><span class="t-name">file</span><span class="t-punc">):</span></div>
+      <div class="cl" id="l4"><span class="gut">4</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-name">amount</span> <span class="t-op">=</span> <span class="t-fn">float</span><span class="t-punc">(</span><span class="t-name">row</span><span class="t-punc">[</span><span class="t-str">"amount"</span><span class="t-punc">])</span></div>
+      <div class="cl" id="l5"><span class="gut">5</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-name">totals</span><span class="t-punc">[</span><span class="t-name">row</span><span class="t-punc">[</span><span class="t-str">"account"</span><span class="t-punc">]]</span> <span class="t-op">+=</span> <span class="t-name">amount</span></div>
+      <div class="cl" id="l6"><span class="gut">6</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-name">grand_total</span> <span class="t-op">+=</span> <span class="t-name">amount</span><span class="t-punc">;</span> <span class="t-name">line_count</span> <span class="t-op">+=</span> <span class="t-punc">1</span></div>
+      <div class="cl" id="l8"><span class="gut">8</span><span class="t-kw">for</span> <span class="t-name">account</span><span class="t-punc">,</span> <span class="t-name">total</span> <span class="t-kw">in</span> <span class="t-fn">sorted</span><span class="t-punc">(</span><span class="t-name">totals</span><span class="t-punc">.</span><span class="t-fn">items</span><span class="t-punc">(),</span> <span class="t-name">key</span><span class="t-op">=</span><span class="t-kw">lambda</span> <span class="t-name">kv</span><span class="t-punc">:</span> <span class="t-name">kv</span><span class="t-punc">[</span><span class="t-punc">1</span><span class="t-punc">],</span> <span class="t-name">reverse</span><span class="t-op">=</span><span class="t-kw">True</span><span class="t-punc">):</span></div>
+      <div class="cl" id="l9"><span class="gut">9</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">f"{account:&lt;12}{counts[account]:&gt;7}{total:&gt;14,.2f}"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l11"><span class="gut">11</span><span class="t-name">writer</span><span class="t-punc">.</span><span class="t-fn">writerow</span><span class="t-punc">([</span><span class="t-name">account</span><span class="t-punc">,</span> <span class="t-name">counts</span><span class="t-punc">[…],</span> <span class="t-name">total</span><span class="t-punc">])</span>  <span class="t-punc">→ account_summary.csv</span></div>
+    </div>
+    <div class="panes">
+      <div class="pane" id="paneRows"><div class="ph"><span>ledger.csv · 12 lines</span><span id="progress">0 / 12</span></div>
+        <div class="scroll"><div class="rows" id="rows"><table id="tbl"></table></div></div></div>
+      <div class="pane" id="paneAcc"><div class="ph"><span>totals — grouped by account</span></div>
+        <div class="accs" id="accs"></div>
+        <div class="grand"><span>NET</span><span id="grand">0.00</span></div></div>
+    </div>
+    <div class="termline"><span class="dim">$ python 07_csv_many_rows.py</span>
+<span class="oline" id="t0">Read 12 transactions</span><span class="oline" id="t1">
+Account       Lines         Total</span><span class="oline" id="t2">---------------------------------</span><span class="oline" id="t3">Revenue           4     21,550.00</span><span class="oline" id="t4">Supplies          2       -670.00</span><span class="oline" id="t5">Rent              3     -5,400.00</span><span class="oline" id="t6">Payroll           3     -9,450.00</span><span class="oline" id="t7">---------------------------------
+NET              12      6,030.00</span><span class="oline" id="t8">
+account_summary.csv created.</span></div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const DATA=[["2026-01-03","Revenue",5200],["2026-01-07","Rent",-1800],["2026-01-11","Payroll",-3100],["2026-01-15","Revenue",4400],
+["2026-02-02","Supplies",-260],["2026-02-09","Revenue",6100],["2026-02-14","Rent",-1800],["2026-02-21","Payroll",-3100],
+["2026-03-01","Revenue",5850],["2026-03-08","Supplies",-410],["2026-03-16","Rent",-1800],["2026-03-27","Payroll",-3250]];
+const ACCTS=['Revenue','Rent','Payroll','Supplies'];
+const tbl=document.getElementById('tbl'),accsEl=document.getElementById('accs'),status=document.getElementById('status');
+const rowsEl=document.getElementById('rows'),progress=document.getElementById('progress'),grandEl=document.getElementById('grand');
+const paneRows=document.getElementById('paneRows'),paneAcc=document.getElementById('paneAcc');
+tbl.innerHTML=DATA.map((d,i)=>`<tr class="r" id="d${i}"><td>${d[0]}</td><td>${d[1]}</td><td class="amt">${d[2]}</td></tr>`).join('');
+accsEl.innerHTML=ACCTS.map(a=>`<div class="acc" id="ac_${a}"><span><span class="k">${a}</span> <span class="n" id="n_${a}">0 lines</span></span><span class="v" id="v_${a}">0.00</span></div>`).join('');
+const fmt=n=>n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d,dep:0},o));t+=d;};
+add(800,{i:-1,pane:0,line:1,out:-1,st:'Two <b>defaultdicts</b> will collect a total and a line count per account.'});
+add(700,{i:-1,pane:0,line:3,out:-1,st:'Loop over <b>every</b> line — the same code handles 12 rows or 12,000.'});
+DATA.forEach((d,i)=>{
+  add(430,{i,pane:0,line:4,dep:1,out:-1,st:`Line ${i+1}: <b>${d[1]}</b> ${d[2]>0?'+':''}${d[2]} → converted with float().`});
+  add(430,{i,pane:1,line:5,dep:1,acc:d[1],out:-1,st:`Add it to the <b>${d[1]}</b> bucket and the grand total.`});
+});
+add(900,{i:11,pane:1,line:8,out:0,st:'Loop done. <b>sorted(..., reverse=True)</b> ranks accounts by total.'});
+add(1000,{i:11,pane:1,line:9,out:6,st:'Print an aligned report with f-string formatting.'});
+add(1000,{i:11,pane:-1,line:11,out:8,st:'Write the grouped results back out as <b>account_summary.csv</b>.'});
+add(1300,{i:11,pane:-1,line:11,out:8,st:'Pattern to remember: <b>read → convert → group → summarise → write</b>.'});
+const CYCLE=t;
+let playing=false,elapsed=0,last=0,raf=null,started=false;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  // rows
+  DATA.forEach((d,i)=>{const el=document.getElementById('d'+i);
+    el.classList.toggle('cur',i===s.i);el.classList.toggle('done',i<s.i);});
+  const done=s.i+1;progress.textContent=done+' / 12';
+  rowsEl.style.transform='translateY(-'+Math.max(0,Math.min(DATA.length-8,s.i-5))*24+'px)';
+  paneRows.classList.toggle('on',s.pane===0);paneAcc.classList.toggle('on',s.pane===1);
+  // accumulate up to current index
+  const tot={},cnt={};ACCTS.forEach(a=>{tot[a]=0;cnt[a]=0;});
+  let grand=0,upto=s.i;
+  const midAdd = (s.line===5);
+  for(let i=0;i<=upto;i++){ if(i===upto && !midAdd && s.line===4) break;
+    const d=DATA[i];tot[d[1]]+=d[2];cnt[d[1]]++;grand+=d[2];}
+  ACCTS.forEach(a=>{
+    const el=document.getElementById('ac_'+a);
+    document.getElementById('v_'+a).textContent=fmt(tot[a]);
+    document.getElementById('n_'+a).textContent=cnt[a]+' line'+(cnt[a]===1?'':'s');
+    el.classList.toggle('hit', s.acc===a);
+    el.classList.toggle('pos', tot[a]>0);el.classList.toggle('neg', tot[a]<0);});
+  grandEl.textContent=fmt(grand);
+  for(let k=0;k<=8;k++)document.getElementById('t'+k).classList.toggle('show', s.out>=k && s.out>=0);
+  ['l1','l2','l3','l4','l5','l6','l8','l9','l11'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
+  if(s.line===4||s.line===5)document.getElementById('l3').classList.add('on');
+  status.innerHTML=s.st;
+}
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop'),bI=document.getElementById('into'),bO=document.getElementById('over');
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
+  DATA.forEach((d,i)=>document.getElementById('d'+i).classList.remove('cur','done'));
+  rowsEl.style.transform='none';progress.textContent='0 / 12';grandEl.textContent='0.00';
+  ACCTS.forEach(a=>{document.getElementById('v_'+a).textContent='0.00';document.getElementById('n_'+a).textContent='0 lines';
+    document.getElementById('ac_'+a).classList.remove('hit','pos','neg');});
+  paneRows.classList.remove('on');paneAcc.classList.remove('on');
+  for(let k=0;k<=8;k++)document.getElementById('t'+k).classList.remove('show');
+  ['l1','l2','l3','l4','l5','l6','l8','l9','l11'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
+</script>
+</body>
+</html>
