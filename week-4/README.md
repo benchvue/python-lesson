@@ -91,3 +91,75 @@ then write the result to an Excel file with a `=SUM()` total row.
 
 Every animation has **▶ Play / ❚❚ Pause / ⤓ Step Into / ⤾ Step Over / ■ Stop** —
 Step Into walks each loop pass, Step Over skips the whole loop.
+
+
+## Python Import Styles (openpyxl Example)
+
+Python supports several ways to import modules, classes, and functions.
+
+### Method 1 — Import the entire module
+
+```python
+import openpyxl
+
+wb = openpyxl.Workbook()
+```
+
+- Imports the entire `openpyxl` package.
+- Access classes and functions with the module name.
+- Recommended when using many objects from the package.
+
+### Method 2 — Import a specific class
+
+```python
+from openpyxl import Workbook
+
+wb = Workbook()
+```
+
+- Imports only the `Workbook` class.
+- No need to prefix with `openpyxl.`.
+- Clean and convenient when using only a few objects.
+
+### Method 3 — Import with an alias
+
+```python
+import openpyxl as xl
+
+wb = xl.Workbook()
+```
+
+- Gives the module a shorter name.
+- Useful when a module name is long.
+
+### Method 4 — Import a class with an alias
+
+```python
+from openpyxl import Workbook as WB
+
+wb = WB()
+```
+
+- Gives a shorter name to a frequently used class.
+- Less common than aliasing a module, but occasionally useful.
+
+## Official References
+
+### Python Standard Library
+
+- CSV module  
+  https://docs.python.org/3/library/csv.html#
+
+- datetime module  
+  https://docs.python.org/3/library/datetime.html
+
+- collections module  
+  https://docs.python.org/3/library/collections.html
+
+### openpyxl
+
+- PyPI  
+  https://pypi.org/project/openpyxl/
+
+- Documentation  
+  https://openpyxl.readthedocs.io/en/stable/#

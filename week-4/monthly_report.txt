@@ -1,0 +1,4 @@
+Monthly Report
+Revenue: 100000
+Expenses: 75000
+Net Income: 25000
