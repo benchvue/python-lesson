@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — groupby</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:28px;text-align:center}
+  .wrap{width:100%;max-width:760px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:24px;font-family:'SF Mono','Consolas',monospace;font-size:12.5px;line-height:1.7;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:block;border-radius:7px;padding:1px 8px;transition:.25s;min-height:21px;white-space:nowrap}
+  .cl .gut{color:#5a6080;display:inline-block;width:14px;text-align:right;margin-right:10px}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}
+  .panes{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+  .pane{flex:1;min-width:230px}
+  .lbl{font-size:9.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#bbb;margin-bottom:9px}
+  table{width:100%;border-collapse:collapse;font-family:'SF Mono','Consolas',monospace;font-size:12px}
+  th,td{border:1px solid #eef0f4;padding:7px 9px;transition:.35s}
+  th{background:#fafafc;color:#888;font-size:10px;font-weight:700}
+  td.idx{background:#fafafc;color:#bbb;text-align:center;width:24px}
+  td.amt,th.amt{text-align:right}
+  tr.src td.cat{font-weight:700}
+  tr.src.gOffice td.cat{color:#4f46e5}tr.src.gTravel td.cat{color:#0369a1}tr.src.gMeals td.cat{color:#0a7d57}
+  tr.src.on td{background:#fff7e6}
+  .gcol-Office{box-shadow:inset 3px 0 0 #6366f1}.gcol-Travel{box-shadow:inset 3px 0 0 #0ea5e9}.gcol-Meals{box-shadow:inset 3px 0 0 #10b981}
+  .grp{border-radius:12px;overflow:hidden;border:2px solid #ececf2;transition:.25s}
+  .grp.on{border-color:#f59e0b;box-shadow:0 10px 26px #f59e0b1a}
+  .bucket{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-bottom:1px solid #f2f2f6;font-family:'SF Mono','Consolas',monospace;font-size:12.5px;transition:.3s;opacity:.5}
+  .bucket:last-child{border-bottom:none}
+  .bucket.on{opacity:1}
+  .bucket .cat{font-weight:700}
+  .bucket .add{font-size:10.5px;color:#aaa;margin-left:auto;margin-right:10px}
+  .bucket .val{font-weight:700;min-width:56px;text-align:right}
+  .bOffice.on{background:#eef0ff}.bOffice .cat{color:#4f46e5}
+  .bTravel.on{background:#e8f6fe}.bTravel .cat{color:#0369a1}
+  .bMeals.on{background:#e9fbf3}.bMeals .cat{color:#0a7d57}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:12px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:10px 12px;margin-top:16px;min-height:104px;line-height:1.7;white-space:pre}
+  .termline .p{color:#6ee7ff}.oline{opacity:0;transition:.3s;display:block}.oline.show{opacity:1}
+  .status{text-align:center;font-size:13px;color:#555;margin:18px auto 16px;min-height:20px;max-width:620px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 18px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
+  @media(max-width:600px){h2{font-size:20px}.code{font-size:10.5px}.pane{min-width:0}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 6</h1>
+  <h2>groupby — Summarize by Category</h2>
+  <div class="subtitle">gather rows that share a value, then total each group</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l8"><span class="gut">8</span><span class="t-name">df</span> <span class="t-op">=</span> <span class="t-name">pd</span><span class="t-punc">.</span><span class="t-fn">DataFrame</span><span class="t-punc">(</span><span class="t-name">data</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l10"><span class="gut">10</span><span class="t-name">summary</span> <span class="t-op">=</span> <span class="t-name">df</span><span class="t-punc">.</span><span class="t-fn">groupby</span><span class="t-punc">(</span><span class="t-str">"Category"</span><span class="t-punc">)</span><span class="t-punc">[</span><span class="t-str">"Amount"</span><span class="t-punc">]</span><span class="t-punc">.</span><span class="t-fn">sum</span><span class="t-punc">()</span></div>
+      <div class="cl" id="l12"><span class="gut">12</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-name">summary</span><span class="t-punc">)</span></div>
+    </div>
+    <div class="panes">
+      <div class="pane">
+        <div class="lbl">the DataFrame</div>
+        <table id="srcTbl">
+          <tr><td class="idx"></td><th>Category</th><th class="amt">Amount</th></tr>
+          <tr class="src gOffice" id="s0"><td class="idx">0</td><td class="cat">Office</td><td class="amt">200</td></tr>
+          <tr class="src gTravel" id="s1"><td class="idx">1</td><td class="cat">Travel</td><td class="amt">800</td></tr>
+          <tr class="src gOffice" id="s2"><td class="idx">2</td><td class="cat">Office</td><td class="amt">150</td></tr>
+          <tr class="src gMeals" id="s3"><td class="idx">3</td><td class="cat">Meals</td><td class="amt">90</td></tr>
+          <tr class="src gTravel" id="s4"><td class="idx">4</td><td class="cat">Travel</td><td class="amt">450</td></tr>
+        </table>
+      </div>
+      <div class="pane">
+        <div class="lbl">grouped &amp; summed</div>
+        <div class="grp" id="grp">
+          <div class="bucket bOffice" id="bOffice"><span class="cat">Office</span><span class="add" id="aOffice"></span><span class="val" id="vOffice">0</span></div>
+          <div class="bucket bTravel" id="bTravel"><span class="cat">Travel</span><span class="add" id="aTravel"></span><span class="val" id="vTravel">0</span></div>
+          <div class="bucket bMeals" id="bMeals"><span class="cat">Meals</span><span class="add" id="aMeals"></span><span class="val" id="vMeals">0</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="termline"><div><span class="p">$</span> python 02_group_expenses.py</div>
+      <div class="oline" id="o0">Category
+Meals       90
+Office     350
+Travel    1250
+Name: Amount, dtype: int64</div></div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const ROWS=[['Office',200],['Travel',800],['Office',150],['Meals',90],['Travel',450]];
+const status=document.getElementById('status'),grp=document.getElementById('grp');
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d,dep:0},o));t+=d;};
+add(750,{cur:-1,upto:-1,grpOn:false,active:'',out:-1,line:8,st:'Five expense rows, each with a Category and an Amount.'});
+add(800,{cur:-1,upto:-1,grpOn:true,active:'',out:-1,line:10,st:'<b>groupby("Category")</b> creates one bucket per category.'});
+ROWS.forEach((r,i)=>{
+  add(700,{cur:i,upto:i-1,grpOn:true,active:r[0],out:-1,line:10,dep:1,st:`Row ${i}: <b>${r[0]}</b> ${r[1]} → drop it into the ${r[0]} bucket.`});
+});
+add(700,{cur:-1,upto:4,grpOn:true,active:'',out:-1,line:10,st:'Each bucket now holds its <b>sum</b> — that\'s the aggregation.'});
+add(900,{cur:-1,upto:4,grpOn:true,active:'',out:0,line:12,st:'<b>print(summary)</b> — pandas sorts the categories alphabetically.'});
+add(1300,{cur:-1,upto:4,grpOn:true,active:'',out:0,line:12,st:'groupby("col")["val"].sum() is the workhorse of accounting summaries.'});
+const CYCLE=t;
+const CATS=['Office','Travel','Meals'];
+let playing=false,elapsed=0,last=0,raf=null,started=false;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  for(let i=0;i<5;i++){const r=document.getElementById('s'+i);r.classList.toggle('on',i===s.cur);}
+  grp.classList.toggle('on',s.grpOn);
+  const tot={Office:0,Travel:0,Meals:0},cnt={Office:0,Travel:0,Meals:0};
+  for(let i=0;i<=s.upto;i++){tot[ROWS[i][0]]+=ROWS[i][1];cnt[ROWS[i][0]]++;}
+  if(s.cur>=0){tot[ROWS[s.cur][0]]+=ROWS[s.cur][1];cnt[ROWS[s.cur][0]]++;}
+  CATS.forEach(c=>{
+    document.getElementById('v'+c).textContent=tot[c];
+    document.getElementById('b'+c).classList.toggle('on',cnt[c]>0||s.grpOn);
+    document.getElementById('b'+c).style.opacity = (cnt[c]>0)?1:(s.grpOn?.55:.5);
+    document.getElementById('a'+c).textContent = (s.active===c)?('+ '+ROWS[s.cur][1]):'';
+  });
+  document.getElementById('o0').classList.toggle('show',s.out>=0);
+  ['l8','l10','l12'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
+  status.innerHTML=s.st;
+}
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop'),bI=document.getElementById('into'),bO=document.getElementById('over');
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
+  for(let i=0;i<5;i++)document.getElementById('s'+i).classList.remove('on');grp.classList.remove('on');
+  CATS.forEach(c=>{document.getElementById('v'+c).textContent='0';document.getElementById('b'+c).classList.remove('on');document.getElementById('b'+c).style.opacity=.5;document.getElementById('a'+c).textContent='';});
+  document.getElementById('o0').classList.remove('show');
+  ['l8','l10','l12'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
+</script>
+</body>
+</html>

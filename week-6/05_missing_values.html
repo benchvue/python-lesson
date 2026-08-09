@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — Missing Values</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:28px;text-align:center}
+  .wrap{width:100%;max-width:720px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:24px;font-family:'SF Mono','Consolas',monospace;font-size:12.5px;line-height:1.7;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:block;border-radius:7px;padding:1px 8px;transition:.25s;min-height:21px;white-space:nowrap}
+  .cl .gut{color:#5a6080;display:inline-block;width:14px;text-align:right;margin-right:10px}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-num{color:#f78c6c}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}.t-com{color:#5a6080}
+  .dfwrap{display:flex;justify-content:center;margin-bottom:14px}
+  table{border-collapse:collapse;font-family:'SF Mono','Consolas',monospace;font-size:12.5px;min-width:280px}
+  th,td{border:1px solid #eef0f4;padding:8px 14px;transition:.35s}
+  th{background:#fafafc;color:#888;font-size:10px;font-weight:700}
+  td.idx{background:#fafafc;color:#bbb;text-align:center;width:26px}
+  td.amt,th.amt{text-align:right}
+  td.nan{color:#c12d2d;font-weight:700;background:#fdecec}
+  td.filled{color:#0a7d57;font-weight:700;background:#e9fbf3}
+  .callouts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:6px}
+  .callout{border:1.5px solid #eee;border-radius:11px;padding:9px 14px;font-family:'SF Mono','Consolas',monospace;font-size:12px;transition:.3s;opacity:.4}
+  .callout.on{opacity:1}
+  .callout.isna.on{border-color:#ef4444;background:#fdecec;color:#c12d2d}
+  .callout.fill.on{border-color:#10b981;background:#e9fbf3;color:#0a7d57}
+  .callout.sum.on{border-color:#6366f1;background:#f7f8ff;color:#4f46e5}
+  .callout b{font-weight:700}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:11.5px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:10px 12px;margin-top:16px;min-height:110px;line-height:1.65;white-space:pre}
+  .termline .p{color:#6ee7ff}.oline{opacity:0;transition:.3s;display:block}.oline.show{opacity:1}
+  .status{text-align:center;font-size:13px;color:#555;margin:18px auto 16px;min-height:20px;max-width:620px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 18px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
+  @media(max-width:600px){h2{font-size:20px}.code{font-size:10.5px}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 6</h1>
+  <h2>Missing Values (NaN)</h2>
+  <div class="subtitle">real data has gaps — pandas marks them <b>NaN</b>, then you fill or drop them</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l4"><span class="gut">4</span><span class="t-str">"Amount"</span><span class="t-punc">:</span> <span class="t-punc">[</span><span class="t-num">5000</span><span class="t-punc">,</span> <span class="t-kw">None</span><span class="t-punc">,</span> <span class="t-num">-250</span><span class="t-punc">,</span> <span class="t-kw">None</span><span class="t-punc">]</span>   <span class="t-com"># two gaps</span></div>
+      <div class="cl" id="l9"><span class="gut">9</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-name">df</span><span class="t-punc">.</span><span class="t-fn">isna</span><span class="t-punc">()</span><span class="t-punc">.</span><span class="t-fn">sum</span><span class="t-punc">())</span></div>
+      <div class="cl" id="l11"><span class="gut">11</span><span class="t-name">df</span><span class="t-punc">[</span><span class="t-str">"Amount"</span><span class="t-punc">]</span> <span class="t-op">=</span> <span class="t-name">df</span><span class="t-punc">[</span><span class="t-str">"Amount"</span><span class="t-punc">]</span><span class="t-punc">.</span><span class="t-fn">fillna</span><span class="t-punc">(</span><span class="t-num">0</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l14"><span class="gut">14</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Total:"</span><span class="t-punc">,</span> <span class="t-name">df</span><span class="t-punc">[</span><span class="t-str">"Amount"</span><span class="t-punc">]</span><span class="t-punc">.</span><span class="t-fn">sum</span><span class="t-punc">())</span></div>
+    </div>
+    <div class="dfwrap">
+      <table>
+        <tr><td class="idx"></td><th>Account</th><th class="amt">Amount</th></tr>
+        <tr><td class="idx">0</td><td>Revenue</td><td class="amt" id="a0">5000</td></tr>
+        <tr><td class="idx">1</td><td>Rent</td><td class="amt" id="a1">NaN</td></tr>
+        <tr><td class="idx">2</td><td>Supplies</td><td class="amt" id="a2">-250</td></tr>
+        <tr><td class="idx">3</td><td>Payroll</td><td class="amt" id="a3">NaN</td></tr>
+      </table>
+    </div>
+    <div class="callouts">
+      <div class="callout isna" id="cIsna"><b>isna().sum()</b> → Amount: 2</div>
+      <div class="callout fill" id="cFill"><b>fillna(0)</b> → gaps become 0</div>
+      <div class="callout sum" id="cSum"><b>sum()</b> → 4750.0</div>
+    </div>
+    <div class="termline"><div><span class="p">$</span> python 05_missing_values.py</div>
+      <div class="oline" id="o0">Missing per column:
+Account    0
+Amount     2</div>
+      <div class="oline" id="o1">
+After fillna(0):
+    Account  Amount
+0   Revenue  5000.0
+1      Rent     0.0
+2  Supplies  -250.0
+3   Payroll     0.0</div>
+      <div class="oline" id="o2">Total: 4750.0</div></div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const status=document.getElementById('status');
+const a1=document.getElementById('a1'),a3=document.getElementById('a3');
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d,dep:0},o));t+=d;};
+add(850,{nan:true,filled:false,call:'',out:-1,line:4,st:'Two amounts are <b>None</b> → pandas stores them as <b>NaN</b> (not a number).'});
+add(950,{nan:true,filled:false,call:'isna',out:0,line:9,st:'<b>df.isna().sum()</b> counts the gaps per column → Amount has 2.'});
+add(1000,{nan:false,filled:true,call:'fill',out:1,line:11,st:'<b>fillna(0)</b> replaces every NaN in the column with 0.'});
+add(950,{nan:false,filled:true,call:'sum',out:2,line:14,st:'Now <b>sum()</b> works cleanly → 5000 + 0 − 250 + 0 = <b>4750.0</b>.'});
+add(1300,{nan:false,filled:true,call:'',out:2,line:14,st:'Handle gaps first — otherwise math with NaN gives NaN.'});
+const CYCLE=t;
+let playing=false,elapsed=0,last=0,raf=null,started=false;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  a1.textContent=s.filled?'0.0':'NaN';a3.textContent=s.filled?'0.0':'NaN';
+  a1.className='amt '+(s.filled?'filled':'nan');a3.className='amt '+(s.filled?'filled':'nan');
+  document.getElementById('cIsna').classList.toggle('on',s.call==='isna');
+  document.getElementById('cFill').classList.toggle('on',s.call==='fill');
+  document.getElementById('cSum').classList.toggle('on',s.call==='sum');
+  document.getElementById('o0').classList.toggle('show',s.out>=0);
+  document.getElementById('o1').classList.toggle('show',s.out>=1);
+  document.getElementById('o2').classList.toggle('show',s.out>=2);
+  ['l4','l9','l11','l14'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
+  status.innerHTML=s.st;
+}
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop'),bI=document.getElementById('into'),bO=document.getElementById('over');
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
+  a1.textContent='NaN';a3.textContent='NaN';a1.className='amt nan';a3.className='amt nan';
+  ['cIsna','cFill','cSum'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  ['o0','o1','o2'].forEach(id=>document.getElementById(id).classList.remove('show'));
+  ['l4','l9','l11','l14'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
+</script>
+</body>
+</html>

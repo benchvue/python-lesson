@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — DataFrame Basics</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:28px;text-align:center}
+  .wrap{width:100%;max-width:760px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:24px;font-family:'SF Mono','Consolas',monospace;font-size:12.5px;line-height:1.7;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:block;border-radius:7px;padding:1px 8px;transition:.25s;min-height:21px;white-space:nowrap}
+  .cl .gut{color:#5a6080;display:inline-block;width:14px;text-align:right;margin-right:10px}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-num{color:#f78c6c}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}
+  .panes{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .pane{flex:1;min-width:250px}
+  .lbl{font-size:9.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#bbb;margin-bottom:9px}
+  .dict{font-family:'SF Mono','Consolas',monospace;font-size:11.5px;background:#f7f8ff;border:1.5px solid #e2e4f5;border-radius:11px;padding:12px;line-height:1.7;transition:.25s}
+  .dict.on{border-color:#6366f1;box-shadow:0 8px 20px #6366f11f}
+  .dict .k{color:#4f46e5;font-weight:700}
+  .df{border:2px solid #ececf2;border-radius:12px;overflow:hidden;transition:.25s}
+  .df.on{border-color:#0ea5e9;box-shadow:0 10px 26px #0ea5e91a}
+  table{width:100%;border-collapse:collapse;font-family:'SF Mono','Consolas',monospace;font-size:11.5px}
+  th,td{border:1px solid #eef0f4;padding:7px 9px;transition:.3s}
+  th{background:#fafafc;color:#888;font-size:10px;font-weight:700}
+  td.idx{background:#fafafc;color:#bbb;text-align:center;width:26px}
+  .colh{background:#eef0ff;color:#4f46e5;font-weight:700}
+  td.amt,th.amt{text-align:right}
+  tr.rowIn td:not(.idx){background:#eef7ff}
+  td.sumcol{background:#e8f6fe;color:#0369a1;font-weight:700}
+  .sumbox{margin-top:12px;font-family:'SF Mono','Consolas',monospace;font-size:12.5px;border:1.5px dashed #d6d9e0;border-radius:10px;padding:10px 12px;color:#bbb;transition:.3s;text-align:center}
+  .sumbox.on{border-style:solid;border-color:#10b981;background:#e9fbf3;color:#0a7d57;font-weight:700}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:11.5px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:10px 12px;margin-top:16px;min-height:90px;line-height:1.7;white-space:pre}
+  .termline .p{color:#6ee7ff}.oline{opacity:0;transition:.3s;display:block}.oline.show{opacity:1}
+  .status{text-align:center;font-size:13px;color:#555;margin:18px auto 16px;min-height:20px;max-width:620px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 18px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
+  @media(max-width:600px){h2{font-size:20px}.code{font-size:10.5px}.pane{min-width:0}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 6</h1>
+  <h2>DataFrame Basics</h2>
+  <div class="subtitle">a DataFrame is a table — columns of labelled data you can compute on</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l1"><span class="gut">1</span><span class="t-kw">import</span> <span class="t-name">pandas</span> <span class="t-kw">as</span> <span class="t-name">pd</span></div>
+      <div class="cl" id="l3"><span class="gut">3</span><span class="t-name">data</span> <span class="t-op">=</span> <span class="t-punc">{</span><span class="t-str">"Account"</span><span class="t-punc">:</span> <span class="t-punc">[...],</span> <span class="t-str">"Amount"</span><span class="t-punc">:</span> <span class="t-punc">[...]}</span></div>
+      <div class="cl" id="l8"><span class="gut">8</span><span class="t-name">df</span> <span class="t-op">=</span> <span class="t-name">pd</span><span class="t-punc">.</span><span class="t-fn">DataFrame</span><span class="t-punc">(</span><span class="t-name">data</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l10"><span class="gut">10</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-name">df</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l11"><span class="gut">11</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Total:"</span><span class="t-punc">,</span> <span class="t-name">df</span><span class="t-punc">[</span><span class="t-str">"Amount"</span><span class="t-punc">]</span><span class="t-punc">.</span><span class="t-fn">sum</span><span class="t-punc">())</span></div>
+    </div>
+    <div class="panes">
+      <div class="pane">
+        <div class="lbl">a dict of lists</div>
+        <div class="dict" id="dict"><span class="k">"Account"</span>: [<br>&nbsp;&nbsp;"Revenue",<br>&nbsp;&nbsp;"Rent Expense",<br>&nbsp;&nbsp;"Salary Expense"]<br><span class="k">"Amount"</span>: [100000, -12000, -45000]</div>
+        <div class="sumbox" id="sumbox">df["Amount"].sum() = ?</div>
+      </div>
+      <div class="pane">
+        <div class="lbl">becomes a DataFrame</div>
+        <div class="df" id="df">
+          <table>
+            <tr><td class="idx"></td><th id="cAcc">Account</th><th class="amt" id="cAmt">Amount</th></tr>
+            <tr id="dr0"><td class="idx">0</td><td>Revenue</td><td class="amt">100000</td></tr>
+            <tr id="dr1"><td class="idx">1</td><td>Rent Expense</td><td class="amt">-12000</td></tr>
+            <tr id="dr2"><td class="idx">2</td><td>Salary Expense</td><td class="amt">-45000</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="termline"><div><span class="p">$</span> python 01_dataframe_basics.py</div>
+      <div class="oline" id="o0">          Account  Amount
+0         Revenue  100000
+1    Rent Expense  -12000
+2  Salary Expense  -45000</div>
+      <div class="oline" id="o1">Total: 43000</div></div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const status=document.getElementById('status'),dict=document.getElementById('dict'),df=document.getElementById('df');
+const cAmt=document.getElementById('cAmt'),sumbox=document.getElementById('sumbox');
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d,dep:0},o));t+=d;};
+add(700,{dict:false,df:false,rows:0,col:false,sum:false,out:-1,line:1,st:'<b>import pandas as pd</b> — the standard nickname for pandas.'});
+add(900,{dict:true,df:false,rows:0,col:false,sum:false,out:-1,line:3,st:'Start with a <b>dict of lists</b>: each key is a column name.'});
+add(1000,{dict:true,df:true,rows:3,col:false,sum:false,out:-1,line:8,st:'<b>pd.DataFrame(data)</b> turns it into a table with a numbered index.'});
+add(900,{dict:true,df:true,rows:3,col:false,sum:false,out:0,line:10,st:'<b>print(df)</b> shows the whole table, nicely aligned.'});
+add(1000,{dict:true,df:true,rows:3,col:true,sum:true,out:1,line:11,st:'<b>df["Amount"].sum()</b> adds one column → 100000 − 12000 − 45000 = <b>43000</b>.'});
+add(1300,{dict:true,df:true,rows:3,col:false,sum:true,out:1,line:11,st:'Pick a column with df["name"], then call methods like sum(), mean(), max().'});
+const CYCLE=t;
+let playing=false,elapsed=0,last=0,raf=null,started=false;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  dict.classList.toggle('on',s.dict);df.classList.toggle('on',s.df);
+  for(let i=0;i<3;i++){const r=document.getElementById('dr'+i);r.style.visibility=i<s.rows?'visible':'hidden';
+    r.querySelectorAll('td')[2].classList.toggle('sumcol',s.col);}
+  cAmt.classList.toggle('colh',s.col);
+  sumbox.classList.toggle('on',s.sum);sumbox.textContent=s.sum?'df["Amount"].sum() = 43000':'df["Amount"].sum() = ?';
+  document.getElementById('o0').classList.toggle('show',s.out>=0);
+  document.getElementById('o1').classList.toggle('show',s.out>=1);
+  ['l1','l3','l8','l10','l11'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
+  status.innerHTML=s.st;
+}
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop'),bI=document.getElementById('into'),bO=document.getElementById('over');
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
+  dict.classList.remove('on');df.classList.remove('on');cAmt.classList.remove('colh');
+  for(let i=0;i<3;i++){document.getElementById('dr'+i).style.visibility='hidden';document.getElementById('dr'+i).querySelectorAll('td')[2].classList.remove('sumcol');}
+  sumbox.classList.remove('on');sumbox.textContent='df["Amount"].sum() = ?';
+  document.getElementById('o0').classList.remove('show');document.getElementById('o1').classList.remove('show');
+  ['l1','l3','l8','l10','l11'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
+</script>
+</body>
+</html>

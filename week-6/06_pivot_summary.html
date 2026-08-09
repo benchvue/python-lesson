@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — Pivot Table</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8a5e08;background:#fff3dc;border:1px solid #f0d9a8;border-radius:20px;padding:2px 10px;margin-bottom:8px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:26px;text-align:center}
+  .wrap{width:100%;max-width:780px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:22px;font-family:'SF Mono','Consolas',monospace;font-size:12px;line-height:1.7;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:block;border-radius:7px;padding:1px 8px;transition:.25s;min-height:20px;white-space:nowrap}
+  .cl .gut{color:#5a6080;display:inline-block;width:16px;text-align:right;margin-right:10px}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}
+  .panes{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .pane{flex:1;min-width:230px}
+  .lbl{font-size:9.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#bbb;margin-bottom:9px}
+  table{border-collapse:collapse;font-family:'SF Mono','Consolas',monospace;font-size:11.5px;width:100%}
+  th,td{border:1px solid #eef0f4;padding:6px 9px;transition:.35s}
+  th{background:#fafafc;color:#888;font-size:10px;font-weight:700}
+  td.idx{background:#fafafc;color:#bbb;text-align:center;width:22px}
+  td.amt,th.amt{text-align:right}
+  tr.src.on td{background:#eef0ff;color:#4f46e5;font-weight:700}
+  .pivot th{background:#eef7fe;color:#0369a1}
+  .pivot td.rowh{background:#f4f5f9;color:#555;font-weight:700}
+  .pivot td.cell{text-align:right;color:#bbb;transition:.3s}
+  .pivot td.cell.on{color:#0a7d57;font-weight:700;background:#e9fbf3}
+  .pivot td.cell.hit{background:#fff3dc;color:#8a5e08;box-shadow:inset 0 0 0 2px #f59e0b}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:11.5px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:10px 12px;margin-top:16px;min-height:92px;line-height:1.65;white-space:pre}
+  .termline .p{color:#6ee7ff}.oline{opacity:0;transition:.3s;display:block}.oline.show{opacity:1}
+  .status{text-align:center;font-size:13px;color:#555;margin:18px auto 16px;min-height:20px;max-width:640px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 18px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
+  @media(max-width:640px){h2{font-size:19px}.code{font-size:10px}.pane{min-width:0}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 6</h1>
+  <div class="badge">putting it together</div>
+  <h2>Pivot Table</h2>
+  <div class="subtitle">reshape a long list into a Month × Category grid of totals</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l10"><span class="gut">10</span><span class="t-name">pivot</span> <span class="t-op">=</span> <span class="t-name">df</span><span class="t-punc">.</span><span class="t-fn">pivot_table</span><span class="t-punc">(</span></div>
+      <div class="cl" id="l11"><span class="gut">11</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-name">index</span><span class="t-op">=</span><span class="t-str">"Month"</span><span class="t-punc">,</span> <span class="t-name">columns</span><span class="t-op">=</span><span class="t-str">"Category"</span><span class="t-punc">,</span></div>
+      <div class="cl" id="l12"><span class="gut">12</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-name">values</span><span class="t-op">=</span><span class="t-str">"Amount"</span><span class="t-punc">,</span> <span class="t-name">aggfunc</span><span class="t-op">=</span><span class="t-str">"sum"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l15"><span class="gut">15</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-name">pivot</span><span class="t-punc">)</span></div>
+    </div>
+    <div class="panes">
+      <div class="pane">
+        <div class="lbl">long data (6 rows)</div>
+        <table>
+          <tr><td class="idx"></td><th>Month</th><th>Cat</th><th class="amt">Amt</th></tr>
+          <tr class="src" id="s0"><td class="idx">0</td><td>Jan</td><td>Office</td><td class="amt">200</td></tr>
+          <tr class="src" id="s1"><td class="idx">1</td><td>Jan</td><td>Travel</td><td class="amt">800</td></tr>
+          <tr class="src" id="s2"><td class="idx">2</td><td>Feb</td><td>Office</td><td class="amt">150</td></tr>
+          <tr class="src" id="s3"><td class="idx">3</td><td>Feb</td><td>Travel</td><td class="amt">450</td></tr>
+          <tr class="src" id="s4"><td class="idx">4</td><td>Mar</td><td>Office</td><td class="amt">300</td></tr>
+          <tr class="src" id="s5"><td class="idx">5</td><td>Mar</td><td>Travel</td><td class="amt">600</td></tr>
+        </table>
+      </div>
+      <div class="pane">
+        <div class="lbl">pivot (Month × Category)</div>
+        <table class="pivot">
+          <tr><th>Month</th><th class="amt">Office</th><th class="amt">Travel</th></tr>
+          <tr><td class="rowh">Feb</td><td class="cell amt" id="pFeb_Office">150</td><td class="cell amt" id="pFeb_Travel">450</td></tr>
+          <tr><td class="rowh">Jan</td><td class="cell amt" id="pJan_Office">200</td><td class="cell amt" id="pJan_Travel">800</td></tr>
+          <tr><td class="rowh">Mar</td><td class="cell amt" id="pMar_Office">300</td><td class="cell amt" id="pMar_Travel">600</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="termline"><div><span class="p">$</span> python 06_pivot_summary.py</div>
+      <div class="oline" id="o0">Category  Office  Travel
+Month
+Feb          150     450
+Jan          200     800
+Mar          300     600</div></div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const ROWS=[['Jan','Office',200],['Jan','Travel',800],['Feb','Office',150],['Feb','Travel',450],['Mar','Office',300],['Mar','Travel',600]];
+const status=document.getElementById('status');
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d,dep:0},o));t+=d;};
+add(800,{cur:-1,filled:0,hit:'',out:-1,line:11,st:'Long data: one row per Month + Category combination.'});
+add(750,{cur:-1,filled:0,hit:'',out:-1,line:12,st:'<b>pivot_table</b>: rows = Month, columns = Category, values summed.'});
+ROWS.forEach((r,i)=>add(600,{cur:i,filled:i,hit:r[0]+'_'+r[1],out:-1,line:12,dep:1,st:`Row ${i}: ${r[0]} · ${r[1]} · ${r[2]} → drops into cell [${r[0]}, ${r[1]}].`}));
+add(900,{cur:-1,filled:6,hit:'',out:0,line:15,st:'Every cell is filled — a compact Month × Category summary.'});
+add(1300,{cur:-1,filled:6,hit:'',out:0,line:15,st:'pivot_table = groupby on two dimensions at once.'});
+const CYCLE=t;
+let playing=false,elapsed=0,last=0,raf=null,started=false;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  for(let i=0;i<6;i++)document.getElementById('s'+i).classList.toggle('on',i===s.cur);
+  document.querySelectorAll('.pivot .cell').forEach(c=>{c.classList.remove('on','hit');});
+  for(let i=0;i<s.filled;i++){const id='p'+ROWS[i][0]+'_'+ROWS[i][1];const el=document.getElementById(id);if(el)el.classList.add('on');}
+  if(s.cur>=0){const id='p'+ROWS[s.cur][0]+'_'+ROWS[s.cur][1];const el=document.getElementById(id);if(el){el.classList.add('on','hit');}}
+  document.getElementById('o0').classList.toggle('show',s.out>=0);
+  ['l10','l11','l12','l15'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
+  if(s.line===11||s.line===12)document.getElementById('l10').classList.add('on');
+  status.innerHTML=s.st;
+}
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop'),bI=document.getElementById('into'),bO=document.getElementById('over');
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
+  for(let i=0;i<6;i++)document.getElementById('s'+i).classList.remove('on');
+  document.querySelectorAll('.pivot .cell').forEach(c=>c.classList.remove('on','hit'));
+  document.getElementById('o0').classList.remove('show');
+  ['l10','l11','l12','l15'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
+</script>
+</body>
+</html>
