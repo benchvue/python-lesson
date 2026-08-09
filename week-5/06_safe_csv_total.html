@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — Safe CSV Total</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8a5e08;background:#fff3dc;border:1px solid #f0d9a8;border-radius:20px;padding:2px 10px;margin-bottom:8px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:26px;text-align:center}
+  .wrap{width:100%;max-width:780px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:22px;font-family:'SF Mono','Consolas',monospace;font-size:12px;line-height:1.7;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:block;border-radius:7px;padding:1px 8px;transition:.25s;min-height:20px;white-space:nowrap}
+  .cl .gut{color:#5a6080;display:inline-block;width:16px;text-align:right;margin-right:10px}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}.t-err{color:#ff8a8a;font-weight:600}
+  .panes{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start}
+  .pane{flex:1;min-width:250px;border:2px solid #ececf2;border-radius:14px;padding:12px;transition:.25s}
+  .pane.on{border-color:#0ea5e9;box-shadow:0 8px 22px #0ea5e91f}
+  .ph{font-size:9.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#bbb;margin-bottom:9px}
+  .pane.on .ph{color:#0ea5e9}
+  .fname{font-family:'SF Mono','Consolas',monospace;font-size:10.5px;color:#0a7d57;background:#e9fbf3;border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:8px}
+  table{width:100%;border-collapse:collapse;font-family:'SF Mono','Consolas',monospace;font-size:11.5px}
+  th,td{padding:6px 8px;text-align:left;border-bottom:1px solid #f2f2f6}
+  th{color:#888;font-weight:700;font-size:10px;text-transform:uppercase}
+  td.amt{text-align:right}
+  tr.row{opacity:.45;transition:.25s}
+  tr.row.cur{opacity:1;background:#eef0ff}tr.row.cur td{color:#4f46e5;font-weight:700}
+  tr.row.good{opacity:1}tr.row.good td.amt{color:#0a7d57;font-weight:700}
+  tr.row.bad{opacity:1;background:#fdecec}tr.row.bad td{color:#c12d2d}
+  .stat{display:flex;flex-direction:column;gap:10px}
+  .stbox{display:flex;align-items:center;justify-content:space-between;border:1.5px solid #eee;border-radius:11px;padding:11px 14px;font-family:'SF Mono','Consolas',monospace;transition:.25s}
+  .stbox .k{font-size:11px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+  .stbox .v{font-size:17px;font-weight:700}
+  .stbox.total{border-color:#d8dbef;background:#f7f8ff}.stbox.total .v{color:#4f46e5}
+  .stbox.skip{border-color:#f3d6d6;background:#fdf4f4}.stbox.skip .v{color:#c12d2d}
+  .stbox.pulse{transform:translateX(3px);box-shadow:0 6px 16px rgba(99,102,241,.15)}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:11.5px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:10px 12px;margin-top:16px;min-height:96px;line-height:1.7}
+  .termline .p{color:#6ee7ff}.oline{opacity:0;transition:.3s;display:block}.oline.show{opacity:1}.obad{color:#ffd27f}
+  .status{text-align:center;font-size:13px;color:#555;margin:18px auto 16px;min-height:20px;max-width:640px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 18px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
+  @media(max-width:620px){h2{font-size:19px}.code{font-size:10px}.pane{min-width:0}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 5</h1>
+  <div class="badge">putting it together</div>
+  <h2>Safe CSV Total</h2>
+  <div class="subtitle">total a CSV where some rows are broken — skip them instead of crashing</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l1"><span class="gut">1</span><span class="t-name">total</span> <span class="t-op">=</span> <span class="t-punc">0</span><span class="t-punc">;</span> <span class="t-name">skipped</span> <span class="t-op">=</span> <span class="t-punc">0</span></div>
+      <div class="cl" id="l2"><span class="gut">2</span><span class="t-kw">for</span> <span class="t-name">row</span> <span class="t-kw">in</span> <span class="t-name">csv</span><span class="t-punc">.</span><span class="t-fn">DictReader</span><span class="t-punc">(</span><span class="t-name">f</span><span class="t-punc">):</span></div>
+      <div class="cl" id="l3"><span class="gut">3</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">try</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l4"><span class="gut">4</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-name">total</span> <span class="t-op">+=</span> <span class="t-fn">float</span><span class="t-punc">(</span><span class="t-name">row</span><span class="t-punc">[</span><span class="t-str">"amount"</span><span class="t-punc">])</span></div>
+      <div class="cl" id="l5"><span class="gut">5</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">except</span> <span class="t-err">ValueError</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l6"><span class="gut">6</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-name">skipped</span> <span class="t-op">+=</span> <span class="t-punc">1</span><span class="t-punc">;</span> <span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Skipped bad row"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l8"><span class="gut">8</span><span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Total of good rows:"</span><span class="t-punc">,</span> <span class="t-name">total</span><span class="t-punc">)</span></div>
+    </div>
+    <div class="panes">
+      <div class="pane" id="paneRows"><div class="ph">data.csv</div><span class="fname">data.csv</span>
+        <table><thead><tr><th>date</th><th class="amt">amount</th></tr></thead><tbody>
+          <tr class="row" id="r0"><td>2026-01-01</td><td class="amt">1500</td></tr>
+          <tr class="row" id="r1"><td>2026-01-02</td><td class="amt">oops</td></tr>
+          <tr class="row" id="r2"><td>2026-01-03</td><td class="amt">2200</td></tr>
+          <tr class="row" id="r3"><td>2026-01-04</td><td class="amt">(empty)</td></tr>
+        </tbody></table></div>
+      <div class="pane" id="paneStat"><div class="ph">running results</div>
+        <div class="stat">
+          <div class="stbox total" id="stTotal"><span class="k">total</span><span class="v" id="vTotal">0</span></div>
+          <div class="stbox skip" id="stSkip"><span class="k">skipped</span><span class="v" id="vSkip">0</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="termline"><div><span class="p">$</span> python 06_safe_csv_total.py</div>
+      <div class="oline obad" id="o0">Skipped bad row: oops</div>
+      <div class="oline obad" id="o1">Skipped bad row: (empty)</div>
+      <div class="oline" id="o2">Total of good rows: 3700.0</div>
+      <div class="oline" id="o3">Rows skipped: 2</div></div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const AMTS=[1500,null,2200,null],RAW=['1500','oops','2200','(empty)'],GOOD=[true,false,true,false];
+const status=document.getElementById('status'),vTotal=document.getElementById('vTotal'),vSkip=document.getElementById('vSkip');
+const paneRows=document.getElementById('paneRows'),paneStat=document.getElementById('paneStat'),stTotal=document.getElementById('stTotal'),stSkip=document.getElementById('stSkip');
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d},o));t+=d;};
+add(650,{cur:-1,upto:-1,pane:0,pulse:'',out:-1,line:1,dep:0,st:'Start with <b>total = 0</b> and <b>skipped = 0</b>.'});
+let outIdx=-1;
+[0,1,2,3].forEach(i=>{
+  add(600,{cur:i,upto:i-1,pane:0,pulse:'',out:outIdx,line:4,dep:1,st:`Row ${i+1}: try <b>float("${RAW[i]}")</b>.`});
+  if(GOOD[i]){
+    add(650,{cur:i,upto:i,pane:1,pulse:'total',out:outIdx,line:4,dep:1,st:`Valid → add ${AMTS[i]} to the total.`});
+  } else {
+    outIdx = (i===1)?0:1;
+    add(750,{cur:i,upto:i,pane:1,pulse:'skip',out:outIdx,line:6,dep:1,bad:true,st:`<b>float("${RAW[i]}")</b> raises <b>ValueError</b> → skip it, count it.`});
+  }
+});
+add(800,{cur:-1,upto:3,pane:1,pulse:'',out:2,line:8,dep:0,st:'Loop done → print the total of the good rows.'});
+add(900,{cur:-1,upto:3,pane:1,pulse:'',out:3,line:8,dep:0,st:'2 rows skipped, total = <b>3700.0</b> — no crash.'});
+add(1300,{cur:-1,upto:3,pane:-1,pulse:'',out:3,line:8,dep:0,st:'try/except inside a loop = resilient data processing.'});
+const CYCLE=t;
+let playing=false,elapsed=0,last=0,raf=null,started=false;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  let total=0,skip=0;
+  for(let i=0;i<=s.upto;i++){ if(GOOD[i])total+=AMTS[i]; else skip++; }
+  for(let i=0;i<4;i++){const el=document.getElementById('r'+i);el.classList.remove('cur','good','bad');
+    if(i===s.cur&&s.line===4&&GOOD[i]===undefined){} 
+    if(i===s.cur){el.classList.add(s.bad&&i===s.cur?'':'cur');}
+    if(i<=s.upto){el.classList.remove('cur');el.classList.add(GOOD[i]?'good':'bad');}
+    else if(i===s.cur){el.classList.add(GOOD[i]&&s.pane===1?'good':(!GOOD[i]&&s.pane===1?'bad':'cur'));}
+  }
+  paneRows.classList.toggle('on',s.pane===0);paneStat.classList.toggle('on',s.pane===1);
+  vTotal.textContent = total.toFixed(1).replace(/\.0$/,'.0');
+  vSkip.textContent = skip;
+  stTotal.classList.toggle('pulse',s.pulse==='total');stSkip.classList.toggle('pulse',s.pulse==='skip');
+  for(let i=0;i<4;i++)document.getElementById('o'+i).classList.toggle('show',s.out>=i&&s.out>=0);
+  ['l1','l2','l3','l4','l5','l6','l8'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
+  if(s.line===4)document.getElementById('l3').classList.add('on');
+  if(s.line===6)document.getElementById('l5').classList.add('on');
+  status.innerHTML=s.st;
+}
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop'),bI=document.getElementById('into'),bO=document.getElementById('over');
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
+  for(let i=0;i<4;i++)document.getElementById('r'+i).classList.remove('cur','good','bad');
+  paneRows.classList.remove('on');paneStat.classList.remove('on');vTotal.textContent='0';vSkip.textContent='0';
+  stTotal.classList.remove('pulse');stSkip.classList.remove('pulse');
+  for(let i=0;i<4;i++)document.getElementById('o'+i).classList.remove('show');
+  ['l1','l2','l3','l4','l5','l6','l8'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
+</script>
+</body>
+</html>

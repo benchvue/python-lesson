@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — try / except / else</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:26px;text-align:center}
+  .wrap{width:100%;max-width:740px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:22px;font-family:'SF Mono','Consolas',monospace;font-size:12.5px;line-height:1.8;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:block;border-radius:7px;padding:1px 8px;transition:.25s;min-height:21px;white-space:nowrap}
+  .cl .gut{color:#5a6080;display:inline-block;width:14px;text-align:right;margin-right:10px}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}.t-err{color:#ff8a8a;font-weight:600}
+  .items{display:flex;gap:9px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+  .it{font-family:'SF Mono','Consolas',monospace;font-size:12.5px;font-weight:600;color:#555;border:2px solid #ececf2;border-radius:11px;padding:9px 13px;transition:.25s;opacity:.5}
+  .it.cur{opacity:1;border-color:#6366f1;background:#eef0ff;color:#4f46e5;transform:translateY(-4px);box-shadow:0 8px 18px #6366f130}
+  .it.good{opacity:1;border-color:#10b981;background:#e9fbf3;color:#0a7d57}
+  .it.bad{opacity:1;border-color:#ef4444;background:#fdecec;color:#c12d2d}
+  .router{display:flex;gap:12px;align-items:stretch;margin-bottom:6px}
+  .node{flex:1;border:2px solid #ececf2;border-radius:14px;padding:13px;text-align:center;transition:.28s;display:flex;flex-direction:column;justify-content:center}
+  .node .tag{font-size:9px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#bbb;margin-bottom:5px;transition:.28s}
+  .node .nm{font-family:'SF Mono','Consolas',monospace;font-size:12px;font-weight:600;color:#444}
+  .tryN.ok{border-color:#f59e0b;box-shadow:0 8px 20px #f59e0b22}.tryN.ok .tag{color:#f59e0b}
+  .excN.on{border-color:#ef4444;box-shadow:0 8px 20px #ef444428}.excN.on .tag{color:#ef4444}.excN.dim{opacity:.35}
+  .elseN.on{border-color:#10b981;box-shadow:0 8px 20px #10b98128}.elseN.on .tag{color:#10b981}.elseN.dim{opacity:.35}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:12px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:10px 12px;margin-top:16px;min-height:88px;line-height:1.7}
+  .termline .p{color:#6ee7ff}.oline{opacity:0;transition:.3s;display:block}.oline.show{opacity:1}.obad{color:#ffd27f}
+  .status{text-align:center;font-size:13px;color:#555;margin:18px auto 16px;min-height:20px;max-width:620px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 18px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
+  @media(max-width:600px){h2{font-size:20px}.code{font-size:10.5px}.router{flex-direction:column}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 5</h1>
+  <h2>try / except / else</h2>
+  <div class="subtitle"><b>else</b> runs only when the try block had <b>no</b> error</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l1"><span class="gut">1</span><span class="t-name">amounts</span> <span class="t-op">=</span> <span class="t-punc">[</span><span class="t-str">"1200"</span><span class="t-punc">,</span> <span class="t-str">"not-a-number"</span><span class="t-punc">,</span> <span class="t-str">"300"</span><span class="t-punc">]</span></div>
+      <div class="cl" id="l3"><span class="gut">3</span><span class="t-kw">for</span> <span class="t-name">value</span> <span class="t-kw">in</span> <span class="t-name">amounts</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l4"><span class="gut">4</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">try</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l5"><span class="gut">5</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-name">amount</span> <span class="t-op">=</span> <span class="t-fn">int</span><span class="t-punc">(</span><span class="t-name">value</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l6"><span class="gut">6</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">except</span> <span class="t-err">ValueError</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l7"><span class="gut">7</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-fn">print</span><span class="t-punc">(</span><span class="t-name">value</span><span class="t-punc">,</span> <span class="t-str">"-&gt; skipped"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l8"><span class="gut">8</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">else</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l9"><span class="gut">9</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-fn">print</span><span class="t-punc">(</span><span class="t-name">value</span><span class="t-punc">,</span> <span class="t-str">"-&gt; added"</span><span class="t-punc">,</span> <span class="t-name">amount</span><span class="t-punc">)</span></div>
+    </div>
+    <div class="items">
+      <span class="it" id="i0">"1200"</span><span class="it" id="i1">"not-a-number"</span><span class="it" id="i2">"300"</span>
+    </div>
+    <div class="router">
+      <div class="node tryN" id="nTry"><div class="tag">try</div><div class="nm" id="tryNm">int(value)</div></div>
+      <div class="node excN" id="nExc"><div class="tag">except → skip</div><div class="nm">not a number</div></div>
+      <div class="node elseN" id="nElse"><div class="tag">else → add</div><div class="nm">no error</div></div>
+    </div>
+    <div class="termline"><div><span class="p">$</span> python 05_try_except_else.py</div>
+      <div class="oline" id="o0">1200 -> added 1200</div>
+      <div class="oline obad" id="o1">not-a-number -> skipped (not a number)</div>
+      <div class="oline" id="o2">300 -> added 300</div></div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const VALS=['"1200"','"not-a-number"','"300"'],GOOD=[true,false,true];
+const status=document.getElementById('status'),nTry=document.getElementById('nTry'),nExc=document.getElementById('nExc'),nElse=document.getElementById('nElse'),tryNm=document.getElementById('tryNm');
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d},o));t+=d;};
+add(700,{cur:-1,route:'',out:-1,line:1,dep:0,st:'Three values — some are numbers, one isn\'t.'});
+[0,1,2].forEach(i=>{
+  add(650,{cur:i,route:'try',out:i-1<0?-1:i-1,line:5,dep:1,st:`Try to convert <b>${VALS[i]}</b> with int().`});
+  if(GOOD[i]){
+    add(800,{cur:i,route:'else',good:i,out:i,line:9,dep:1,st:`No error → <b>else</b> runs → added ${VALS[i].replace(/"/g,'')}.`});
+  } else {
+    add(800,{cur:i,route:'exc',bad:i,out:i,line:7,dep:1,st:`<b>ValueError</b> ⚡ → <b>except</b> runs → skipped. (else is NOT run)`});
+  }
+});
+add(1250,{cur:-1,route:'',out:2,line:8,dep:0,st:'<b>else</b> = the "it worked" branch — keeps success logic out of try.'});
+const CYCLE=t;
+let playing=false,elapsed=0,last=0,raf=null,started=false;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  for(let i=0;i<3;i++){const el=document.getElementById('i'+i);
+    el.className='it'+(i===s.cur?' cur':'')+((s.good!==undefined&&i<=s.good&&GOOD[i]&&i<=s.cur)?'':'');
+    el.classList.remove('cur','good','bad');
+    if(i===s.cur&&s.route==='try')el.classList.add('cur');
+    else if(i<s.cur||(i===s.cur&&(s.route==='else'||s.route==='exc'))){el.classList.add(GOOD[i]?'good':'bad');}
+  }
+  nTry.className='node tryN'+(s.route==='try'||s.route==='else'||s.route==='exc'?' ok':'');
+  tryNm.textContent = s.cur>=0 ? 'int('+VALS[s.cur]+')' : 'int(value)';
+  nExc.className='node excN'+(s.route==='exc'?' on':' dim');
+  nElse.className='node elseN'+(s.route==='else'?' on':' dim');
+  for(let i=0;i<3;i++)document.getElementById('o'+i).classList.toggle('show',s.out>=i&&s.out>=0);
+  ['l1','l3','l4','l5','l6','l7','l8','l9'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
+  if([5].includes(s.line))document.getElementById('l4').classList.add('on');
+  status.innerHTML=s.st;
+}
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop'),bI=document.getElementById('into'),bO=document.getElementById('over');
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
+  for(let i=0;i<3;i++)document.getElementById('i'+i).className='it';
+  nTry.className='node tryN';nExc.className='node excN';nElse.className='node elseN';tryNm.textContent='int(value)';
+  for(let i=0;i<3;i++)document.getElementById('o'+i).classList.remove('show');
+  ['l1','l3','l4','l5','l6','l7','l8','l9'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
+</script>
+</body>
+</html>

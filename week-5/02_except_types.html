@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — Exception Types</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:26px;text-align:center}
+  .wrap{width:100%;max-width:740px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:22px;font-family:'SF Mono','Consolas',monospace;font-size:12.5px;line-height:1.8;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:block;border-radius:7px;padding:1px 8px;transition:.25s;min-height:21px;white-space:nowrap}
+  .cl .gut{color:#5a6080;display:inline-block;width:16px;text-align:right;margin-right:10px}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-num{color:#f78c6c}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}.t-err{color:#ff8a8a;font-weight:600}
+  .calls{display:flex;gap:10px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+  .call{font-family:'SF Mono','Consolas',monospace;font-size:12px;border:1.5px solid #e6e6ee;border-radius:10px;padding:8px 12px;color:#666;transition:.25s;opacity:.5}
+  .call.on{opacity:1;border-color:#6366f1;background:#f7f8ff;color:#4f46e5;font-weight:700;transform:translateY(-3px)}
+  .call.done{opacity:.8}
+  .router{display:flex;gap:12px;align-items:stretch;margin-bottom:6px}
+  .try{flex:1.1;border:2px solid #ececf2;border-radius:14px;padding:14px;text-align:center;transition:.28s;display:flex;flex-direction:column;justify-content:center}
+  .try .tag{font-size:9px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#bbb;margin-bottom:6px}
+  .try .nm{font-family:'SF Mono','Consolas',monospace;font-size:13px;font-weight:700;color:#333}
+  .try.ok{border-color:#10b981;box-shadow:0 8px 20px #10b98128}.try.ok .tag{color:#10b981}
+  .try.err{border-color:#ef4444;box-shadow:0 8px 20px #ef444428}.try.err .tag{color:#ef4444}
+  .handlers{flex:1.4;display:flex;flex-direction:column;gap:9px}
+  .h{border:2px solid #ececf2;border-radius:12px;padding:10px 12px;transition:.28s;display:flex;align-items:center;justify-content:space-between;opacity:.5}
+  .h .ht{font-family:'SF Mono','Consolas',monospace;font-size:12px;font-weight:700;color:#555}
+  .h .hr{font-family:'SF Mono','Consolas',monospace;font-size:11px;color:#999}
+  .h.zero.on{opacity:1;border-color:#ef4444;background:#fdecec}.h.zero.on .ht{color:#c12d2d}
+  .h.type.on{opacity:1;border-color:#f59e0b;background:#fff8ec}.h.type.on .ht{color:#8a5e08}
+  .h.ok.on{opacity:1;border-color:#10b981;background:#e9fbf3}.h.ok.on .ht{color:#0a7d57}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:12px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:10px 12px;margin-top:16px;min-height:70px;line-height:1.7}
+  .termline .p{color:#6ee7ff}.oline{opacity:0;transition:.3s;display:block}.oline.show{opacity:1}
+  .status{text-align:center;font-size:13px;color:#555;margin:18px auto 16px;min-height:20px;max-width:620px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 18px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
+  @media(max-width:600px){h2{font-size:20px}.code{font-size:10.5px}.router{flex-direction:column}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 5</h1>
+  <h2>Catching Different Errors</h2>
+  <div class="subtitle">each kind of problem has its own exception — match it to the right handler</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l1"><span class="gut">1</span><span class="t-kw">def</span> <span class="t-fn">safe_divide</span><span class="t-punc">(</span><span class="t-name">a</span><span class="t-punc">,</span> <span class="t-name">b</span><span class="t-punc">):</span></div>
+      <div class="cl" id="l2"><span class="gut">2</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">try</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l3"><span class="gut">3</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">return</span> <span class="t-name">a</span> <span class="t-op">/</span> <span class="t-name">b</span></div>
+      <div class="cl" id="l4"><span class="gut">4</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">except</span> <span class="t-err">ZeroDivisionError</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l5"><span class="gut">5</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">return</span> <span class="t-str">"Cannot divide by zero"</span></div>
+      <div class="cl" id="l6"><span class="gut">6</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">except</span> <span class="t-err">TypeError</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l7"><span class="gut">7</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">return</span> <span class="t-str">"Both values must be numbers"</span></div>
+    </div>
+    <div class="calls">
+      <span class="call" id="c0">safe_divide(10, 2)</span>
+      <span class="call" id="c1">safe_divide(10, 0)</span>
+      <span class="call" id="c2">safe_divide(10, "x")</span>
+    </div>
+    <div class="router">
+      <div class="try" id="try"><div class="tag">try</div><div class="nm" id="tryNm">a / b</div></div>
+      <div class="handlers">
+        <div class="h ok" id="hOk"><span class="ht">no error → return</span><span class="hr" id="rOk">result</span></div>
+        <div class="h zero" id="hZero"><span class="ht">except ZeroDivisionError</span><span class="hr">b was 0</span></div>
+        <div class="h type" id="hType"><span class="ht">except TypeError</span><span class="hr">"x" isn't a number</span></div>
+      </div>
+    </div>
+    <div class="termline"><div><span class="p">$</span> python 02_except_types.py</div>
+      <div class="oline" id="o0">5.0</div>
+      <div class="oline" id="o1">Cannot divide by zero</div>
+      <div class="oline" id="o2">Both values must be numbers</div></div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const status=document.getElementById('status'),tryEl=document.getElementById('try'),tryNm=document.getElementById('tryNm'),rOk=document.getElementById('rOk');
+const hOk=document.getElementById('hOk'),hZero=document.getElementById('hZero'),hType=document.getElementById('hType');
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d,dep:0},o));t+=d;};
+// call 0: ok
+add(650,{call:0,tryS:'',route:'',expr:'10 / 2',out:-1,line:2,st:'Call 1: <b>safe_divide(10, 2)</b> — enter the try block.'});
+add(800,{call:0,tryS:'ok',route:'ok',expr:'10 / 2 = 5.0',out:0,line:3,dep:1,st:'<b>10 / 2</b> works → no error, so it returns <b>5.0</b>.'});
+// call 1: zero
+add(650,{call:1,tryS:'',route:'',expr:'10 / 0',out:0,line:2,st:'Call 2: <b>safe_divide(10, 0)</b> — try again with b = 0.'});
+add(850,{call:1,tryS:'err',route:'zero',expr:'10 / 0 ⚡',out:0,line:4,dep:1,st:'<b>10 / 0</b> raises <b>ZeroDivisionError</b> → matches the first except.'});
+add(700,{call:1,tryS:'err',route:'zero',expr:'10 / 0 ⚡',out:1,line:5,dep:1,st:'Returns <b>"Cannot divide by zero"</b>.'});
+// call 2: type
+add(650,{call:2,tryS:'',route:'',expr:'10 / "x"',out:1,line:2,st:'Call 3: <b>safe_divide(10, "x")</b> — a string sneaks in.'});
+add(850,{call:2,tryS:'err',route:'type',expr:'10 / "x" ⚡',out:1,line:6,dep:1,st:'<b>10 / "x"</b> raises <b>TypeError</b> → skips the first except, matches the second.'});
+add(700,{call:2,tryS:'err',route:'type',expr:'10 / "x" ⚡',out:2,line:7,dep:1,st:'Returns <b>"Both values must be numbers"</b>.'});
+add(1250,{call:-1,tryS:'',route:'',expr:'a / b',out:2,line:1,st:'Python matches the raised error to the first except that fits.'});
+const CYCLE=t;
+let playing=false,elapsed=0,last=0,raf=null,started=false;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  for(let i=0;i<3;i++){const el=document.getElementById('c'+i);el.classList.toggle('on',i===s.call);el.classList.toggle('done',s.call>i&&s.call>=0);}
+  tryEl.className='node try'+(s.tryS==='ok'?' ok':s.tryS==='err'?' err':'');tryEl.classList.add('try');
+  tryEl.className='try'+(s.tryS==='ok'?' ok':s.tryS==='err'?' err':'');tryNm.textContent=s.expr;
+  hOk.classList.toggle('on',s.route==='ok');hZero.classList.toggle('on',s.route==='zero');hType.classList.toggle('on',s.route==='type');
+  rOk.textContent = s.route==='ok' ? '5.0' : 'result';
+  for(let i=0;i<3;i++)document.getElementById('o'+i).classList.toggle('show',s.out>=i&&s.out>=0);
+  ['l1','l2','l3','l4','l5','l6','l7'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
+  status.innerHTML=s.st;
+}
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop'),bI=document.getElementById('into'),bO=document.getElementById('over');
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
+  for(let i=0;i<3;i++)document.getElementById('c'+i).classList.remove('on','done');
+  tryEl.className='try';tryNm.textContent='a / b';hOk.classList.remove('on');hZero.classList.remove('on');hType.classList.remove('on');rOk.textContent='result';
+  for(let i=0;i<3;i++)document.getElementById('o'+i).classList.remove('show');
+  ['l1','l2','l3','l4','l5','l6','l7'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
+</script>
+</body>
+</html>

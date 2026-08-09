@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — raise</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:26px;text-align:center}
+  .wrap{width:100%;max-width:760px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:24px;font-family:'SF Mono','Consolas',monospace;font-size:12.5px;line-height:1.8;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:block;border-radius:7px;padding:1px 8px;transition:.25s;min-height:21px;white-space:nowrap}
+  .cl .gut{color:#5a6080;display:inline-block;width:16px;text-align:right;margin-right:10px}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-num{color:#f78c6c}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}.t-err{color:#ff8a8a;font-weight:600}
+  .track{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:170px}
+  .rail{position:absolute;left:7%;right:7%;top:50%;height:3px;background:#eee;border-radius:3px;transform:translateY(-50%);z-index:0}
+  .box{position:relative;z-index:2;flex:1 1 0;background:#fff;border:2px solid #ececec;border-radius:14px;padding:14px 11px;text-align:center;transition:.25s}
+  .box .tag{font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#bbb;transition:.25s}
+  .box .name{font-size:12.5px;font-weight:600;margin:5px 0 4px}
+  .box .detail{font-family:'SF Mono','Consolas',monospace;font-size:10.5px;color:#777;line-height:1.4}
+  .box.active[data-c="0"]{border-color:#6366f1;box-shadow:0 8px 22px #6366f138}.box.active[data-c="0"] .tag{color:#6366f1}
+  .box.active[data-c="1"]{border-color:#ef4444;box-shadow:0 8px 22px #ef444438}.box.active[data-c="1"] .tag{color:#ef4444}
+  .box.active[data-c="2"]{border-color:#10b981;box-shadow:0 8px 22px #10b98138}.box.active[data-c="2"] .tag{color:#10b981}
+  .check{font-family:'SF Mono','Consolas',monospace;font-size:11px;padding:3px 8px;border-radius:7px;display:inline-block;margin-top:6px;transition:.3s}
+  .check.bad{background:#fdecec;color:#c12d2d;font-weight:700}
+  .packet{position:absolute;z-index:6;top:50%;left:0;transform:translate(-50%,-50%) scale(.6);opacity:0;font-family:'SF Mono','Consolas',monospace;font-size:11.5px;font-weight:700;color:#fff;background:#ef4444;padding:5px 11px;border-radius:16px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:12px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:10px 12px;margin-top:20px;min-height:44px;line-height:1.7}
+  .termline .p{color:#6ee7ff}.oline{opacity:0;transition:.3s;display:block}.oline.show{opacity:1}.oerr{color:#ffd27f}
+  .status{text-align:center;font-size:13px;color:#555;margin:20px auto 16px;min-height:20px;max-width:620px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 18px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
+  @media(max-width:600px){h2{font-size:20px}.code{font-size:10.5px}.track{gap:6px}.box .name{font-size:11px}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 5</h1>
+  <h2>raise — Signal Your Own Error</h2>
+  <div class="subtitle">when a rule is broken, <b>raise</b> throws an error for a caller to catch</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l1"><span class="gut">1</span><span class="t-kw">def</span> <span class="t-fn">withdraw</span><span class="t-punc">(</span><span class="t-name">balance</span><span class="t-punc">,</span> <span class="t-name">amount</span><span class="t-punc">):</span></div>
+      <div class="cl" id="l2"><span class="gut">2</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">if</span> <span class="t-name">amount</span> <span class="t-op">&gt;</span> <span class="t-name">balance</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l3"><span class="gut">3</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">raise</span> <span class="t-err">ValueError</span><span class="t-punc">(</span><span class="t-str">"Insufficient funds"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l4"><span class="gut">4</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-kw">return</span> <span class="t-name">balance</span> <span class="t-op">-</span> <span class="t-name">amount</span></div>
+      <div class="cl" id="l6"><span class="gut">6</span><span class="t-kw">try</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l7"><span class="gut">7</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-name">new_balance</span> <span class="t-op">=</span> <span class="t-fn">withdraw</span><span class="t-punc">(</span><span class="t-num">100</span><span class="t-punc">,</span> <span class="t-num">250</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l9"><span class="gut">9</span><span class="t-kw">except</span> <span class="t-err">ValueError</span> <span class="t-kw">as</span> <span class="t-name">error</span><span class="t-punc">:</span></div>
+      <div class="cl" id="l10"><span class="gut">10</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-fn">print</span><span class="t-punc">(</span><span class="t-str">"Denied:"</span><span class="t-punc">,</span> <span class="t-name">error</span><span class="t-punc">)</span></div>
+    </div>
+    <div class="track" id="track">
+      <div class="rail"></div>
+      <div class="box" data-c="0"><div class="tag">Call</div><div class="name">withdraw(100, 250)</div><div class="detail">take out 250 from 100</div></div>
+      <div class="box" data-c="1"><div class="tag">Check → raise</div><div class="name">amount &gt; balance</div><div class="check" id="check">250 &gt; 100 ?</div></div>
+      <div class="box" data-c="2"><div class="tag">except catches</div><div class="name">as error</div><div class="detail" id="caught">waiting…</div></div>
+      <div class="packet" id="packet">ValueError</div>
+    </div>
+    <div class="termline"><div><span class="p">$</span> python 04_raise.py</div>
+      <div class="oline oerr" id="o0">Denied: Insufficient funds</div></div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const track=document.getElementById('track'),boxes=[...track.querySelectorAll('.box')],packet=document.getElementById('packet');
+const status=document.getElementById('status'),check=document.getElementById('check'),caught=document.getElementById('caught');
+function cx(i){const tr=track.getBoundingClientRect(),b=boxes[i].getBoundingClientRect();return b.left-tr.left+b.width/2;}
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d},o));t+=d;};
+add(700,{type:'dwell',i:0,bad:false,caught:false,out:-1,line:7,dep:0,st:'Call <b>withdraw(100, 250)</b> inside a try block.'});
+add(800,{type:'check',i:1,bad:true,caught:false,out:-1,line:2,dep:1,st:'Check the rule: <b>250 &gt; 100</b> is True — that\'s not allowed.'});
+add(850,{type:'raise',i:1,bad:true,caught:false,out:-1,line:3,dep:1,st:'<b>raise ValueError("Insufficient funds")</b> throws the error. ⚡'});
+add(850,{type:'fly',from:1,to:2,bad:true,caught:false,out:-1,line:3,dep:1,st:'The error travels up to whoever called the function…'});
+add(800,{type:'catch',i:2,bad:true,caught:true,out:-1,line:9,dep:0,st:'<b>except ValueError as error</b> catches it — <b>error</b> holds the message.'});
+add(850,{type:'print',i:2,bad:true,caught:true,out:0,line:10,dep:0,st:'Print <b>"Denied: Insufficient funds"</b>.'});
+add(1250,{type:'hold',i:2,bad:true,caught:true,out:0,line:10,dep:0,st:'<b>raise</b> lets your code enforce its own rules, cleanly.'});
+const CYCLE=t;
+let playing=false,elapsed=0,last=0,raf=null,started=false;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];let x,vis=false,act=s.i;
+  if(s.type==='fly'){const p=(ms-s.s)/(s.e-s.s);x=cx(s.from)+(cx(s.to)-cx(s.from))*p;vis=true;act=p<.5?s.from:s.to;}
+  else if(s.type==='raise'){x=cx(1);vis=true;act=1;}
+  else {x=cx(s.i);vis=false;}
+  packet.style.left=x+'px';packet.style.opacity=vis?1:0;packet.style.transform='translate(-50%,-50%) scale('+(vis?1:.6)+')';
+  boxes.forEach((b,i)=>b.classList.toggle('active',i===act));
+  check.className='check'+(s.bad?' bad':'');check.textContent=s.bad?'250 > 100 → raise':'250 > 100 ?';
+  caught.textContent=s.caught?'error = "Insufficient funds"':'waiting…';
+  document.getElementById('o0').classList.toggle('show',s.out>=0);
+  ['l1','l2','l3','l4','l6','l7','l9','l10'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
+  if(s.line===2||s.line===3)document.getElementById('l1').classList.add('on');
+  status.innerHTML=s.st;
+}
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop'),bI=document.getElementById('into'),bO=document.getElementById('over');
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
+  boxes.forEach(b=>b.classList.remove('active'));packet.style.opacity=0;check.className='check';check.textContent='250 > 100 ?';caught.textContent='waiting…';
+  document.getElementById('o0').classList.remove('show');
+  ['l1','l2','l3','l4','l6','l7','l9','l10'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
+</script>
+</body>
+</html>
