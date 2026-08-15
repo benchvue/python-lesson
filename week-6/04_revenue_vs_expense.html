@@ -50,6 +50,7 @@
       <div class="cl" id="l8"><span class="gut">8</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">bar</span><span class="t-punc">(</span><span class="t-name">x</span> <span class="t-op">-</span> <span class="t-num">0.2</span><span class="t-punc">,</span> <span class="t-name">revenue</span><span class="t-punc">,</span> <span class="t-name">width</span><span class="t-op">=</span><span class="t-num">0.4</span><span class="t-punc">,</span> <span class="t-name">label</span><span class="t-op">=</span><span class="t-str">"Revenue"</span><span class="t-punc">)</span></div>
       <div class="cl" id="l9"><span class="gut">9</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">bar</span><span class="t-punc">(</span><span class="t-name">x</span> <span class="t-op">+</span> <span class="t-num">0.2</span><span class="t-punc">,</span> <span class="t-name">expenses</span><span class="t-punc">,</span> <span class="t-name">width</span><span class="t-op">=</span><span class="t-num">0.4</span><span class="t-punc">,</span> <span class="t-name">label</span><span class="t-op">=</span><span class="t-str">"Expenses"</span><span class="t-punc">)</span></div>
       <div class="cl" id="l12"><span class="gut">12</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">legend</span><span class="t-punc">()</span><span class="t-punc">;</span> <span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">savefig</span><span class="t-punc">(</span><span class="t-str">"revenue_vs_expenses.png"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l14"><span class="gut">14</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">show</span><span class="t-punc">()</span></div>
     </div>
     <div class="canvas" id="canvas">
       <svg viewBox="0 0 480 300" id="svg">
@@ -85,7 +86,8 @@ add(600,{rev:0,exp:0,title:false,leg:false,out:-1,line:5,st:'Second series: <b>e
 add(1100,{rev:1,exp:0,title:false,leg:false,out:-1,line:8,st:'First <b>plt.bar()</b> — shifted left by 0.2 — draws the Revenue bars.'});
 add(1100,{rev:1,exp:1,title:false,leg:false,out:-1,line:9,st:'Second <b>plt.bar()</b> — shifted right — draws Expenses beside them.'});
 add(850,{rev:1,exp:1,title:true,leg:true,out:0,line:12,st:'<b>plt.legend()</b> names the two colors, then savefig writes the PNG.'});
-add(1300,{rev:1,exp:1,title:true,leg:true,out:0,line:12,st:'Side-by-side bars make the profit gap in each quarter easy to compare.'});
+add(950,{rev:1,exp:1,title:true,leg:true,out:0,line:14,st:'<b>plt.show()</b> opens the chart in a window when you run the script.'});
+add(1300,{rev:1,exp:1,title:true,leg:true,out:0,line:14,st:'Side-by-side bars make the profit gap in each quarter easy to compare.'});
 const CYCLE=t,RSEG=seg[3],ESEG=seg[4];
 let playing=false,elapsed=0,last=0,raf=null,started=false;
 function grow(prefix,vals,arr,g){for(let i=0;i<4;i++){const h=(arr[i]/MAX)*PLOTH*g;const b=document.getElementById(prefix+i);b.setAttribute('height',h);b.setAttribute('y',Y0-h);}}
@@ -98,7 +100,7 @@ function render(ms){
   grow('rev',REV,REV,rg);grow('exp',EXP,EXP,eg);
   ctitle.classList.toggle('show',s.title);legend.classList.toggle('show',s.leg);
   document.getElementById('o0').classList.toggle('show',s.out>=0);
-  ['l3','l4','l5','l8','l9','l12'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  ['l3','l4','l5','l8','l9','l12','l14'].forEach(id=>document.getElementById(id).classList.remove('on'));
   const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
   status.innerHTML=s.st;
 }
@@ -109,7 +111,7 @@ function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.d
 function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
   canvas.classList.remove('on');grow('rev',REV,REV,0);grow('exp',EXP,EXP,0);
   ctitle.classList.remove('show');legend.classList.remove('show');document.getElementById('o0').classList.remove('show');
-  ['l3','l4','l5','l8','l9','l12'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+  ['l3','l4','l5','l8','l9','l12','l14'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
 function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
 function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
 function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}

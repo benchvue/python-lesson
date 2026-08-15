@@ -49,6 +49,7 @@
       <div class="cl" id="l10"><span class="gut">10</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">axhline</span><span class="t-punc">(</span><span class="t-num">0</span><span class="t-punc">,</span> <span class="t-name">color</span><span class="t-op">=</span><span class="t-str">"black"</span><span class="t-punc">)</span></div>
       <div class="cl" id="l12"><span class="gut">12</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">grid</span><span class="t-punc">(</span><span class="t-name">axis</span><span class="t-op">=</span><span class="t-str">"y"</span><span class="t-punc">,</span> <span class="t-name">linestyle</span><span class="t-op">=</span><span class="t-str">"--"</span><span class="t-punc">)</span></div>
       <div class="cl" id="l13"><span class="gut">13</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">savefig</span><span class="t-punc">(</span><span class="t-str">"monthly_profit.png"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l15"><span class="gut">15</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">show</span><span class="t-punc">()</span></div>
     </div>
     <div class="canvas" id="canvas">
       <svg viewBox="0 0 480 300" id="svg">
@@ -89,7 +90,8 @@ add(800,{grown:1,colored:true,zero:false,grid:false,title:true,out:-1,line:9,st:
 add(750,{grown:1,colored:true,zero:true,grid:false,title:true,out:-1,line:10,st:'<b>plt.axhline(0)</b> draws a baseline at zero.'});
 add(800,{grown:1,colored:true,zero:true,grid:true,title:true,out:-1,line:12,st:'<b>plt.grid()</b> adds dashed gridlines so values are easy to read off.'});
 add(850,{grown:1,colored:true,zero:true,grid:true,title:true,out:0,line:13,st:'<b>savefig()</b> writes the finished, styled chart.'});
-add(1300,{grown:1,colored:true,zero:true,grid:true,title:true,out:0,line:13,st:'Color + baseline + grid = a chart a manager can read at a glance.'});
+add(950,{grown:1,colored:true,zero:true,grid:true,title:true,out:0,line:15,st:'<b>plt.show()</b> opens the styled chart in a window when you run it.'});
+add(1300,{grown:1,colored:true,zero:true,grid:true,title:true,out:0,line:15,st:'Color + baseline + grid = a chart a manager can read at a glance.'});
 const CYCLE=t,GROW=seg[2];
 let playing=false,elapsed=0,last=0,raf=null,started=false;
 function render(ms){
@@ -105,7 +107,7 @@ function render(ms){
   ctitle.classList.toggle('show',s.title);zero.classList.toggle('show',s.zero);
   document.querySelectorAll('#grid line').forEach(l=>l.classList.toggle('show',s.grid));
   document.getElementById('o0').classList.toggle('show',s.out>=0);
-  ['l3','l4','l6','l9','l10','l12','l13'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  ['l3','l4','l6','l9','l10','l12','l13','l15'].forEach(id=>document.getElementById(id).classList.remove('on'));
   const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
   status.innerHTML=s.st;
 }
@@ -116,7 +118,7 @@ function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.d
 function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
   canvas.classList.remove('on');for(let i=0;i<MON.length;i++){const b=document.getElementById('bar'+i);b.setAttribute('height',0);b.setAttribute('y',Y_ZERO);b.setAttribute('fill','#9aa1b0');}
   ctitle.classList.remove('show');zero.classList.remove('show');document.querySelectorAll('#grid line').forEach(l=>l.classList.remove('show'));document.getElementById('o0').classList.remove('show');
-  ['l3','l4','l6','l9','l10','l12','l13'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+  ['l3','l4','l6','l9','l10','l12','l13','l15'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
 function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
 function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
 function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}

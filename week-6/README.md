@@ -31,7 +31,8 @@ pip3 install matplotlib pandas
 |---|-------|-----------|------|------|
 | 06 | DataFrame.plot() | [▶ Demo](https://benchvue.github.io/python-lesson/week-6/06_dataframe_plot.html) | [.py](06_dataframe_plot.py) | `groupby` then `.plot(kind="bar")` in one line. |
 
-Every script ends with `plt.savefig("...png")`, so running it drops a real image next to the file.
+Every script both **saves** the chart (`plt.savefig("...png")`) and **opens it in a window** (`plt.show()`),
+so running it drops a real image next to the file *and* pops the chart up on screen.
 
 **01** → `monthly_expenses.png`  ·  **02** → `revenue_trend.png`  ·  **03** → `expense_pie.png`
 **04** → `revenue_vs_expenses.png`  ·  **05** → `monthly_profit.png`  ·  **06** → `spending_by_category.png`
@@ -76,8 +77,7 @@ Name: Amount, dtype: int64
 
 ```bash
 cd /Users/you/Documents/python-lesson/week-6   # go to the folder
-python3 01_expense_chart.py                    # writes monthly_expenses.png
-open monthly_expenses.png                      # view the saved image
+python3 01_expense_chart.py                    # saves monthly_expenses.png AND opens a chart window
 ```
 
 Tip: type the start of a filename and press **Tab ⇥** to auto-complete it.

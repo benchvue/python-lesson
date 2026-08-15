@@ -8,3 +8,4 @@ plt.title("Expense Breakdown")
 plt.savefig("expense_pie.png")
 
 print("expense_pie.png created.")
+plt.show()

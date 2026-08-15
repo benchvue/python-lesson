@@ -10,3 +10,4 @@ plt.ylabel("Amount")
 plt.savefig("monthly_expenses.png")
 
 print("monthly_expenses.png created.")
+plt.show()

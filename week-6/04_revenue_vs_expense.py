@@ -14,3 +14,4 @@ plt.legend()
 plt.savefig("revenue_vs_expenses.png")
 
 print("revenue_vs_expenses.png created.")
+plt.show()

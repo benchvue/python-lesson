@@ -50,6 +50,7 @@
       <div class="cl" id="l6"><span class="gut">6</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">plot</span><span class="t-punc">(</span><span class="t-name">months</span><span class="t-punc">,</span> <span class="t-name">revenue</span><span class="t-punc">,</span> <span class="t-name">marker</span><span class="t-op">=</span><span class="t-str">"o"</span><span class="t-punc">)</span></div>
       <div class="cl" id="l7"><span class="gut">7</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">title</span><span class="t-punc">(</span><span class="t-str">"Revenue Trend"</span><span class="t-punc">)</span></div>
       <div class="cl" id="l10"><span class="gut">10</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">savefig</span><span class="t-punc">(</span><span class="t-str">"revenue_trend.png"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l12"><span class="gut">12</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">show</span><span class="t-punc">()</span></div>
     </div>
     <div class="canvas" id="canvas">
       <svg viewBox="0 0 480 300" id="svg">
@@ -85,7 +86,8 @@ add(600,{prog:0,title:false,out:-1,line:4,st:'The <b>revenue</b> values set each
 add(1600,{prog:1,title:false,out:-1,line:6,st:'<b>plt.plot()</b> draws a line through the points; <b>marker="o"</b> dots each month.'});
 add(700,{prog:1,title:true,out:-1,line:7,st:'<b>plt.title()</b> labels the chart.'});
 add(850,{prog:1,title:true,out:0,line:10,st:'<b>plt.savefig()</b> saves it as a PNG.'});
-add(1300,{prog:1,title:true,out:0,line:10,st:'A line chart makes the upward revenue trend easy to read.'});
+add(950,{prog:1,title:true,out:0,line:12,st:'<b>plt.show()</b> opens the chart in a window when you run the script.'});
+add(1300,{prog:1,title:true,out:0,line:12,st:'A line chart makes the upward revenue trend easy to read.'});
 const CYCLE=t,LSEG=seg[3];
 let playing=false,elapsed=0,last=0,raf=null,started=false;
 function render(ms){
@@ -102,7 +104,7 @@ function render(ms){
   for(let i=0;i<MON.length;i++){const on=segf>=i-0.001;document.getElementById('dot'+i).classList.toggle('show',on);document.getElementById('dval'+i).classList.toggle('show',on&&(s.prog>=1));}
   ctitle.classList.toggle('show',s.title);
   document.getElementById('o0').classList.toggle('show',s.out>=0);
-  ['l1','l3','l4','l6','l7','l10'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  ['l1','l3','l4','l6','l7','l10','l12'].forEach(id=>document.getElementById(id).classList.remove('on'));
   const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
   status.innerHTML=s.st;
 }
@@ -113,7 +115,7 @@ function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.d
 function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
   canvas.classList.remove('on');rline.setAttribute('points','');for(let i=0;i<MON.length;i++){document.getElementById('dot'+i).classList.remove('show');document.getElementById('dval'+i).classList.remove('show');}
   ctitle.classList.remove('show');document.getElementById('o0').classList.remove('show');
-  ['l1','l3','l4','l6','l7','l10'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+  ['l1','l3','l4','l6','l7','l10','l12'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
 function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
 function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
 function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}

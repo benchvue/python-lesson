@@ -10,3 +10,4 @@ plt.ylabel("Revenue")
 plt.savefig("revenue_trend.png")
 
 print("revenue_trend.png created.")
+plt.show()

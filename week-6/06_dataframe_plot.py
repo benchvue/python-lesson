@@ -16,3 +16,4 @@ plt.savefig("spending_by_category.png")
 
 print(summary)
 print("spending_by_category.png created.")
+plt.show()

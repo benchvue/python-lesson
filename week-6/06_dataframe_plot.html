@@ -57,6 +57,7 @@
       <div class="cl" id="l11"><span class="gut">11</span><span class="t-name">summary</span> <span class="t-op">=</span> <span class="t-name">df</span><span class="t-punc">.</span><span class="t-fn">groupby</span><span class="t-punc">(</span><span class="t-str">"Category"</span><span class="t-punc">)</span><span class="t-punc">[</span><span class="t-str">"Amount"</span><span class="t-punc">]</span><span class="t-punc">.</span><span class="t-fn">sum</span><span class="t-punc">()</span></div>
       <div class="cl" id="l13"><span class="gut">13</span><span class="t-name">summary</span><span class="t-punc">.</span><span class="t-fn">plot</span><span class="t-punc">(</span><span class="t-name">kind</span><span class="t-op">=</span><span class="t-str">"bar"</span><span class="t-punc">,</span> <span class="t-name">title</span><span class="t-op">=</span><span class="t-str">"Spending by Category"</span><span class="t-punc">)</span></div>
       <div class="cl" id="l15"><span class="gut">15</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">savefig</span><span class="t-punc">(</span><span class="t-str">"spending_by_category.png"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l18"><span class="gut">18</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">show</span><span class="t-punc">()</span></div>
     </div>
     <div class="row">
       <div class="pane">
@@ -105,7 +106,8 @@ add(700,{rows:0,bars:0,title:false,out:-1,line:1,st:'Import both <b>pandas</b> a
 add(1000,{rows:3,bars:0,title:false,out:0,line:11,st:'<b>groupby(...).sum()</b> makes a summary Series — the pandas skills from before.'});
 add(1500,{rows:3,bars:3,title:true,out:0,line:13,st:'<b>summary.plot(kind="bar")</b> — pandas hands the Series straight to matplotlib.'});
 add(850,{rows:3,bars:3,title:true,out:1,line:15,st:'<b>plt.savefig()</b> writes the PNG, same as always.'});
-add(1300,{rows:3,bars:3,title:true,out:1,line:15,st:'No manual plt.bar() — .plot() reads the index as labels and values as heights.'});
+add(950,{rows:3,bars:3,title:true,out:1,line:18,st:'<b>plt.show()</b> opens the chart in a window when you run the script.'});
+add(1300,{rows:3,bars:3,title:true,out:1,line:18,st:'No manual plt.bar() — .plot() reads the index as labels and values as heights.'});
 const CYCLE=t,BSEG=seg[2];
 let playing=false,elapsed=0,last=0,raf=null,started=false;
 function render(ms){
@@ -117,7 +119,7 @@ function render(ms){
   ctitle.classList.toggle('show',s.title);
   document.getElementById('o0').classList.toggle('show',s.out>=0);
   document.getElementById('o1').classList.toggle('show',s.out>=1);
-  ['l1','l2','l11','l13','l15'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  ['l1','l2','l11','l13','l15','l18'].forEach(id=>document.getElementById(id).classList.remove('on'));
   const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
   if(s.line===1){document.getElementById('l2').classList.add('on');}
   status.innerHTML=s.st;
@@ -129,7 +131,7 @@ function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.d
 function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
   canvas.classList.remove('on');for(let i=0;i<3;i++){document.getElementById('sr'+i).classList.remove('on');document.getElementById('bar'+i).setAttribute('height',0);document.getElementById('bar'+i).setAttribute('y',Y0);}
   ctitle.classList.remove('show');document.getElementById('o0').classList.remove('show');document.getElementById('o1').classList.remove('show');
-  ['l1','l2','l11','l13','l15'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+  ['l1','l2','l11','l13','l15','l18'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
 function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
 function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
 function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}

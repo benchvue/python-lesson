@@ -50,6 +50,7 @@
       <div class="cl" id="l7"><span class="gut">7</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">title</span><span class="t-punc">(</span><span class="t-str">"Monthly Expenses"</span><span class="t-punc">)</span></div>
       <div class="cl" id="l8"><span class="gut">8</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">xlabel</span><span class="t-punc">(</span><span class="t-str">"Category"</span><span class="t-punc">)</span><span class="t-punc">;</span> <span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">ylabel</span><span class="t-punc">(</span><span class="t-str">"Amount"</span><span class="t-punc">)</span></div>
       <div class="cl" id="l10"><span class="gut">10</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">savefig</span><span class="t-punc">(</span><span class="t-str">"monthly_expenses.png"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l12"><span class="gut">12</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">show</span><span class="t-punc">()</span></div>
     </div>
     <div class="canvas" id="canvas">
       <svg viewBox="0 0 480 300" id="svg">
@@ -93,7 +94,8 @@ add(1400,{bars:4,title:false,axlab:false,out:-1,line:6,st:'<b>plt.bar()</b> draw
 add(700,{bars:4,title:true,axlab:false,out:-1,line:7,st:'<b>plt.title()</b> adds a heading above the chart.'});
 add(750,{bars:4,title:true,axlab:true,out:-1,line:8,st:'<b>xlabel</b> / <b>ylabel</b> name the two axes.'});
 add(850,{bars:4,title:true,axlab:true,out:0,line:10,st:'<b>plt.savefig()</b> writes the chart to a PNG file.'});
-add(1300,{bars:4,title:true,axlab:true,out:0,line:10,st:'Salary towers over the rest — a bar chart makes that obvious instantly.'});
+add(950,{bars:4,title:true,axlab:true,out:0,line:12,st:'<b>plt.show()</b> also pops the chart up in a window so you see it right away.'});
+add(1300,{bars:4,title:true,axlab:true,out:0,line:12,st:'Salary towers over the rest — a bar chart makes that obvious instantly.'});
 const CYCLE=t, BARSEG=seg[3];
 let playing=false,elapsed=0,last=0,raf=null,started=false;
 function render(ms){
@@ -109,7 +111,7 @@ function render(ms){
   }
   ctitle.classList.toggle('show',s.title);xlab.classList.toggle('show',s.axlab);ylab.classList.toggle('show',s.axlab);
   document.getElementById('o0').classList.toggle('show',s.out>=0);
-  ['l1','l3','l4','l6','l7','l8','l10'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  ['l1','l3','l4','l6','l7','l8','l10','l12'].forEach(id=>document.getElementById(id).classList.remove('on'));
   const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
   status.innerHTML=s.st;
 }
@@ -120,7 +122,7 @@ function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.d
 function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
   canvas.classList.remove('on');for(let i=0;i<4;i++){document.getElementById('bar'+i).setAttribute('height',0);document.getElementById('bar'+i).setAttribute('y',Y0);document.getElementById('val'+i).setAttribute('opacity',0);}
   ctitle.classList.remove('show');xlab.classList.remove('show');ylab.classList.remove('show');document.getElementById('o0').classList.remove('show');
-  ['l1','l3','l4','l6','l7','l8','l10'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+  ['l1','l3','l4','l6','l7','l8','l10','l12'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
 function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
 function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
 function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}

@@ -50,6 +50,7 @@
       <div class="cl" id="l6"><span class="gut">6</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">pie</span><span class="t-punc">(</span><span class="t-name">amounts</span><span class="t-punc">,</span> <span class="t-name">labels</span><span class="t-op">=</span><span class="t-name">labels</span><span class="t-punc">,</span> <span class="t-name">autopct</span><span class="t-op">=</span><span class="t-str">"%1.1f%%"</span><span class="t-punc">)</span></div>
       <div class="cl" id="l7"><span class="gut">7</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">title</span><span class="t-punc">(</span><span class="t-str">"Expense Breakdown"</span><span class="t-punc">)</span></div>
       <div class="cl" id="l8"><span class="gut">8</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">savefig</span><span class="t-punc">(</span><span class="t-str">"expense_pie.png"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l10"><span class="gut">10</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">show</span><span class="t-punc">()</span></div>
     </div>
     <div class="row">
       <div class="canvas" id="canvas">
@@ -84,7 +85,8 @@ add(600,{prog:0,title:false,pct:false,out:-1,line:4,st:'The <b>amounts</b> set e
 add(1700,{prog:1,title:false,pct:true,out:-1,line:6,st:'<b>plt.pie()</b> sweeps out a wedge for each amount; <b>autopct</b> prints the %.'});
 add(700,{prog:1,title:true,pct:true,out:-1,line:7,st:'<b>plt.title()</b> adds the heading.'});
 add(850,{prog:1,title:true,pct:true,out:0,line:8,st:'<b>plt.savefig()</b> saves the PNG.'});
-add(1300,{prog:1,title:true,pct:true,out:0,line:8,st:'Salary is 66.7% of spending — proportions jump out in a pie.'});
+add(950,{prog:1,title:true,pct:true,out:0,line:10,st:'<b>plt.show()</b> opens the pie chart in a window when you run it.'});
+add(1300,{prog:1,title:true,pct:true,out:0,line:10,st:'Salary is 66.7% of spending — proportions jump out in a pie.'});
 const CYCLE=t,PSEG=seg[3];
 let playing=false,elapsed=0,last=0,raf=null,started=false;
 function render(ms){
@@ -101,7 +103,7 @@ function render(ms){
   }
   ctitle.classList.toggle('show',s.title);
   document.getElementById('o0').classList.toggle('show',s.out>=0);
-  ['l1','l3','l4','l6','l7','l8'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  ['l1','l3','l4','l6','l7','l8','l10'].forEach(id=>document.getElementById(id).classList.remove('on'));
   const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
   status.innerHTML=s.st;
 }
@@ -112,7 +114,7 @@ function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.d
 function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
   canvas.classList.remove('on');for(let i=0;i<LABELS.length;i++){document.getElementById('sl'+i).setAttribute('d','');document.getElementById('pct'+i).classList.remove('show');document.getElementById('leg'+i).classList.remove('on');}
   ctitle.classList.remove('show');document.getElementById('o0').classList.remove('show');
-  ['l1','l3','l4','l6','l7','l8'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+  ['l1','l3','l4','l6','l7','l8','l10'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
 function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
 function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
 function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}

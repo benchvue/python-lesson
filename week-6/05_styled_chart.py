@@ -13,3 +13,4 @@ plt.grid(axis="y", linestyle="--", alpha=0.5)
 plt.savefig("monthly_profit.png")
 
 print("monthly_profit.png created.")
+plt.show()
