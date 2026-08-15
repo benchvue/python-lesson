@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — Grouped Bar Chart</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:28px;text-align:center}
+  .wrap{width:100%;max-width:760px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:24px;font-family:'SF Mono','Consolas',monospace;font-size:12px;line-height:1.7;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:block;border-radius:7px;padding:1px 8px;transition:.25s;min-height:20px;white-space:nowrap}
+  .cl .gut{color:#5a6080;display:inline-block;width:16px;text-align:right;margin-right:10px}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-num{color:#f78c6c}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}
+  .canvas{border:2px solid #ececf2;border-radius:14px;padding:14px;transition:.25s;background:#fff;margin-bottom:8px}
+  .canvas.on{border-color:#6366f1;box-shadow:0 10px 26px #6366f11a}
+  svg{width:100%;height:auto;display:block}
+  .axis{stroke:#c9ced9;stroke-width:1.5}
+  .tick{fill:#9aa1b0;font-family:'SF Mono','Consolas',monospace;font-size:11px}
+  .cat{fill:#555;font-family:'SF Mono','Consolas',monospace;font-size:12px;text-anchor:middle}
+  .bar{transition:height .4s ease, y .4s ease}
+  .charttitle{fill:#222;font-family:'Segoe UI',sans-serif;font-size:15px;font-weight:700;text-anchor:middle;opacity:0;transition:.4s}
+  .charttitle.show{opacity:1}
+  .legend{display:flex;gap:16px;justify-content:center;margin-top:6px;opacity:0;transition:.4s}
+  .legend.show{opacity:1}
+  .leg{display:flex;align-items:center;gap:7px;font-family:'SF Mono','Consolas',monospace;font-size:12px}
+  .sw{width:13px;height:13px;border-radius:4px}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:12px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:10px 12px;margin-top:14px;min-height:44px;line-height:1.7}
+  .termline .p{color:#6ee7ff}.oline{opacity:0;transition:.3s;display:block}.oline.show{opacity:1}
+  .status{text-align:center;font-size:13px;color:#555;margin:18px auto 16px;min-height:20px;max-width:620px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 18px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
+  @media(max-width:600px){h2{font-size:20px}.code{font-size:10px}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 6</h1>
+  <h2>Grouped Bars — Compare Two Series</h2>
+  <div class="subtitle">two calls to plt.bar(), shifted side by side, compare revenue vs expenses</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l3"><span class="gut">3</span><span class="t-name">quarters</span> <span class="t-op">=</span> <span class="t-punc">[</span><span class="t-str">"Q1"</span><span class="t-punc">,</span> <span class="t-str">"Q2"</span><span class="t-punc">,</span> <span class="t-str">"Q3"</span><span class="t-punc">,</span> <span class="t-str">"Q4"</span><span class="t-punc">]</span></div>
+      <div class="cl" id="l4"><span class="gut">4</span><span class="t-name">revenue</span> <span class="t-op">=</span> <span class="t-punc">[</span><span class="t-num">50000</span><span class="t-punc">,</span> <span class="t-num">62000</span><span class="t-punc">,</span> <span class="t-num">58000</span><span class="t-punc">,</span> <span class="t-num">70000</span><span class="t-punc">]</span></div>
+      <div class="cl" id="l5"><span class="gut">5</span><span class="t-name">expenses</span> <span class="t-op">=</span> <span class="t-punc">[</span><span class="t-num">40000</span><span class="t-punc">,</span> <span class="t-num">45000</span><span class="t-punc">,</span> <span class="t-num">43000</span><span class="t-punc">,</span> <span class="t-num">50000</span><span class="t-punc">]</span></div>
+      <div class="cl" id="l8"><span class="gut">8</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">bar</span><span class="t-punc">(</span><span class="t-name">x</span> <span class="t-op">-</span> <span class="t-num">0.2</span><span class="t-punc">,</span> <span class="t-name">revenue</span><span class="t-punc">,</span> <span class="t-name">width</span><span class="t-op">=</span><span class="t-num">0.4</span><span class="t-punc">,</span> <span class="t-name">label</span><span class="t-op">=</span><span class="t-str">"Revenue"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l9"><span class="gut">9</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">bar</span><span class="t-punc">(</span><span class="t-name">x</span> <span class="t-op">+</span> <span class="t-num">0.2</span><span class="t-punc">,</span> <span class="t-name">expenses</span><span class="t-punc">,</span> <span class="t-name">width</span><span class="t-op">=</span><span class="t-num">0.4</span><span class="t-punc">,</span> <span class="t-name">label</span><span class="t-op">=</span><span class="t-str">"Expenses"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l12"><span class="gut">12</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">legend</span><span class="t-punc">()</span><span class="t-punc">;</span> <span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">savefig</span><span class="t-punc">(</span><span class="t-str">"revenue_vs_expenses.png"</span><span class="t-punc">)</span></div>
+    </div>
+    <div class="canvas" id="canvas">
+      <svg viewBox="0 0 480 300" id="svg">
+        <text class="charttitle" id="ctitle" x="255" y="22">Revenue vs Expenses</text>
+        <line class="axis" x1="60" y1="40" x2="60" y2="250"></line>
+        <line class="axis" x1="60" y1="250" x2="465" y2="250"></line>
+        <g id="yticks"></g>
+        <g id="bars"></g>
+        <g id="xcats"></g>
+      </svg>
+    </div>
+    <div class="legend" id="legend"><div class="leg"><span class="sw" style="background:#6366f1"></span>Revenue</div><div class="leg"><span class="sw" style="background:#f59e0b"></span>Expenses</div></div>
+    <div class="termline"><div><span class="p">$</span> python 04_revenue_vs_expense.py</div>
+      <div class="oline" id="o0">revenue_vs_expenses.png created.</div></div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const Q=["Q1","Q2","Q3","Q4"],REV=[50000,62000,58000,70000],EXP=[40000,45000,43000,50000];
+const MAX=80000,X0=60,X1=460,Y0=250,YTOP=45,PLOTH=Y0-YTOP,PLOTW=X1-X0;
+const gap=PLOTW/Q.length,bw=gap*0.34;
+const bars=document.getElementById('bars'),yticks=document.getElementById('yticks'),xcats=document.getElementById('xcats');
+const ctitle=document.getElementById('ctitle'),legend=document.getElementById('legend'),canvas=document.getElementById('canvas'),status=document.getElementById('status');
+[0,20000,40000,60000,80000].forEach(v=>{const y=Y0-(v/MAX)*PLOTH;const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('class','tick');t.setAttribute('x',54);t.setAttribute('y',y+4);t.setAttribute('text-anchor','end');t.textContent=(v/1000)+'k';yticks.appendChild(t);});
+Q.forEach((q,i)=>{const cx=X0+gap*i+gap/2;
+  const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('class','cat');t.setAttribute('x',cx);t.setAttribute('y',Y0+18);t.textContent=q;xcats.appendChild(t);
+  [['rev',REV[i],'#6366f1',-1],['exp',EXP[i],'#f59e0b',1]].forEach(([k,val,col,side])=>{
+    const r=document.createElementNS('http://www.w3.org/2000/svg','rect');r.setAttribute('class','bar');r.setAttribute('x',cx+side*bw/2-bw/2+side*1);r.setAttribute('width',bw);r.setAttribute('y',Y0);r.setAttribute('height',0);r.setAttribute('rx',2);r.setAttribute('fill',col);r.id=k+i;bars.appendChild(r);});});
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d,dep:0},o));t+=d;};
+add(650,{rev:0,exp:0,title:false,leg:false,out:-1,line:3,st:'Four quarters on the x-axis.'});
+add(600,{rev:0,exp:0,title:false,leg:false,out:-1,line:4,st:'First series: <b>revenue</b> per quarter.'});
+add(600,{rev:0,exp:0,title:false,leg:false,out:-1,line:5,st:'Second series: <b>expenses</b> per quarter.'});
+add(1100,{rev:1,exp:0,title:false,leg:false,out:-1,line:8,st:'First <b>plt.bar()</b> — shifted left by 0.2 — draws the Revenue bars.'});
+add(1100,{rev:1,exp:1,title:false,leg:false,out:-1,line:9,st:'Second <b>plt.bar()</b> — shifted right — draws Expenses beside them.'});
+add(850,{rev:1,exp:1,title:true,leg:true,out:0,line:12,st:'<b>plt.legend()</b> names the two colors, then savefig writes the PNG.'});
+add(1300,{rev:1,exp:1,title:true,leg:true,out:0,line:12,st:'Side-by-side bars make the profit gap in each quarter easy to compare.'});
+const CYCLE=t,RSEG=seg[3],ESEG=seg[4];
+let playing=false,elapsed=0,last=0,raf=null,started=false;
+function grow(prefix,vals,arr,g){for(let i=0;i<4;i++){const h=(arr[i]/MAX)*PLOTH*g;const b=document.getElementById(prefix+i);b.setAttribute('height',h);b.setAttribute('y',Y0-h);}}
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  canvas.classList.toggle('on',s.line===8||s.line===9);
+  let rg=s.rev,eg=s.exp;
+  if(s.line===8)rg=Math.min(1,(ms-RSEG.s)/(RSEG.e-RSEG.s));
+  if(s.line===9)eg=Math.min(1,(ms-ESEG.s)/(ESEG.e-ESEG.s));
+  grow('rev',REV,REV,rg);grow('exp',EXP,EXP,eg);
+  ctitle.classList.toggle('show',s.title);legend.classList.toggle('show',s.leg);
+  document.getElementById('o0').classList.toggle('show',s.out>=0);
+  ['l3','l4','l5','l8','l9','l12'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
+  status.innerHTML=s.st;
+}
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop'),bI=document.getElementById('into'),bO=document.getElementById('over');
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
+  canvas.classList.remove('on');grow('rev',REV,REV,0);grow('exp',EXP,EXP,0);
+  ctitle.classList.remove('show');legend.classList.remove('show');document.getElementById('o0').classList.remove('show');
+  ['l3','l4','l5','l8','l9','l12'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
+</script>
+</body>
+</html>

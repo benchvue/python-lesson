@@ -1,4 +1,5 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 
 data = {
     "Category": ["Office", "Travel", "Office", "Meals", "Travel"],
@@ -6,7 +7,12 @@ data = {
 }
 
 df = pd.DataFrame(data)
-
 summary = df.groupby("Category")["Amount"].sum()
 
+summary.plot(kind="bar", title="Spending by Category")
+plt.ylabel("Amount")
+plt.tight_layout()
+plt.savefig("spending_by_category.png")
+
 print(summary)
+print("spending_by_category.png created.")

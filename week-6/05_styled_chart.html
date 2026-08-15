@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — Styling a Chart</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:28px;text-align:center}
+  .wrap{width:100%;max-width:760px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:24px;font-family:'SF Mono','Consolas',monospace;font-size:12px;line-height:1.7;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:block;border-radius:7px;padding:1px 8px;transition:.25s;min-height:20px;white-space:nowrap}
+  .cl .gut{color:#5a6080;display:inline-block;width:16px;text-align:right;margin-right:10px}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-num{color:#f78c6c}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}
+  .canvas{border:2px solid #ececf2;border-radius:14px;padding:14px;transition:.25s;background:#fff;margin-bottom:8px}
+  .canvas.on{border-color:#10b981;box-shadow:0 10px 26px #10b9811a}
+  svg{width:100%;height:auto;display:block}
+  .axis{stroke:#c9ced9;stroke-width:1.5}
+  .zero{stroke:#333;stroke-width:1.5;opacity:0;transition:.4s}.zero.show{opacity:1}
+  .grid{stroke:#e3e6ee;stroke-width:1;stroke-dasharray:4 4;opacity:0;transition:.4s}.grid.show{opacity:1}
+  .tick{fill:#9aa1b0;font-family:'SF Mono','Consolas',monospace;font-size:11px}
+  .cat{fill:#555;font-family:'SF Mono','Consolas',monospace;font-size:12px;text-anchor:middle}
+  .bar{transition:height .4s ease, y .4s ease, fill .5s}
+  .charttitle{fill:#222;font-family:'Segoe UI',sans-serif;font-size:15px;font-weight:700;text-anchor:middle;opacity:0;transition:.4s}
+  .charttitle.show{opacity:1}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:12px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:10px 12px;margin-top:14px;min-height:44px;line-height:1.7}
+  .termline .p{color:#6ee7ff}.oline{opacity:0;transition:.3s;display:block}.oline.show{opacity:1}
+  .status{text-align:center;font-size:13px;color:#555;margin:18px auto 16px;min-height:20px;max-width:620px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 18px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
+  @media(max-width:600px){h2{font-size:20px}.code{font-size:10px}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 6</h1>
+  <h2>Styling a Chart</h2>
+  <div class="subtitle">colors, a zero line and a grid turn a plain chart into a readable report</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l3"><span class="gut">3</span><span class="t-name">months</span> <span class="t-op">=</span> <span class="t-punc">[</span><span class="t-str">"Jan"</span><span class="t-punc">,</span> <span class="t-str">"Feb"</span><span class="t-punc">,</span> <span class="t-str">"Mar"</span><span class="t-punc">,</span> <span class="t-str">"Apr"</span><span class="t-punc">]</span></div>
+      <div class="cl" id="l4"><span class="gut">4</span><span class="t-name">profit</span> <span class="t-op">=</span> <span class="t-punc">[</span><span class="t-num">8000</span><span class="t-punc">,</span> <span class="t-op">-</span><span class="t-num">3000</span><span class="t-punc">,</span> <span class="t-num">5000</span><span class="t-punc">,</span> <span class="t-num">12000</span><span class="t-punc">]</span></div>
+      <div class="cl" id="l6"><span class="gut">6</span><span class="t-name">colors</span> <span class="t-op">=</span> <span class="t-punc">[</span><span class="t-str">"green"</span> <span class="t-kw">if</span> <span class="t-name">p</span> <span class="t-op">&gt;=</span> <span class="t-num">0</span> <span class="t-kw">else</span> <span class="t-str">"red"</span> <span class="t-kw">for</span> <span class="t-name">p</span> <span class="t-kw">in</span> <span class="t-name">profit</span><span class="t-punc">]</span></div>
+      <div class="cl" id="l9"><span class="gut">9</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">bar</span><span class="t-punc">(</span><span class="t-name">months</span><span class="t-punc">,</span> <span class="t-name">profit</span><span class="t-punc">,</span> <span class="t-name">color</span><span class="t-op">=</span><span class="t-name">colors</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l10"><span class="gut">10</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">axhline</span><span class="t-punc">(</span><span class="t-num">0</span><span class="t-punc">,</span> <span class="t-name">color</span><span class="t-op">=</span><span class="t-str">"black"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l12"><span class="gut">12</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">grid</span><span class="t-punc">(</span><span class="t-name">axis</span><span class="t-op">=</span><span class="t-str">"y"</span><span class="t-punc">,</span> <span class="t-name">linestyle</span><span class="t-op">=</span><span class="t-str">"--"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l13"><span class="gut">13</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">savefig</span><span class="t-punc">(</span><span class="t-str">"monthly_profit.png"</span><span class="t-punc">)</span></div>
+    </div>
+    <div class="canvas" id="canvas">
+      <svg viewBox="0 0 480 300" id="svg">
+        <text class="charttitle" id="ctitle" x="255" y="20">Monthly Profit</text>
+        <g id="grid"></g>
+        <line class="axis" x1="60" y1="30" x2="60" y2="250"></line>
+        <g id="yticks"></g>
+        <g id="bars"></g>
+        <line class="zero" id="zero" x1="60" y1="0" x2="465" y2="0"></line>
+        <g id="xcats"></g>
+      </svg>
+    </div>
+    <div class="termline"><div><span class="p">$</span> python 05_styled_chart.py</div>
+      <div class="oline" id="o0">monthly_profit.png created.</div></div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const MON=["Jan","Feb","Mar","Apr"],PROFIT=[8000,-3000,5000,12000];
+const MIN=-5000,MAX=15000,X0=60,X1=465,YT=30,YB=250,PLOTW=X1-X0;
+const yFor=v=>YB-((v-MIN)/(MAX-MIN))*(YB-YT);
+const Y_ZERO=yFor(0);
+const gap=PLOTW/MON.length,bw=gap*0.5;
+const bars=document.getElementById('bars'),yticks=document.getElementById('yticks'),xcats=document.getElementById('xcats'),grid=document.getElementById('grid');
+const ctitle=document.getElementById('ctitle'),zero=document.getElementById('zero'),canvas=document.getElementById('canvas'),status=document.getElementById('status');
+zero.setAttribute('y1',Y_ZERO);zero.setAttribute('y2',Y_ZERO);
+[-5000,0,5000,10000,15000].forEach(v=>{const y=yFor(v);
+  const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('class','tick');t.setAttribute('x',54);t.setAttribute('y',y+4);t.setAttribute('text-anchor','end');t.textContent=(v/1000)+'k';yticks.appendChild(t);
+  const g=document.createElementNS('http://www.w3.org/2000/svg','line');g.setAttribute('class','grid');g.setAttribute('x1',60);g.setAttribute('x2',X1);g.setAttribute('y1',y);g.setAttribute('y2',y);g.id='grid'+v;grid.appendChild(g);});
+MON.forEach((m,i)=>{const cx=X0+gap*i+gap/2;
+  const r=document.createElementNS('http://www.w3.org/2000/svg','rect');r.setAttribute('class','bar');r.setAttribute('x',cx-bw/2);r.setAttribute('width',bw);r.setAttribute('y',Y_ZERO);r.setAttribute('height',0);r.setAttribute('rx',2);r.setAttribute('fill','#9aa1b0');r.id='bar'+i;bars.appendChild(r);
+  const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('class','cat');t.setAttribute('x',cx);t.setAttribute('y',YB+18);t.textContent=m;xcats.appendChild(t);});
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d,dep:0},o));t+=d;};
+add(600,{grown:0,colored:false,zero:false,grid:false,title:false,out:-1,line:3,st:'Four months of <b>profit</b> — note February is negative.'});
+add(700,{grown:0,colored:false,zero:false,grid:false,title:false,out:-1,line:6,st:'A list comprehension picks <b>green</b> for profit, <b>red</b> for a loss.'});
+add(1200,{grown:1,colored:false,zero:false,grid:false,title:true,out:-1,line:9,st:'<b>plt.bar()</b> draws the bars — losses hang below the axis.'});
+add(800,{grown:1,colored:true,zero:false,grid:false,title:true,out:-1,line:9,st:'The <b>color=colors</b> argument tints each bar green or red.'});
+add(750,{grown:1,colored:true,zero:true,grid:false,title:true,out:-1,line:10,st:'<b>plt.axhline(0)</b> draws a baseline at zero.'});
+add(800,{grown:1,colored:true,zero:true,grid:true,title:true,out:-1,line:12,st:'<b>plt.grid()</b> adds dashed gridlines so values are easy to read off.'});
+add(850,{grown:1,colored:true,zero:true,grid:true,title:true,out:0,line:13,st:'<b>savefig()</b> writes the finished, styled chart.'});
+add(1300,{grown:1,colored:true,zero:true,grid:true,title:true,out:0,line:13,st:'Color + baseline + grid = a chart a manager can read at a glance.'});
+const CYCLE=t,GROW=seg[2];
+let playing=false,elapsed=0,last=0,raf=null,started=false;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  canvas.classList.toggle('on',[9,10,12].includes(s.line));
+  let g=s.grown;if(s.line===9&&s.colored===false&&s.grown===1&&ms<GROW.e)g=Math.min(1,(ms-GROW.s)/(GROW.e-GROW.s));
+  for(let i=0;i<MON.length;i++){
+    const v=PROFIT[i],yv=yFor(v),h=Math.abs(yv-Y_ZERO)*g;
+    const bar=document.getElementById('bar'+i);
+    bar.setAttribute('height',h);bar.setAttribute('y', v>=0 ? Y_ZERO-h : Y_ZERO);
+    bar.setAttribute('fill', s.colored ? (v>=0?'#10b981':'#ef4444') : '#9aa1b0');
+  }
+  ctitle.classList.toggle('show',s.title);zero.classList.toggle('show',s.zero);
+  document.querySelectorAll('#grid line').forEach(l=>l.classList.toggle('show',s.grid));
+  document.getElementById('o0').classList.toggle('show',s.out>=0);
+  ['l3','l4','l6','l9','l10','l12','l13'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
+  status.innerHTML=s.st;
+}
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop'),bI=document.getElementById('into'),bO=document.getElementById('over');
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
+  canvas.classList.remove('on');for(let i=0;i<MON.length;i++){const b=document.getElementById('bar'+i);b.setAttribute('height',0);b.setAttribute('y',Y_ZERO);b.setAttribute('fill','#9aa1b0');}
+  ctitle.classList.remove('show');zero.classList.remove('show');document.querySelectorAll('#grid line').forEach(l=>l.classList.remove('show'));document.getElementById('o0').classList.remove('show');
+  ['l3','l4','l6','l9','l10','l12','l13'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
+</script>
+</body>
+</html>

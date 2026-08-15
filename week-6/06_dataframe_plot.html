@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python — DataFrame.plot()</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fff;font-family:'Segoe UI',system-ui,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:52px 18px;overflow-x:hidden}
+  h1{font-size:13px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#999;margin-bottom:8px}
+  h2{font-size:25px;font-weight:600;letter-spacing:-.02em;text-align:center;margin-bottom:6px}
+  .badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8a5e08;background:#fff3dc;border:1px solid #f0d9a8;border-radius:20px;padding:2px 10px;margin-bottom:8px}
+  .subtitle{font-size:13px;color:#9a9a9a;margin-bottom:26px;text-align:center}
+  .wrap{width:100%;max-width:780px}
+  .code{background:#1e2030;border-radius:12px;padding:13px 16px;margin-bottom:22px;font-family:'SF Mono','Consolas',monospace;font-size:12px;line-height:1.7;box-shadow:0 8px 22px rgba(0,0,0,.13);overflow-x:auto}
+  .cl{display:block;border-radius:7px;padding:1px 8px;transition:.25s;min-height:20px;white-space:nowrap}
+  .cl .gut{color:#5a6080;display:inline-block;width:16px;text-align:right;margin-right:10px}.cl.on{background:rgba(255,255,255,.08)}.cl.on .gut{color:#cfd4e8}
+  .t-name{color:#89ddff}.t-op{color:#c792ea}.t-str{color:#c3e88d}.t-num{color:#f78c6c}.t-fn{color:#ffcb6b}.t-punc{color:#9aa4c0}.t-kw{color:#c792ea;font-weight:600}
+  .row{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+  .pane{flex:1;min-width:200px}
+  .lbl{font-size:9.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#bbb;margin-bottom:9px}
+  table{border-collapse:collapse;font-family:'SF Mono','Consolas',monospace;font-size:12px;width:100%}
+  th,td{border:1px solid #eef0f4;padding:6px 10px;transition:.3s}
+  th{background:#eef7fe;color:#0369a1;font-size:10px;font-weight:700}
+  td.rowh{background:#f4f5f9;color:#555;font-weight:700}
+  td.amt{text-align:right;color:#0a7d57;font-weight:700}
+  tr.sr.on td{background:#e9fbf3}
+  .arrow{flex:0 0 auto;font-size:24px;color:#cbd0dc}
+  .canvas{flex:1;min-width:220px;border:2px solid #ececf2;border-radius:14px;padding:12px;transition:.25s;background:#fff}
+  .canvas.on{border-color:#f59e0b;box-shadow:0 10px 26px #f59e0b1a}
+  svg{width:100%;height:auto;display:block}
+  .axis{stroke:#c9ced9;stroke-width:1.5}
+  .tick{fill:#9aa1b0;font-family:'SF Mono','Consolas',monospace;font-size:10px}
+  .cat{fill:#555;font-family:'SF Mono','Consolas',monospace;font-size:11px;text-anchor:middle}
+  .bar{transition:height .5s ease, y .5s ease}
+  .charttitle{fill:#222;font-family:'Segoe UI',sans-serif;font-size:13px;font-weight:700;text-anchor:middle;opacity:0;transition:.4s}
+  .charttitle.show{opacity:1}
+  .termline{font-family:'SF Mono','Consolas',monospace;font-size:11.5px;background:#0b0f18;color:#9af7c0;border-radius:10px;padding:10px 12px;margin-top:14px;min-height:86px;line-height:1.7;white-space:pre}
+  .termline .p{color:#6ee7ff}.oline{opacity:0;transition:.3s;display:block}.oline.show{opacity:1}
+  .status{text-align:center;font-size:13px;color:#555;margin:18px auto 16px;min-height:20px;max-width:640px}.status b{color:#222}
+  .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .controls button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border:none;border-radius:10px;padding:9px 18px;color:#fff;transition:.15s}
+  .controls button:active{transform:scale(.95)}.controls button:disabled{opacity:.4;cursor:default}
+  #play{background:#10b981}#pause{background:#64748b}#stop{background:#ef4444}#into{background:#6366f1}#over{background:#0ea5e9}
+  @media(max-width:640px){h2{font-size:19px}.code{font-size:10px}.pane,.canvas{min-width:0}.arrow{transform:rotate(90deg)}}
+</style>
+</head>
+<body>
+  <h1>Python 3 · Week 6</h1>
+  <div class="badge">pandas + matplotlib</div>
+  <h2>DataFrame.plot()</h2>
+  <div class="subtitle">pandas can call matplotlib for you — group, then plot in one line</div>
+  <div class="wrap">
+    <div class="code">
+      <div class="cl" id="l1"><span class="gut">1</span><span class="t-kw">import</span> <span class="t-name">pandas</span> <span class="t-kw">as</span> <span class="t-name">pd</span></div>
+      <div class="cl" id="l2"><span class="gut">2</span><span class="t-kw">import</span> <span class="t-name">matplotlib</span><span class="t-punc">.</span><span class="t-name">pyplot</span> <span class="t-kw">as</span> <span class="t-name">plt</span></div>
+      <div class="cl" id="l11"><span class="gut">11</span><span class="t-name">summary</span> <span class="t-op">=</span> <span class="t-name">df</span><span class="t-punc">.</span><span class="t-fn">groupby</span><span class="t-punc">(</span><span class="t-str">"Category"</span><span class="t-punc">)</span><span class="t-punc">[</span><span class="t-str">"Amount"</span><span class="t-punc">]</span><span class="t-punc">.</span><span class="t-fn">sum</span><span class="t-punc">()</span></div>
+      <div class="cl" id="l13"><span class="gut">13</span><span class="t-name">summary</span><span class="t-punc">.</span><span class="t-fn">plot</span><span class="t-punc">(</span><span class="t-name">kind</span><span class="t-op">=</span><span class="t-str">"bar"</span><span class="t-punc">,</span> <span class="t-name">title</span><span class="t-op">=</span><span class="t-str">"Spending by Category"</span><span class="t-punc">)</span></div>
+      <div class="cl" id="l15"><span class="gut">15</span><span class="t-name">plt</span><span class="t-punc">.</span><span class="t-fn">savefig</span><span class="t-punc">(</span><span class="t-str">"spending_by_category.png"</span><span class="t-punc">)</span></div>
+    </div>
+    <div class="row">
+      <div class="pane">
+        <div class="lbl">summary (grouped)</div>
+        <table>
+          <tr><th>Category</th><th class="amt" style="text-align:right">Amount</th></tr>
+          <tr class="sr" id="sr0"><td class="rowh">Meals</td><td class="amt">90</td></tr>
+          <tr class="sr" id="sr1"><td class="rowh">Office</td><td class="amt">350</td></tr>
+          <tr class="sr" id="sr2"><td class="rowh">Travel</td><td class="amt">1250</td></tr>
+        </table>
+      </div>
+      <div class="arrow">→</div>
+      <div class="canvas" id="canvas">
+        <svg viewBox="0 0 260 220" id="svg">
+          <text class="charttitle" id="ctitle" x="140" y="16">Spending by Category</text>
+          <line class="axis" x1="55" y1="30" x2="55" y2="180"></line>
+          <line class="axis" x1="55" y1="180" x2="250" y2="180"></line>
+          <g id="yticks"></g>
+          <g id="bars"></g>
+          <g id="xcats"></g>
+        </svg>
+      </div>
+    </div>
+    <div class="termline"><div><span class="p">$</span> python 06_dataframe_plot.py</div>
+      <div class="oline" id="o0">Category
+Meals       90
+Office     350
+Travel    1250
+Name: Amount, dtype: int64</div>
+      <div class="oline" id="o1">spending_by_category.png created.</div></div>
+    <div class="status" id="status">Press Play to start</div>
+    <div class="controls"><button id="play">▶ Play</button><button id="pause" disabled>❚❚ Pause</button><button id="into">⤓ Step Into</button><button id="over">⤾ Step Over</button><button id="stop" disabled>■ Stop</button></div>
+  </div>
+<script>
+const CATS=["Meals","Office","Travel"],VALS=[90,350,1250],COLORS=["#6366f1","#0ea5e9","#10b981"];
+const MAX=1400,X0=55,X1=248,Y0=180,YT=32,PLOTW=X1-X0,PLOTH=Y0-YT;
+const gap=PLOTW/CATS.length,bw=gap*0.5;
+const bars=document.getElementById('bars'),yticks=document.getElementById('yticks'),xcats=document.getElementById('xcats');
+const ctitle=document.getElementById('ctitle'),canvas=document.getElementById('canvas'),status=document.getElementById('status');
+[0,350,700,1050,1400].forEach(v=>{const y=Y0-(v/MAX)*PLOTH;const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('class','tick');t.setAttribute('x',50);t.setAttribute('y',y+3);t.setAttribute('text-anchor','end');t.textContent=v;yticks.appendChild(t);});
+CATS.forEach((c,i)=>{const cx=X0+gap*i+gap/2;
+  const r=document.createElementNS('http://www.w3.org/2000/svg','rect');r.setAttribute('class','bar');r.setAttribute('x',cx-bw/2);r.setAttribute('width',bw);r.setAttribute('y',Y0);r.setAttribute('height',0);r.setAttribute('rx',2);r.setAttribute('fill',COLORS[i]);r.id='bar'+i;bars.appendChild(r);
+  const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('class','cat');t.setAttribute('x',cx);t.setAttribute('y',Y0+15);t.textContent=c;xcats.appendChild(t);});
+let t=0;const seg=[];const add=(d,o)=>{seg.push(Object.assign({s:t,e:t+d,dep:0},o));t+=d;};
+add(700,{rows:0,bars:0,title:false,out:-1,line:1,st:'Import both <b>pandas</b> and <b>matplotlib.pyplot</b>.'});
+add(1000,{rows:3,bars:0,title:false,out:0,line:11,st:'<b>groupby(...).sum()</b> makes a summary Series — the pandas skills from before.'});
+add(1500,{rows:3,bars:3,title:true,out:0,line:13,st:'<b>summary.plot(kind="bar")</b> — pandas hands the Series straight to matplotlib.'});
+add(850,{rows:3,bars:3,title:true,out:1,line:15,st:'<b>plt.savefig()</b> writes the PNG, same as always.'});
+add(1300,{rows:3,bars:3,title:true,out:1,line:15,st:'No manual plt.bar() — .plot() reads the index as labels and values as heights.'});
+const CYCLE=t,BSEG=seg[2];
+let playing=false,elapsed=0,last=0,raf=null,started=false;
+function render(ms){
+  const s=seg.find(g=>ms>=g.s&&ms<g.e)||seg[seg.length-1];
+  canvas.classList.toggle('on',s.line===13);
+  for(let i=0;i<3;i++)document.getElementById('sr'+i).classList.toggle('on',i<s.rows);
+  let bg=s.bars;if(s.line===13)bg=Math.min(3,((ms-BSEG.s)/(BSEG.e-BSEG.s))*3);
+  for(let i=0;i<3;i++){const full=Math.max(0,Math.min(1,bg-i));const h=(VALS[i]/MAX)*PLOTH*full;const bar=document.getElementById('bar'+i);bar.setAttribute('height',h);bar.setAttribute('y',Y0-h);}
+  ctitle.classList.toggle('show',s.title);
+  document.getElementById('o0').classList.toggle('show',s.out>=0);
+  document.getElementById('o1').classList.toggle('show',s.out>=1);
+  ['l1','l2','l11','l13','l15'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  const el=document.getElementById('l'+s.line);if(el)el.classList.add('on');
+  if(s.line===1){document.getElementById('l2').classList.add('on');}
+  status.innerHTML=s.st;
+}
+const bP=document.getElementById('play'),bPa=document.getElementById('pause'),bS=document.getElementById('stop'),bI=document.getElementById('into'),bO=document.getElementById('over');
+function frame(now){if(!playing)return;const dt=now-last;last=now;elapsed=(elapsed+dt)%CYCLE;render(elapsed);raf=requestAnimationFrame(frame);}
+function play(){if(playing)return;playing=true;started=true;last=performance.now();bP.disabled=true;bPa.disabled=false;bS.disabled=false;raf=requestAnimationFrame(frame);}
+function pause(){if(!playing)return;playing=false;cancelAnimationFrame(raf);bP.disabled=false;bPa.disabled=true;status.innerHTML='Paused — press Play to resume';}
+function stop(){playing=false;cancelAnimationFrame(raf);elapsed=0;started=false;bP.disabled=false;bPa.disabled=true;bS.disabled=true;
+  canvas.classList.remove('on');for(let i=0;i<3;i++){document.getElementById('sr'+i).classList.remove('on');document.getElementById('bar'+i).setAttribute('height',0);document.getElementById('bar'+i).setAttribute('y',Y0);}
+  ctitle.classList.remove('show');document.getElementById('o0').classList.remove('show');document.getElementById('o1').classList.remove('show');
+  ['l1','l2','l11','l13','l15'].forEach(id=>document.getElementById(id).classList.remove('on'));status.innerHTML='Press Play to start';}
+function curIndex(){for(let i=0;i<seg.length;i++)if(elapsed>=seg[i].s&&elapsed<seg[i].e)return i;return seg.length-1;}
+function gotoSeg(i){elapsed=Math.max(seg[i].s,seg[i].e-4);render(elapsed);}
+function pauseForStep(){if(playing){playing=false;cancelAnimationFrame(raf);}bP.disabled=false;bPa.disabled=true;bS.disabled=false;}
+function stepInto(){pauseForStep();const i=started?Math.min(curIndex()+1,seg.length-1):0;started=true;gotoSeg(i);}
+function stepOver(){pauseForStep();if(!started){started=true;gotoSeg(0);return;}const i=curIndex(),d=seg[i].dep||0;let j=i+1;while(j<seg.length&&(seg[j].dep||0)>d)j++;gotoSeg(Math.min(j,seg.length-1));}
+bP.onclick=play;bPa.onclick=pause;bS.onclick=stop;bI.onclick=stepInto;bO.onclick=stepOver;stop();
+</script>
+</body>
+</html>
