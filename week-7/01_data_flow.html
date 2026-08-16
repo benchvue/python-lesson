@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Week 7 · Step 1 · Where the data comes from</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B1A26;
+    --ink-soft:#415666;
+    --paper:#E9EEF1;
+    --card:#FFFFFF;
+    --grid:#C9D6DF;
+    --sea:#1F5E7A;
+    --isotherm:#BF3B2B;
+    --sans:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.5;
+    padding:clamp(20px,3.5vw,48px) clamp(12px,2.5vw,34px) 64px;
+  }
+  .wrap{max-width:1680px;margin:0 auto}
+
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--sea);margin:0 0 10px}
+  h1{font-size:clamp(26px,4vw,42px);font-weight:600;letter-spacing:-.02em;line-height:1.1;margin:0 0 12px}
+  h1 em{font-style:normal;color:var(--isotherm)}
+  .lede{max-width:68ch;margin:0 0 34px;color:var(--ink-soft);font-size:clamp(15px,1.4vw,17px)}
+
+  /* ---------- the chain: box -> box -> box, one row on a wide screen ---------- */
+  .chain{
+    display:flex;
+    flex-wrap:nowrap;          /* never breaks to a second row above 1080px */
+    align-items:stretch;
+  }
+
+  .box{
+    flex:1 1 0;                /* six equal boxes, shrinking to fit the row */
+    min-width:0;
+    background:var(--card);
+    border:1.5px solid var(--ink);
+    padding:14px 13px 12px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .box .num{
+    font-family:var(--mono);font-size:10.5px;font-weight:600;
+    letter-spacing:.14em;color:var(--sea);
+  }
+  .box h2{font-size:clamp(14px,1.05vw,17px);font-weight:600;letter-spacing:-.01em;margin:0}
+  .box p{margin:0;font-size:clamp(12px,.82vw,13.5px);color:var(--ink-soft)}
+  .box code{font-family:var(--mono);font-size:.92em}
+  .box .art{
+    margin-top:auto;
+    font-family:var(--mono);font-size:clamp(10px,.7vw,11.5px);line-height:1.55;
+    background:#F4F7F9;border:1px solid var(--grid);
+    padding:7px 8px;white-space:pre-wrap;word-break:break-word;
+  }
+  .box .art i{color:var(--isotherm);font-style:normal}
+  .box .art b{color:var(--sea);font-weight:600}
+
+  /* the first three boxes are the new material this week */
+  .box.new{border-color:var(--isotherm)}
+  .box.new .num{color:var(--isotherm)}
+
+  .arrow{
+    flex:0 0 clamp(44px,4vw,74px);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:4px;
+    color:var(--sea);
+    text-align:center;
+  }
+  .arrow .glyph{font-size:clamp(18px,1.7vw,26px);line-height:1}
+  .arrow .lbl{font-family:var(--mono);font-size:clamp(9px,.68vw,11px);line-height:1.3;color:var(--ink-soft)}
+
+  /* ---------- legend + note ---------- */
+  .keys{
+    display:flex;flex-wrap:wrap;gap:10px 26px;
+    margin:34px 0 0;padding-top:18px;border-top:1px solid var(--grid);
+    font-size:13px;color:var(--ink-soft);
+  }
+  .keys span{display:flex;align-items:center;gap:8px}
+  .swatch{width:14px;height:14px;border:1.5px solid var(--ink);background:var(--card);flex:none}
+  .swatch.new{border-color:var(--isotherm)}
+
+  .note{margin:30px 0 0;border-left:3px solid var(--isotherm);padding:2px 0 2px 16px}
+  .note h3{font-size:14px;margin:0 0 6px}
+  .note p{margin:0;font-size:14px;color:var(--ink-soft);max-width:76ch}
+  .note code{font-family:var(--mono);font-size:13px;background:var(--card);border:1px solid var(--grid);padding:1px 5px}
+
+  /* below 1080px there is no room for six boxes side by side - stack them */
+  @media (max-width:1080px){
+    .chain{flex-direction:column;align-items:center}
+    .box{max-width:440px;width:100%;flex:none}
+    .arrow{flex:none;padding:8px 0}
+    .arrow .glyph{transform:rotate(90deg)}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">Week 7 · Step 1 of 5</p>
+  <h1>One temperature reading, six <em>boxes</em>.</h1>
+  <p class="lede">Week 6 read data that already sat on your disk. This week the data starts on a
+  weather server and ends as a line on your screen. Read the chain left to right — each box is one
+  thing you will type today, and each arrow is the one call that moves the data to the next box.</p>
+
+  <div class="chain">
+
+    <div class="box new">
+      <span class="num">BOX 01</span>
+      <h2>Weather server</h2>
+      <p>Open-Meteo holds the forecast. It is not yours — you are a guest asking for a copy.</p>
+      <div class="art"><b>host</b>
+api.open-meteo.com
+<b>key</b>  none, free</div>
+    </div>
+
+    <div class="arrow">
+      <span class="lbl">HTTPS<br>GET</span>
+      <span class="glyph">→</span>
+    </div>
+
+    <div class="box new">
+      <span class="num">BOX 02</span>
+      <h2>Request URL</h2>
+      <p>A URL is a question. Everything after the <code>?</code> is a parameter.</p>
+      <div class="art">/v1/forecast?
+ latitude=<i>52.52</i>
+ &amp;hourly=<i>temperature_2m</i></div>
+    </div>
+
+    <div class="arrow">
+      <span class="lbl">200 OK<br>text</span>
+      <span class="glyph">→</span>
+    </div>
+
+    <div class="box new">
+      <span class="num">BOX 03</span>
+      <h2>JSON reply</h2>
+      <p>Plain text: nested keys, plus two long lists of equal length.</p>
+      <div class="art">{"hourly":{
+ "time":[<i>"…T00:00"</i>],
+ "temperature_2m":
+     [<i>18.5</i>,<i>18.3</i>]}}</div>
+    </div>
+
+    <div class="arrow">
+      <span class="lbl">json<br>.loads()</span>
+      <span class="glyph">→</span>
+    </div>
+
+    <div class="box">
+      <span class="num">BOX 04</span>
+      <h2>dict + lists</h2>
+      <p>Python objects you can index, slice and loop over. Week 6 material.</p>
+      <div class="art">data[<i>"hourly"</i>]
+   [<i>"temperature_2m"</i>]
+→ [18.5, 18.3, …]</div>
+    </div>
+
+    <div class="arrow">
+      <span class="lbl">pd<br>.DataFrame()</span>
+      <span class="glyph">→</span>
+    </div>
+
+    <div class="box">
+      <span class="num">BOX 05</span>
+      <h2>DataFrame</h2>
+      <p>The two lists become one table, one row per hour.</p>
+      <div class="art"><b>date</b>    <b>temp</b>
+00:00   <i>18.5</i>
+01:00   <i>18.3</i>
+02:00   <i>17.6</i></div>
+    </div>
+
+    <div class="arrow">
+      <span class="lbl">plt<br>.plot()</span>
+      <span class="glyph">→</span>
+    </div>
+
+    <div class="box">
+      <span class="num">BOX 06</span>
+      <h2>Chart</h2>
+      <p>Time along x, degrees up y, a circle on every measured hour.</p>
+      <div class="art">plt.plot(
+ df[<i>"date"</i>],
+ df[<i>"temperature_2m"</i>],
+ marker=<i>"o"</i>)</div>
+    </div>
+
+  </div>
+
+  <div class="keys">
+    <span><i class="swatch new"></i> New this week — boxes 01 → 03</span>
+    <span><i class="swatch"></i> Week 6 again — boxes 04 → 06</span>
+  </div>
+
+  <div class="note">
+    <h3>The only new idea this week</h3>
+    <p>Boxes 04–06 are last week's lesson: dictionaries, lists, pandas, matplotlib. Boxes 01–03 are
+    new, and every error today will come from those three — no internet, a typo in the URL, a key
+    that does not exist. That is why Step 3 stops at a printed table and does not draw anything.</p>
+  </div>
+
+</div>
+</body>
+</html>

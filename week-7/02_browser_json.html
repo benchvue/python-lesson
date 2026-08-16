@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Week 7 · Step 2 · Read the JSON in your browser</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B1A26;
+    --ink-soft:#415666;
+    --paper:#E9EEF1;
+    --card:#FFFFFF;
+    --grid:#C9D6DF;
+    --sea:#1F5E7A;
+    --isotherm:#BF3B2B;
+    --sans:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.5;
+    padding:clamp(20px,4vw,52px) clamp(14px,4vw,44px) 72px;
+  }
+  .wrap{max-width:1080px;margin:0 auto}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--sea);margin:0 0 10px}
+  h1{font-size:clamp(26px,4vw,40px);font-weight:600;letter-spacing:-.02em;margin:0 0 12px;line-height:1.1}
+  .lede{max-width:64ch;margin:0 0 30px;color:var(--ink-soft)}
+
+  .panel{background:var(--card);border:1px solid var(--grid);padding:20px}
+  .panel + .panel{border-top:none}
+
+  .top{display:flex;gap:24px;align-items:flex-start}
+  .fields{
+    flex:1 1 auto;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(142px,1fr));gap:14px 18px;
+  }
+  .fields .wide{grid-column:1 / -1}
+  label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--sea);margin:0 0 5px}
+  input,select{
+    width:100%;font-family:var(--mono);font-size:14px;color:var(--ink);
+    background:#F4F7F9;border:1px solid var(--grid);padding:8px 9px;
+  }
+  input:focus,select:focus{outline:2px solid var(--sea);outline-offset:1px;background:var(--card)}
+
+  /* ---- globe ---- */
+  .globe{flex:0 0 210px;text-align:center}
+  .globe svg{width:100%;height:auto;cursor:grab;touch-action:none;user-select:none}
+  .globe svg:active{cursor:grabbing}
+  .globe-label{
+    margin:2px 0 0;font-family:var(--mono);font-size:11px;line-height:1.45;color:var(--ink-soft);
+  }
+  .globe-label b{color:var(--ink);font-weight:600;display:block;font-size:12px}
+
+  .urlbar{margin-top:20px;border-top:1px dashed var(--grid);padding-top:18px}
+  .url{
+    font-family:var(--mono);font-size:13.5px;line-height:1.7;word-break:break-all;
+    background:#F4F7F9;border:1px solid var(--grid);padding:12px;
+  }
+  .url .k{color:var(--sea)}
+  .url .v{color:var(--isotherm)}
+
+  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center}
+  button,a.btn{
+    font-family:var(--sans);font-size:14px;font-weight:500;
+    border:1px solid var(--ink);background:var(--ink);color:#fff;
+    padding:9px 16px;cursor:pointer;text-decoration:none;display:inline-block;
+  }
+  button.ghost,a.btn.ghost{background:transparent;color:var(--ink)}
+  button:hover,a.btn:hover{background:var(--sea);border-color:var(--sea);color:#fff}
+  button:focus-visible,a.btn:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--isotherm);outline-offset:2px}
+  .status{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
+  .status.err{color:var(--isotherm)}
+
+  /* ---- view switch ---- */
+  .viewbar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .tabs{display:flex;border:1px solid var(--ink)}
+  .tabs button{border:none;background:transparent;color:var(--ink);padding:7px 18px;font-size:13.5px;font-weight:500}
+  .tabs button + button{border-left:1px solid var(--ink)}
+  .tabs button[aria-selected="true"]{background:var(--ink);color:#fff}
+  .tabs button:hover{background:var(--sea);color:#fff}
+
+  .opts{display:flex;gap:16px;align-items:center;font-size:13px;color:var(--ink-soft);flex-wrap:wrap}
+  .opts label{display:flex;align-items:center;gap:7px;text-transform:none;letter-spacing:0;font-family:var(--sans);font-size:13px;color:var(--ink-soft);margin:0}
+  .opts input{width:auto}
+
+  .series{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .series button{font-family:var(--mono);font-size:12px;font-weight:500;background:transparent;color:var(--sea);border:1px solid var(--grid);padding:5px 10px}
+  .series button[aria-pressed="true"]{background:var(--sea);border-color:var(--sea);color:#fff}
+
+  pre{
+    margin:0;font-family:var(--mono);font-size:12.5px;line-height:1.6;
+    background:#F4F7F9;border:1px solid var(--grid);padding:14px;
+    max-height:440px;overflow:auto;white-space:pre-wrap;word-break:break-word;
+  }
+  .j-key{color:var(--sea)}
+  .j-str{color:#2E7D5B}
+  .j-num{color:var(--isotherm)}
+  .j-bool,.j-null{color:#7A5CA8}
+
+  .chartbox{background:#F4F7F9;border:1px solid var(--grid);padding:8px}
+  .chartbox svg{display:block;width:100%;height:auto}
+  .empty{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);padding:40px 14px;text-align:center}
+  .stats{display:flex;flex-wrap:wrap;gap:8px 26px;margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+  .stats b{color:var(--isotherm);font-weight:600}
+  .hidden{display:none}
+
+  .legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-top:18px}
+  .legend div{border-left:2px solid var(--grid);padding-left:12px}
+  .legend h3{font-family:var(--mono);font-size:12px;margin:0 0 4px;color:var(--sea);letter-spacing:.06em}
+  .legend p{margin:0;font-size:13px;color:var(--ink-soft)}
+  .legend code{font-family:var(--mono);font-size:12px}
+
+  .ask{margin-top:34px;border-left:3px solid var(--isotherm);padding-left:16px}
+  .ask h2{font-size:15px;margin:0 0 6px}
+  .ask ol{margin:0;padding-left:18px;font-size:14px;color:var(--ink-soft)}
+  .ask li{margin-bottom:4px}
+  .ask code{font-family:var(--mono);font-size:13px}
+
+  @media (max-width:760px){
+    .top{flex-direction:column}
+    .globe{flex:none;width:100%;max-width:230px;margin:0 auto}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">Week 7 · Step 2 of 5</p>
+  <h1>Before Python, look at the reply yourself.</h1>
+  <p class="lede">An API request is just a web address. Pick a city — the globe turns to it — then
+  open the URL in a tab. Whatever comes back is exactly what Python will receive in Step 3, and the
+  <b>Chart</b> tab is that same data drawn, which is all Step 4 does.</p>
+
+  <section class="panel">
+    <div class="top">
+      <div class="fields">
+        <div class="wide">
+          <label for="city">city</label>
+          <select id="city"></select>
+        </div>
+        <div>
+          <label for="lat">latitude</label>
+          <input id="lat" type="number" step="0.01" value="52.52">
+        </div>
+        <div>
+          <label for="lon">longitude</label>
+          <input id="lon" type="number" step="0.01" value="13.41">
+        </div>
+        <div>
+          <label for="hourly">hourly</label>
+          <select id="hourly">
+            <option value="temperature_2m" selected>temperature_2m</option>
+            <option value="relative_humidity_2m">relative_humidity_2m</option>
+            <option value="precipitation">precipitation</option>
+            <option value="wind_speed_10m">wind_speed_10m</option>
+            <option value="temperature_2m,relative_humidity_2m">temperature_2m + humidity</option>
+            <option value="temperature_2m,precipitation,wind_speed_10m">temp + rain + wind</option>
+          </select>
+        </div>
+        <div>
+          <label for="tz">timezone</label>
+          <select id="tz"></select>
+        </div>
+        <div>
+          <label for="days">forecast_days</label>
+          <input id="days" type="number" min="1" max="16" step="1" value="7">
+        </div>
+      </div>
+
+      <div class="globe">
+        <label>globe · drag to spin</label>
+        <svg id="globe" viewBox="0 0 200 200" role="img" aria-label="Globe centred on the selected city"></svg>
+        <p class="globe-label" id="globe-label"></p>
+      </div>
+    </div>
+
+    <div class="urlbar">
+      <label>request url</label>
+      <div class="url" id="url"></div>
+      <div class="actions">
+        <a class="btn" id="open" href="#" target="_blank" rel="noopener">Open in a new tab</a>
+        <button id="fetch">Fetch it here</button>
+        <button class="ghost" id="copy">Copy URL</button>
+        <span class="status" id="status">Ready.</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="viewbar">
+      <div class="tabs" role="tablist">
+        <button id="tab-json" role="tab" aria-selected="true">JSON view</button>
+        <button id="tab-chart" role="tab" aria-selected="false">Chart view</button>
+      </div>
+      <div class="opts" id="json-opts">
+        <label><input type="checkbox" id="trim" checked> Shorten long lists to the first 6 values</label>
+      </div>
+    </div>
+
+    <pre id="out">Press <b>Fetch it here</b> to see the reply.</pre>
+
+    <div id="chart-pane" class="hidden">
+      <div class="series" id="series"></div>
+      <div class="chartbox" id="chartbox"><p class="empty">Press Fetch it here, then come back to this tab.</p></div>
+      <div class="stats" id="stats"></div>
+    </div>
+
+    <div class="legend">
+      <div>
+        <h3>city + globe</h3>
+        <p>Only a convenience. They fill <code>latitude</code>, <code>longitude</code> and <code>timezone</code> — the API knows nothing about city names.</p>
+      </div>
+      <div>
+        <h3>hourly</h3>
+        <p>What. Each name you list comes back as its own list inside <code>hourly</code>.</p>
+      </div>
+      <div>
+        <h3>timezone</h3>
+        <p>How timestamps are labelled. The <code>/</code> is sent as <code>%2F</code>.</p>
+      </div>
+      <div>
+        <h3>forecast_days</h3>
+        <p>How far ahead, 1 to 16. This is the control you wire to a slider in Step 5.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="ask">
+    <h2>Try these before moving on</h2>
+    <ol>
+      <li>Set forecast_days to 1, then 16. How many numbers are in <code>hourly.temperature_2m</code> each time? Watch the Chart tab redraw.</li>
+      <li>Compare Lisbon and Chicago on the same day. Which has the wider daily swing?</li>
+      <li>Switch the timezone and compare the first entry of <code>hourly.time</code>. The temperatures do not change — only the labels do.</li>
+      <li>Break it on purpose: type <code>temperature_2</code> in the URL bar of the open tab and read the error the server sends back.</li>
+      <li>Find <code>hourly_units</code>. Which key tells you the reply is in °C?</li>
+    </ol>
+  </div>
+
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const BASE = "https://api.open-meteo.com/v1/forecast";
+const LINE = "#BF3B2B";
+
+/* ================= cities ================= */
+const CITIES = {
+  "Western Europe": [
+    ["London",        51.51,  -0.13, "Europe/London"],
+    ["Dublin",        53.35,  -6.26, "Europe/Dublin"],
+    ["Paris",         48.86,   2.35, "Europe/Paris"],
+    ["Amsterdam",     52.37,   4.90, "Europe/Amsterdam"],
+    ["Brussels",      50.85,   4.35, "Europe/Brussels"],
+    ["Berlin",        52.52,  13.41, "Europe/Berlin"],
+    ["Munich",        48.14,  11.58, "Europe/Berlin"],
+    ["Zurich",        47.38,   8.54, "Europe/Zurich"],
+    ["Vienna",        48.21,  16.37, "Europe/Vienna"],
+    ["Copenhagen",    55.68,  12.57, "Europe/Copenhagen"],
+    ["Oslo",          59.91,  10.75, "Europe/Oslo"],
+    ["Stockholm",     59.33,  18.07, "Europe/Stockholm"],
+    ["Madrid",        40.42,  -3.70, "Europe/Madrid"],
+    ["Barcelona",     41.39,   2.17, "Europe/Madrid"],
+    ["Lisbon",        38.72,  -9.14, "Europe/Lisbon"],
+    ["Rome",          41.90,  12.50, "Europe/Rome"]
+  ],
+  "United States": [
+    ["New York, NY",     40.71,  -74.01, "America/New_York"],
+    ["Randolph, NJ",     40.85,  -74.58, "America/New_York"],
+    ["Boston, MA",       42.36,  -71.06, "America/New_York"],
+    ["Washington, DC",   38.91,  -77.04, "America/New_York"],
+    ["Miami, FL",        25.76,  -80.19, "America/New_York"],
+    ["Atlanta, GA",      33.75,  -84.39, "America/New_York"],
+    ["Chicago, IL",      41.88,  -87.63, "America/Chicago"],
+    ["Houston, TX",      29.76,  -95.37, "America/Chicago"],
+    ["Dallas, TX",       32.78,  -96.80, "America/Chicago"],
+    ["Denver, CO",       39.74, -104.98, "America/Denver"],
+    ["Phoenix, AZ",      33.45, -112.07, "America/Phoenix"],
+    ["Las Vegas, NV",    36.17, -115.14, "America/Los_Angeles"],
+    ["Los Angeles, CA",  34.05, -118.24, "America/Los_Angeles"],
+    ["San Francisco, CA",37.77, -122.42, "America/Los_Angeles"],
+    ["Seattle, WA",      47.61, -122.33, "America/Los_Angeles"],
+    ["Honolulu, HI",     21.31, -157.86, "Pacific/Honolulu"]
+  ]
+};
+
+const TIMEZONES = ["auto","UTC",
+  "America/New_York","America/Chicago","America/Denver","America/Phoenix",
+  "America/Los_Angeles","Pacific/Honolulu",
+  "Europe/London","Europe/Dublin","Europe/Lisbon","Europe/Paris","Europe/Brussels",
+  "Europe/Amsterdam","Europe/Berlin","Europe/Zurich","Europe/Vienna","Europe/Madrid",
+  "Europe/Rome","Europe/Copenhagen","Europe/Oslo","Europe/Stockholm"];
+
+function allCities(){
+  return Object.keys(CITIES).reduce((acc, region) => acc.concat(CITIES[region]), []);
+}
+
+function buildPickers(){
+  const sel = $("city");
+  sel.innerHTML = '<option value="custom">Custom coordinates…</option>';
+  for (const region of Object.keys(CITIES)){
+    const group = document.createElement("optgroup");
+    group.label = region;
+    for (const [name, lat, lon, tz] of CITIES[region]){
+      const opt = document.createElement("option");
+      opt.value = [lat, lon, tz].join("|");
+      opt.textContent = name;
+      if (name === "Berlin") opt.selected = true;
+      group.appendChild(opt);
+    }
+    sel.appendChild(group);
+  }
+  const tzSel = $("tz");
+  tzSel.innerHTML = "";
+  for (const tz of TIMEZONES){
+    const opt = document.createElement("option");
+    opt.value = tz; opt.textContent = tz;
+    if (tz === "America/New_York") opt.selected = true;
+    tzSel.appendChild(opt);
+  }
+}
+
+function cityName(){
+  const sel = $("city");
+  return sel.value === "custom" ? "Custom location" : sel.options[sel.selectedIndex].text;
+}
+
+function applyCity(){
+  const value = $("city").value;
+  if (value === "custom"){ spinTo(+$("lon").value, +$("lat").value); return; }
+  const [lat, lon, tz] = value.split("|");
+  $("lat").value = lat;
+  $("lon").value = lon;
+  $("tz").value = tz;
+  renderUrl();
+  spinTo(+lon, +lat);
+}
+
+/* ================= globe =================
+   Orthographic projection, drawn by hand so the page needs no map library.
+   Coastlines are deliberately coarse - enough to recognise a continent. */
+const LAND = [
+  // North America
+  [[-168,65],[-164,71],[-140,70],[-120,70],[-95,68],[-82,70],[-70,62],[-56,52],[-66,45],
+   [-74,40],[-81,31],[-80,25],[-90,29],[-97,26],[-91,19],[-87,21],[-88,16],[-83,9],[-79,9],
+   [-86,13],[-95,16],[-105,20],[-114,28],[-124,40],[-124,48],[-136,58],[-150,60],[-165,55],[-168,65]],
+  // Greenland
+  [[-45,60],[-52,65],[-55,70],[-45,75],[-35,78],[-20,76],[-22,70],[-30,65],[-42,60],[-45,60]],
+  // South America
+  [[-79,9],[-72,11],[-62,10],[-52,5],[-50,0],[-44,-2],[-35,-5],[-39,-13],[-48,-25],[-58,-34],
+   [-62,-40],[-65,-45],[-68,-52],[-75,-52],[-73,-45],[-71,-33],[-70,-20],[-75,-14],[-81,-6],
+   [-80,0],[-77,8],[-79,9]],
+  // Eurasia
+  [[-10,36],[-9,44],[-2,43],[0,49],[4,52],[8,54],[5,58],[11,58],[13,55],[19,54],[21,57],[24,60],
+   [30,60],[28,66],[22,70],[30,70],[40,68],[55,70],[70,73],[80,74],[100,77],[115,73],[130,72],
+   [145,70],[160,70],[170,68],[180,66],[178,63],[163,60],[160,55],[155,50],[140,46],[135,43],
+   [130,35],[122,30],[120,24],[110,20],[105,10],[100,6],[98,10],[95,16],[90,22],[85,20],[80,15],
+   [77,8],[73,20],[70,25],[63,25],[57,25],[50,30],[43,38],[35,36],[28,36],[20,40],[15,38],
+   [12,45],[5,43],[-2,36],[-10,36]],
+  // Africa
+  [[-17,15],[-17,21],[-10,30],[0,35],[10,37],[20,32],[32,31],[35,24],[43,12],[51,12],[48,5],
+   [41,-2],[40,-12],[35,-20],[32,-26],[26,-34],[18,-34],[12,-18],[9,-1],[0,5],[-8,5],[-13,9],[-17,15]],
+  // Australia
+  [[113,-22],[114,-34],[121,-34],[129,-32],[138,-35],[146,-39],[150,-37],[153,-28],[146,-19],
+   [142,-11],[136,-12],[130,-12],[125,-14],[118,-20],[113,-22]],
+  // Great Britain
+  [[-5,50],[-6,54],[-3,58],[-2,58],[0,53],[1,51],[-5,50]],
+  // Ireland
+  [[-10,52],[-10,55],[-6,55],[-6,52],[-10,52]],
+  // Iceland
+  [[-24,65],[-22,66],[-14,66],[-14,64],[-22,63.5],[-24,65]],
+  // Japan
+  [[130,33],[135,34],[140,36],[142,42],[145,44],[141,45],[138,37],[133,35],[130,33]],
+  // New Zealand
+  [[173,-35],[178,-38],[176,-41],[171,-44],[167,-46],[170,-43],[172,-40],[173,-35]]
+];
+
+const GC = 100, GR = 86;          // centre and radius inside the 200x200 viewBox
+let curLon = 13.41, curLat = 52.52;
+const D = Math.PI / 180;
+
+function project(lon, lat){
+  const l = (lon - curLon) * D, p = lat * D, p0 = curLat * D;
+  const cosc = Math.sin(p0) * Math.sin(p) + Math.cos(p0) * Math.cos(p) * Math.cos(l);
+  return {
+    x: GC + GR * Math.cos(p) * Math.sin(l),
+    y: GC - GR * (Math.cos(p0) * Math.sin(p) - Math.sin(p0) * Math.cos(p) * Math.cos(l)),
+    visible: cosc >= 0
+  };
+}
+
+function pathOf(points){
+  let d = "", pen = false;
+  for (const [lon, lat] of points){
+    const q = project(lon, lat);
+    if (!q.visible){ pen = false; continue; }          // point is on the far side
+    d += (pen ? " L " : " M ") + q.x.toFixed(1) + " " + q.y.toFixed(1);
+    pen = true;
+  }
+  return d;
+}
+
+function graticule(){
+  const lines = [];
+  for (let lat = -60; lat <= 60; lat += 30){
+    const ring = [];
+    for (let lon = -180; lon <= 180; lon += 5) ring.push([lon, lat]);
+    lines.push(ring);
+  }
+  for (let lon = -180; lon < 180; lon += 30){
+    const ring = [];
+    for (let lat = -90; lat <= 90; lat += 5) ring.push([lon, lat]);
+    lines.push(ring);
+  }
+  return lines;
+}
+const GRATICULE = graticule();
+
+function drawGlobe(){
+  let svg = '<circle cx="' + GC + '" cy="' + GC + '" r="' + GR +
+            '" fill="#DCE7EC" stroke="#0B1A26" stroke-width="1.2"/>';
+
+  for (const line of GRATICULE){
+    const d = pathOf(line);
+    if (d) svg += '<path d="' + d + '" fill="none" stroke="#C9D6DF" stroke-width=".7"/>';
+  }
+  for (const shape of LAND){
+    const d = pathOf(shape);
+    if (d) svg += '<path d="' + d + '" fill="#FFFFFF" stroke="#1F5E7A" stroke-width="1" ' +
+                  'stroke-linejoin="round" fill-opacity=".85"/>';
+  }
+
+  const selected = cityName();
+  for (const [name, lat, lon] of allCities()){
+    const q = project(lon, lat);
+    if (!q.visible) continue;
+    if (name === selected) continue;
+    svg += '<circle cx="' + q.x.toFixed(1) + '" cy="' + q.y.toFixed(1) +
+           '" r="1.8" fill="#1F5E7A" fill-opacity=".55"/>';
+  }
+
+  // the chosen point always sits dead centre once the spin finishes
+  const here = project(+$("lon").value, +$("lat").value);
+  if (here.visible){
+    svg += '<circle cx="' + here.x.toFixed(1) + '" cy="' + here.y.toFixed(1) +
+           '" r="7" fill="none" stroke="' + LINE + '" stroke-width="1.2" opacity=".55"/>';
+    svg += '<circle cx="' + here.x.toFixed(1) + '" cy="' + here.y.toFixed(1) +
+           '" r="3.4" fill="' + LINE + '"/>';
+  }
+
+  $("globe").innerHTML = svg;
+
+  const lat = Number($("lat").value).toFixed(2), lon = Number($("lon").value).toFixed(2);
+  $("globe-label").innerHTML =
+    "<b>" + esc(cityName()) + "</b>" + lat + ", " + lon;
+}
+
+let spinFrame = null;
+function spinTo(lon, lat){
+  if (isNaN(lon) || isNaN(lat)) return;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce){ curLon = lon; curLat = lat; drawGlobe(); return; }
+
+  const fromLon = curLon, fromLat = curLat;
+  let dLon = ((lon - fromLon + 540) % 360) - 180;   // always the short way round
+  const dLat = lat - fromLat;
+  if (Math.abs(dLon) < 0.01 && Math.abs(dLat) < 0.01){ drawGlobe(); return; }
+
+  const start = performance.now(), duration = 900;
+  if (spinFrame) cancelAnimationFrame(spinFrame);
+  function step(now){
+    const k = Math.min(1, (now - start) / duration);
+    const eased = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+    curLon = fromLon + dLon * eased;
+    curLat = fromLat + dLat * eased;
+    drawGlobe();
+    if (k < 1) spinFrame = requestAnimationFrame(step);
+  }
+  spinFrame = requestAnimationFrame(step);
+}
+
+// drag to spin by hand
+(function enableDrag(){
+  const el = $("globe");
+  let dragging = false, lastX = 0, lastY = 0;
+  el.addEventListener("pointerdown", e => {
+    dragging = true; lastX = e.clientX; lastY = e.clientY;
+    if (spinFrame) cancelAnimationFrame(spinFrame);
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener("pointermove", e => {
+    if (!dragging) return;
+    const scale = 220 / el.clientWidth;
+    curLon -= (e.clientX - lastX) * 0.45 * scale;
+    curLat = Math.max(-85, Math.min(85, curLat + (e.clientY - lastY) * 0.45 * scale));
+    lastX = e.clientX; lastY = e.clientY;
+    drawGlobe();
+  });
+  el.addEventListener("pointerup", e => { dragging = false; el.releasePointerCapture(e.pointerId); });
+  el.addEventListener("pointercancel", () => { dragging = false; });
+})();
+
+/* ================= url ================= */
+function params(){
+  return {
+    latitude: $("lat").value.trim(),
+    longitude: $("lon").value.trim(),
+    hourly: $("hourly").value,
+    timezone: $("tz").value,
+    forecast_days: $("days").value.trim()
+  };
+}
+
+function buildUrl(){
+  const p = params();
+  const qs = Object.keys(p)
+    .map(k => encodeURIComponent(k) + "=" + encodeURIComponent(p[k]))
+    .join("&");
+  return BASE + "?" + qs;
+}
+
+function esc(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function renderUrl(){
+  const url = buildUrl();
+  const [base, qs] = url.split("?");
+  const parts = qs.split("&").map(pair => {
+    const [k, v] = pair.split("=");
+    return '<span class="k">' + esc(k) + '</span>=<span class="v">' + esc(v) + '</span>';
+  });
+  $("url").innerHTML = esc(base) + "?" + parts.join("<wbr>&amp;");
+  $("open").href = url;
+  return url;
+}
+
+/* ================= JSON view ================= */
+function trimArrays(value, keep){
+  if (Array.isArray(value)){
+    if (value.length > keep){
+      const head = value.slice(0, keep).map(v => trimArrays(v, keep));
+      head.push("… " + (value.length - keep) + " more (" + value.length + " total)");
+      return head;
+    }
+    return value.map(v => trimArrays(v, keep));
+  }
+  if (value && typeof value === "object"){
+    const out = {};
+    for (const k of Object.keys(value)) out[k] = trimArrays(value[k], keep);
+    return out;
+  }
+  return value;
+}
+
+function highlight(text){
+  return esc(text).replace(
+    /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b-?\d+(\.\d+)?([eE][+-]?\d+)?\b|\btrue\b|\bfalse\b|\bnull\b)/g,
+    (m) => {
+      let cls = "j-num";
+      if (/^"/.test(m)) cls = /:$/.test(m) ? "j-key" : "j-str";
+      else if (/true|false/.test(m)) cls = "j-bool";
+      else if (/null/.test(m)) cls = "j-null";
+      return '<span class="' + cls + '">' + m + '</span>';
+    }
+  );
+}
+
+let lastData = null;
+let currentSeries = null;
+
+function showJson(){
+  if (lastData === null) return;
+  const data = $("trim").checked ? trimArrays(lastData, 6) : lastData;
+  $("out").innerHTML = highlight(JSON.stringify(data, null, 2));
+}
+
+/* ================= Chart view ================= */
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+function dayLabel(stamp){            // "2026-08-16T00:00" -> "16 Aug"
+  const d = stamp.slice(0, 10).split("-");
+  return Number(d[2]) + " " + MONTHS[Number(d[1]) - 1];
+}
+
+function seriesNames(){
+  if (!lastData || !lastData.hourly) return [];
+  return Object.keys(lastData.hourly).filter(k => k !== "time");
+}
+
+function buildSeriesButtons(){
+  const names = seriesNames();
+  const box = $("series");
+  box.innerHTML = "";
+  if (names.length <= 1){ currentSeries = names[0] || null; return; }
+  if (!names.includes(currentSeries)) currentSeries = names[0];
+  for (const name of names){
+    const b = document.createElement("button");
+    b.textContent = name;
+    b.setAttribute("aria-pressed", name === currentSeries ? "true" : "false");
+    b.addEventListener("click", () => { currentSeries = name; buildSeriesButtons(); drawChart(); });
+    box.appendChild(b);
+  }
+}
+
+function drawChart(){
+  const box = $("chartbox");
+  if (!lastData || !lastData.hourly || !currentSeries){
+    box.innerHTML = '<p class="empty">Press Fetch it here, then come back to this tab.</p>';
+    $("stats").innerHTML = "";
+    return;
+  }
+
+  const times = lastData.hourly.time;
+  const values = lastData.hourly[currentSeries];
+  const unit = (lastData.hourly_units && lastData.hourly_units[currentSeries]) || "";
+  const n = values.length;
+
+  const W = Math.max(box.clientWidth - 16, 320), H = 320;
+  const P = { l: 54, r: 14, t: 16, b: 40 };
+  const iw = W - P.l - P.r, ih = H - P.t - P.b;
+
+  const clean = values.filter(v => v !== null && !isNaN(v));
+  let lo = Math.min.apply(null, clean), hi = Math.max.apply(null, clean);
+  if (lo === hi){ lo -= 1; hi += 1; }
+  const pad = (hi - lo) * 0.08;
+  lo -= pad; hi += pad;
+
+  const x = i => P.l + (n === 1 ? iw / 2 : (i * iw) / (n - 1));
+  const y = v => P.t + ih - ((v - lo) / (hi - lo)) * ih;
+
+  let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' +
+            esc(currentSeries) + ' over time">';
+
+  for (let g = 0; g <= 4; g++){
+    const v = lo + ((hi - lo) * g) / 4;
+    const yy = y(v);
+    svg += '<line x1="' + P.l + '" y1="' + yy + '" x2="' + (W - P.r) + '" y2="' + yy +
+           '" stroke="#C9D6DF" stroke-width="1"/>';
+    svg += '<text x="' + (P.l - 8) + '" y="' + (yy + 4) +
+           '" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="11" fill="#415666">' +
+           v.toFixed(1) + '</text>';
+  }
+
+  for (let i = 0; i < n; i++){
+    if (!times[i].endsWith("T00:00") && i !== 0) continue;
+    const xx = x(i);
+    if (i !== 0){
+      svg += '<line x1="' + xx + '" y1="' + P.t + '" x2="' + xx + '" y2="' + (P.t + ih) +
+             '" stroke="#C9D6DF" stroke-width="1" stroke-dasharray="3 3"/>';
+    }
+    svg += '<text x="' + xx + '" y="' + (H - 14) +
+           '" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#415666">' +
+           dayLabel(times[i]) + '</text>';
+  }
+
+  let d = "";
+  for (let i = 0; i < n; i++){
+    if (values[i] === null || isNaN(values[i])) continue;
+    d += (d === "" ? "M " : " L ") + x(i).toFixed(1) + " " + y(values[i]).toFixed(1);
+  }
+  svg += '<path d="' + d + '" fill="none" stroke="' + LINE +
+         '" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>';
+
+  // circle markers, only while they are still readable (same rule as Step 5)
+  if (n <= 200){
+    for (let i = 0; i < n; i++){
+      if (values[i] === null || isNaN(values[i])) continue;
+      svg += '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(values[i]).toFixed(1) +
+             '" r="3" fill="#fff" stroke="' + LINE + '" stroke-width="1.4"><title>' +
+             esc(times[i] + "  " + values[i] + " " + unit) + '</title></circle>';
+    }
+  }
+
+  svg += '<line x1="' + P.l + '" y1="' + (P.t + ih) + '" x2="' + (W - P.r) + '" y2="' + (P.t + ih) +
+         '" stroke="#0B1A26" stroke-width="1"/>';
+  svg += '<text x="' + P.l + '" y="' + (P.t - 3) +
+         '" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="#0B1A26">' +
+         esc(cityName() + " · " + currentSeries + (unit ? " (" + unit + ")" : "")) + '</text>';
+  svg += "</svg>";
+
+  box.innerHTML = svg;
+
+  const sum = clean.reduce((a, b) => a + b, 0);
+  $("stats").innerHTML =
+    "points <b>" + n + "</b>" +
+    "<span>min <b>" + Math.min.apply(null, clean).toFixed(1) + unit + "</b></span>" +
+    "<span>max <b>" + Math.max.apply(null, clean).toFixed(1) + unit + "</b></span>" +
+    "<span>mean <b>" + (sum / clean.length).toFixed(1) + unit + "</b></span>" +
+    "<span>markers " + (n <= 200 ? "on" : "off, too many points") + "</span>";
+}
+
+/* ================= tabs ================= */
+function setView(view){
+  const isJson = view === "json";
+  $("tab-json").setAttribute("aria-selected", isJson);
+  $("tab-chart").setAttribute("aria-selected", !isJson);
+  $("out").classList.toggle("hidden", !isJson);
+  $("json-opts").classList.toggle("hidden", !isJson);
+  $("chart-pane").classList.toggle("hidden", isJson);
+  if (!isJson) drawChart();
+}
+
+/* ================= fetch ================= */
+async function fetchJson(){
+  const url = renderUrl();
+  $("status").textContent = "Requesting…";
+  $("status").className = "status";
+  try{
+    const res = await fetch(url);
+    const data = await res.json();
+    lastData = data;
+    currentSeries = null;
+    if (!res.ok){
+      $("status").textContent = "Server said " + res.status + ". Read the reason below.";
+      $("status").className = "status err";
+    } else {
+      const rows = data.hourly && data.hourly.time ? data.hourly.time.length : 0;
+      $("status").textContent = res.status + " OK · " + rows + " hourly rows · " + cityName();
+    }
+    showJson();
+    buildSeriesButtons();
+    if ($("tab-chart").getAttribute("aria-selected") === "true") drawChart();
+  }catch(err){
+    lastData = null;
+    $("status").textContent = "Request failed: " + err.message;
+    $("status").className = "status err";
+    $("out").textContent =
+      "No reply. Check that this machine is online, then open the URL in a tab to confirm the address itself works.";
+    drawChart();
+  }
+}
+
+/* ================= wiring ================= */
+buildPickers();
+$("city").addEventListener("change", applyCity);
+["lat","lon"].forEach(id => $(id).addEventListener("change", () => {
+  $("city").value = "custom";
+  renderUrl();
+  spinTo(+$("lon").value, +$("lat").value);
+}));
+["lat","lon"].forEach(id => $(id).addEventListener("input", () => {
+  $("city").value = "custom";
+  renderUrl();
+}));
+["hourly","tz","days"].forEach(id => $(id).addEventListener("input", renderUrl));
+$("fetch").addEventListener("click", fetchJson);
+$("trim").addEventListener("change", showJson);
+$("tab-json").addEventListener("click", () => setView("json"));
+$("tab-chart").addEventListener("click", () => setView("chart"));
+$("copy").addEventListener("click", async () => {
+  try{
+    await navigator.clipboard.writeText(buildUrl());
+    $("status").textContent = "URL copied.";
+    $("status").className = "status";
+  }catch(e){
+    $("status").textContent = "Copy blocked by the browser — select the URL above instead.";
+    $("status").className = "status err";
+  }
+});
+
+let resizeTimer;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    if ($("tab-chart").getAttribute("aria-selected") === "true") drawChart();
+  }, 150);
+});
+
+// On load we keep the exact URL used in the README (Berlin coordinates, New York
+// clock) so the page matches Step 3. Picking a city overwrites both.
+renderUrl();
+curLon = -30; curLat = 30;      // start out over the Atlantic...
+drawGlobe();
+spinTo(13.41, 52.52);           // ...and turn to Berlin
+</script>
+</body>
+</html>
